@@ -6,10 +6,11 @@ import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
 import { type Task } from "@/lib/taskData";
 import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
+import type { StarType } from "./Header";
 
 interface TaskCardProps {
   task: Task;
-  onComplete: (correct: boolean, hintsUsed: number) => void;
+  onComplete: (correct: boolean, hintsUsed: number, starType: StarType) => void;
   isDiscovery?: boolean;
 }
 
@@ -20,6 +21,8 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [showStarBurst, setShowStarBurst] = useState(false);
+  const [earnedStarType, setEarnedStarType] = useState<StarType>("empty");
+  const [usedHintButton, setUsedHintButton] = useState(false);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -33,6 +36,9 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
     setIsCorrect(correct);
 
     if (correct) {
+      const isFirstTry = attempts === 0;
+      const starType: StarType = isFirstTry && !usedHintButton ? "gold" : "silver";
+      setEarnedStarType(starType);
       setShowResult(true);
       setShowStarBurst(true);
     } else {
@@ -42,6 +48,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
       if (newAttempts >= 2) {
         setShowResult(true);
         setIsCorrect(false);
+        setEarnedStarType("empty");
       } else {
         setSelectedOption(null);
         if (hintLevel < 3) {
@@ -52,10 +59,11 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   };
 
   const handleNext = () => {
-    onComplete(isCorrect, hintLevel);
+    onComplete(isCorrect, hintLevel, earnedStarType);
   };
 
   const handleShowHint = () => {
+    setUsedHintButton(true);
     if (hintLevel < 3) {
       setHintLevel((prev) => prev + 1);
     }
@@ -72,6 +80,12 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
     phonetics: "bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300",
     meaning: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
   };
+
+  const isGold = earnedStarType === "gold";
+  const starColorClass = isGold
+    ? "fill-amber-400 text-amber-400"
+    : "fill-slate-300 text-slate-400";
+  const starLabel = isGold ? "Золотая звезда!" : "Серебряная звезда!";
 
   return (
     <motion.div
@@ -212,7 +226,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                       transition={{ duration: 0.8, delay: i * 0.08, ease: "easeOut" }}
                       className="absolute"
                     >
-                      <Star className="w-7 h-7 fill-amber-400 text-amber-400 drop-shadow-sm" />
+                      <Star className={cn("w-7 h-7 drop-shadow-sm", starColorClass)} />
                     </motion.div>
                   );
                 })}
@@ -222,7 +236,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="absolute"
                 >
-                  <Star className="w-10 h-10 fill-amber-400 text-amber-400 drop-shadow-md" />
+                  <Star className={cn("w-10 h-10 drop-shadow-md", starColorClass)} />
                 </motion.div>
               </div>
             )}
@@ -242,7 +256,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
             >
               <div className="flex items-start gap-2">
                 {isCorrect && (
-                  <Star className="w-5 h-5 fill-amber-400 text-amber-400 shrink-0 mt-0.5" />
+                  <Star className={cn("w-5 h-5 shrink-0 mt-0.5", starColorClass)} />
                 )}
                 <div>
                   <p
@@ -252,8 +266,9 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                         ? "text-emerald-800 dark:text-emerald-200"
                         : "text-orange-800 dark:text-orange-200"
                     )}
+                    data-testid="text-result-label"
                   >
-                    {isCorrect ? "Правильно! +1" : "Давай запомним!"}
+                    {isCorrect ? starLabel : "Давай запомним!"}
                   </p>
                   <p
                     className={cn(

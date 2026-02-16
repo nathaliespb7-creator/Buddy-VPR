@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Zap, BookOpen, Star, Layers } from "lucide-react";
 import { Mascot } from "./Mascot";
-import { speak } from "@/lib/speechSynthesis";
 
 interface CategoryPickerProps {
   onSelect: (category: string) => void;
@@ -74,7 +73,6 @@ export function CategoryPicker({ onSelect }: CategoryPickerProps) {
                 >
                   <button
                     onClick={() => {
-                      speak(`Отлично! Давай займёмся темой: ${cat.label}!`);
                       onSelect(cat.key);
                     }}
                     className="w-full text-left rounded-xl border-2 border-border bg-background px-4 py-4 transition-all hover-elevate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

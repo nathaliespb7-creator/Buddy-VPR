@@ -1,12 +1,13 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Header } from "@/components/Header";
+import { Header, type StarType } from "@/components/Header";
 import { ProgressBar } from "@/components/ProgressBar";
 import { TaskCard } from "@/components/TaskCard";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { CompletionScreen } from "@/components/CompletionScreen";
 import { CategoryPicker } from "@/components/CategoryPicker";
 import { EmpathyToast } from "@/components/EmpathyToast";
+import { LevelUpOverlay } from "@/components/LevelUpOverlay";
 import { tasksData, discoveryTasks, encouragements, type Task } from "@/lib/taskData";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -19,6 +20,21 @@ function getStoredSessionId(): string {
   const newId = `session_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   localStorage.setItem("buddy_session_id", newId);
   return newId;
+}
+
+function getStoredStars(): StarType[] {
+  try {
+    const stored = localStorage.getItem("buddy_user_stars");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+}
+
+function saveStars(stars: StarType[]) {
+  localStorage.setItem("buddy_user_stars", JSON.stringify(stars));
 }
 
 export default function Home() {
@@ -34,6 +50,8 @@ export default function Home() {
   const [toastType, setToastType] = useState<"success" | "encouragement" | "hint">("success");
   const [toastVisible, setToastVisible] = useState(false);
   const [sessionId] = useState(getStoredSessionId);
+  const [userStars, setUserStars] = useState<StarType[]>(getStoredStars);
+  const [showLevelUp, setShowLevelUp] = useState(false);
 
   const { data: serverTasks } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -86,6 +104,18 @@ export default function Home() {
     setToastVisible(true);
   }, []);
 
+  const addStar = useCallback((starType: StarType) => {
+    if (starType === "empty") return;
+    setUserStars((prev) => {
+      const updated = [...prev, starType];
+      saveStars(updated);
+      if (updated.length % 5 === 0) {
+        setTimeout(() => setShowLevelUp(true), 600);
+      }
+      return updated;
+    });
+  }, []);
+
   const handleStartDiscovery = useCallback(() => {
     const discoveryFromServer = allTasks.length >= 3
       ? [allTasks[0], allTasks.find(t => t.type === "phonetics") || allTasks[1], allTasks.find(t => t.type === "meaning") || allTasks[2]]
@@ -113,7 +143,7 @@ export default function Home() {
   );
 
   const handleTaskComplete = useCallback(
-    (correct: boolean, hintsUsed: number) => {
+    (correct: boolean, hintsUsed: number, starType: StarType) => {
       const currentTask = activeTasks[currentTaskIndex];
 
       saveProgressMutation.mutate({
@@ -130,6 +160,7 @@ export default function Home() {
           [currentTask.category]: (prev[currentTask.category] || 0) + 1,
         }));
         setMascotMood("celebrating");
+        addStar(starType);
         showToast(
           encouragements[Math.floor(Math.random() * encouragements.length)],
           "success"
@@ -159,23 +190,30 @@ export default function Home() {
         }, 800);
       }
     },
-    [activeTasks, currentTaskIndex, phase, sessionId, saveProgressMutation, showToast]
+    [activeTasks, currentTaskIndex, phase, sessionId, saveProgressMutation, showToast, addStar]
   );
+
+  const handleLevelUpNext = useCallback(() => {
+    setShowLevelUp(false);
+    setPhase("categoryPick");
+    setMascotMood("happy");
+  }, []);
 
   const handleRestart = useCallback(() => {
     const newSessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     localStorage.setItem("buddy_session_id", newSessionId);
-    setPhase("welcome");
-    setCurrentTaskIndex(0);
-    setCompletedTasks(0);
-    setCorrectTasks(0);
-    setCategoryScores({});
-    setMascotMood("idle");
+    localStorage.removeItem("buddy_user_stars");
     window.location.reload();
   }, []);
 
   const currentTask = activeTasks[currentTaskIndex];
   const totalTasks = activeTasks.length;
+
+  const currentBatchStars = useMemo(() => {
+    const batchIndex = Math.floor(userStars.length / 5);
+    const batchStart = batchIndex * 5;
+    return userStars.slice(batchStart, batchStart + 5);
+  }, [userStars]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col" data-testid="home-page">
@@ -186,7 +224,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header mascotMood={mascotMood} stars={correctTasks} />
+        <Header mascotMood={mascotMood} stars={currentBatchStars} />
 
         {(phase === "training" || phase === "discovery") && (
           <ProgressBar
@@ -231,6 +269,8 @@ export default function Home() {
           onClose={() => setToastVisible(false)}
         />
       </div>
+
+      <LevelUpOverlay visible={showLevelUp} onNext={handleLevelUpNext} />
     </div>
   );
 }
