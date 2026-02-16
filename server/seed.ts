@@ -157,21 +157,59 @@ const seedTasks = [
     difficulty: 2,
     category: "meaning",
   },
+  {
+    type: "accent",
+    word: "квартал",
+    question: "Поставь ударение: КВАРТАЛ",
+    correct: "квартАл",
+    options: ["квартАл", "квАртал"],
+    audio: "КвартАл. Где спрятался сильный звук?",
+    hint: "Представь, что это слово — артист, и он поет на букву А!",
+    rule: "Ударение — это секретная сила слова. Мы просто учимся её находить!",
+    difficulty: 1,
+    category: "accent",
+  },
+  {
+    type: "phonetics",
+    word: "вьюга",
+    question: "В слове 'ВЬЮГА' букв столько же, сколько звуков?",
+    correct: "Да",
+    options: ["Да", "Нет"],
+    audio: "Вьюга. Мягкий знак звук съел, а буква Ю — подарила два новых!",
+    hint: "Раздели слово: ВЬЮ — ГА. Мягкий знак молчит, а Ю поет за двоих: Й и У.",
+    rule: "Звуки мы слышим, а буквы — пишем. Иногда они не совпадают, и это нормально!",
+    difficulty: 1,
+    category: "phonetics",
+  },
 ];
 
 export async function seedDatabase() {
   try {
     const count = await storage.getTaskCount();
-    if (count > 0) {
+    if (count >= seedTasks.length) {
       console.log(`Database already has ${count} tasks, skipping seed.`);
       return;
     }
 
-    console.log("Seeding database with VPR tasks...");
-    for (const task of seedTasks) {
-      await storage.insertTask(task);
+    if (count === 0) {
+      console.log("Seeding database with VPR tasks...");
+      for (const task of seedTasks) {
+        await storage.insertTask(task);
+      }
+      console.log(`Seeded ${seedTasks.length} tasks successfully.`);
+    } else {
+      console.log(`Database has ${count} tasks, expected ${seedTasks.length}. Adding missing tasks...`);
+      const existing = await storage.getAllTasks();
+      const existingWords = new Set(existing.map(t => t.word));
+      let added = 0;
+      for (const task of seedTasks) {
+        if (!existingWords.has(task.word)) {
+          await storage.insertTask(task);
+          added++;
+        }
+      }
+      console.log(`Added ${added} new tasks.`);
     }
-    console.log(`Seeded ${seedTasks.length} tasks successfully.`);
   } catch (error) {
     console.error("Error seeding database:", error);
   }
