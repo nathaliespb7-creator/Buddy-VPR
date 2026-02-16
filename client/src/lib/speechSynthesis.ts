@@ -5,7 +5,7 @@ export function speak(text: string, onEnd?: () => void) {
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "ru-RU";
-  utterance.rate = 0.85;
+  utterance.rate = 0.9;
   utterance.pitch = 1.1;
   utterance.volume = 1;
 
