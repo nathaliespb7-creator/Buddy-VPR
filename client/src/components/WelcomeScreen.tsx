@@ -2,20 +2,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mascot } from "./Mascot";
-import { Rocket, Volume2 } from "lucide-react";
-import { speak } from "@/lib/speechSynthesis";
+import { Rocket } from "lucide-react";
 
 interface WelcomeScreenProps {
   onStart: () => void;
 }
 
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
-  const handleGreeting = () => {
-    speak(
-      "Привет! Я — твой друг для учёбы! Давай вместе подготовимся к ВПР! Сначала я хочу узнать, что ты уже знаешь. Это будет наша разведывательная миссия!"
-    );
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -55,15 +48,6 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
             >
               <Rocket className="w-5 h-5" />
               Начать миссию!
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={handleGreeting}
-              className="w-full gap-2"
-              data-testid="button-welcome-voice"
-            >
-              <Volume2 className="w-4 h-4" />
-              Послушать приветствие
             </Button>
           </div>
         </CardContent>

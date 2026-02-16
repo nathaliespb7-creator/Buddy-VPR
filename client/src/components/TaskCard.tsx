@@ -1,10 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Volume2, Lightbulb, BookOpen, ArrowRight, RotateCcw, Sparkles } from "lucide-react";
+import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
 import { type Task } from "@/lib/taskData";
-import { speak } from "@/lib/speechSynthesis";
 import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
 
@@ -20,12 +19,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const [attempts, setAttempts] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-
-  const handleSpeak = useCallback((text: string) => {
-    setIsSpeaking(true);
-    speak(text, () => setIsSpeaking(false));
-  }, []);
+  const [showStarBurst, setShowStarBurst] = useState(false);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -40,7 +34,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
 
     if (correct) {
       setShowResult(true);
-      handleSpeak("Отлично! Ты справился!");
+      setShowStarBurst(true);
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
@@ -48,13 +42,11 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
       if (newAttempts >= 2) {
         setShowResult(true);
         setIsCorrect(false);
-        handleSpeak(task.audio);
       } else {
         setSelectedOption(null);
         if (hintLevel < 3) {
           setHintLevel((prev) => prev + 1);
         }
-        handleSpeak("Попробуй ещё разок! Ты почти у цели!");
       }
     }
   };
@@ -66,13 +58,6 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const handleShowHint = () => {
     if (hintLevel < 3) {
       setHintLevel((prev) => prev + 1);
-    }
-    if (hintLevel === 0) {
-      handleSpeak("Ты можешь! Подумай ещё немножко!");
-    } else if (hintLevel === 1) {
-      handleSpeak(task.hint);
-    } else {
-      handleSpeak(task.rule || task.hint);
     }
   };
 
@@ -115,16 +100,6 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                 </span>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handleSpeak(task.audio)}
-              className={cn(isSpeaking && "text-primary")}
-              data-testid="button-task-voice"
-              aria-label="Озвучить задание"
-            >
-              <Volume2 className="w-5 h-5" />
-            </Button>
           </div>
           <CardTitle className="text-lg sm:text-xl mt-2" data-testid="text-task-title">
             {task.question || `Где правильное ударение в слове «${task.word}»?`}
@@ -221,6 +196,38 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
             )}
           </AnimatePresence>
 
+          <AnimatePresence>
+            {showStarBurst && (
+              <div className="relative flex justify-center mb-2 h-16" data-testid="star-burst">
+                {[...Array(5)].map((_, i) => {
+                  const angle = (i - 2) * 30;
+                  const rad = (angle * Math.PI) / 180;
+                  const x = Math.sin(rad) * 60;
+                  const y = -Math.cos(rad) * 50 - 10;
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                      animate={{ opacity: [0, 1, 1, 0], scale: [0, 1.3, 1, 0.5], x, y }}
+                      transition={{ duration: 0.8, delay: i * 0.08, ease: "easeOut" }}
+                      className="absolute"
+                    >
+                      <Star className="w-7 h-7 fill-amber-400 text-amber-400 drop-shadow-sm" />
+                    </motion.div>
+                  );
+                })}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: [0, 1.5, 1] }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="absolute"
+                >
+                  <Star className="w-10 h-10 fill-amber-400 text-amber-400 drop-shadow-md" />
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+
           {showResult && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -233,27 +240,34 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
               )}
               data-testid="result-box"
             >
-              <p
-                className={cn(
-                  "text-sm font-semibold mb-1",
-                  isCorrect
-                    ? "text-emerald-800 dark:text-emerald-200"
-                    : "text-orange-800 dark:text-orange-200"
+              <div className="flex items-start gap-2">
+                {isCorrect && (
+                  <Star className="w-5 h-5 fill-amber-400 text-amber-400 shrink-0 mt-0.5" />
                 )}
-              >
-                {isCorrect ? "Правильно!" : "Давай запомним!"}
-              </p>
-              <p
-                className={cn(
-                  "text-sm",
-                  isCorrect
-                    ? "text-emerald-700 dark:text-emerald-300"
-                    : "text-orange-700 dark:text-orange-300"
-                )}
-                data-testid="text-result-explanation"
-              >
-                {task.audio}
-              </p>
+                <div>
+                  <p
+                    className={cn(
+                      "text-sm font-semibold mb-1",
+                      isCorrect
+                        ? "text-emerald-800 dark:text-emerald-200"
+                        : "text-orange-800 dark:text-orange-200"
+                    )}
+                  >
+                    {isCorrect ? "Правильно! +1" : "Давай запомним!"}
+                  </p>
+                  <p
+                    className={cn(
+                      "text-sm",
+                      isCorrect
+                        ? "text-emerald-700 dark:text-emerald-300"
+                        : "text-orange-700 dark:text-orange-300"
+                    )}
+                    data-testid="text-result-explanation"
+                  >
+                    {task.audio}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           )}
 

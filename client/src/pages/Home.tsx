@@ -8,7 +8,6 @@ import { CompletionScreen } from "@/components/CompletionScreen";
 import { CategoryPicker } from "@/components/CategoryPicker";
 import { EmpathyToast } from "@/components/EmpathyToast";
 import { tasksData, discoveryTasks, encouragements, type Task } from "@/lib/taskData";
-import { speak } from "@/lib/speechSynthesis";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
@@ -95,7 +94,6 @@ export default function Home() {
     setCurrentTaskIndex(0);
     setPhase("discovery");
     setMascotMood("thinking");
-    speak("Отлично! Начинаем разведывательную миссию!");
   }, [allTasks]);
 
   const handleSelectCategory = useCallback(
@@ -149,11 +147,9 @@ export default function Home() {
           if (phase === "discovery") {
             setPhase("categoryPick");
             setMascotMood("happy");
-            speak("Разведка завершена! Теперь выбери тему для тренировки!");
           } else {
             setPhase("complete");
             setMascotMood("celebrating");
-            speak("Ура! Ты прошёл все задания! Ты молодец!");
           }
         }, 1200);
       } else {
@@ -190,7 +186,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header mascotMood={mascotMood} />
+        <Header mascotMood={mascotMood} stars={correctTasks} />
 
         {(phase === "training" || phase === "discovery") && (
           <ProgressBar
