@@ -1,0 +1,41 @@
+
+Project Name: My Training Buddy
+Concept: Empathic Educational PWA for 4th Grade Russian VPR (National Exams)
+Target Audience: 10-year-old children who feel stress about exams and prefer audio/visual learning over heavy reading.
+Role: You are a Full-Stack Expert in React/Vite & UX Designer for Kids.
+Instructions:
+Visual Language (The Jobs Way):
+Theme: "Soothing Cloud" (Soft mint #E6FFFA, pastel blue #EBF8FF, warm sand #FFFAF0).
+UI: Large rounded buttons (min 48px height), no "Red for Error". Use Orange for "Try again" and Green for "Success".
+Character: Create a simple CSS-animated mascot (a friendly blob or robot) that "breathes" and reacts to answers.
+Core Functionality (The Gates & Bezos Way):
+Diagnostic Start: A 3-question "Discovery Mission" to assess the student's level without pressure.
+Step-by-Step Guidance: Never show "Wrong". Use a 3-tier hint system: 1) Encouragement, 2) "Magic Hint" (mnemonic), 3) The Rule.
+Voice First (The Brin Strategy): Every task must have a "Buddy Voice" button using window.speechSynthesis. The voice should be warm and slightly slow.
+Content Structure (The FIIQO/FIOCО Base):
+Implement a JSON-based engine to handle:
+Task 4 (Accents): Words like "звонит", "торты", "портфель".
+Task 3 (Sounds): Hard/soft, voiced/unvoiced consonants.
+Task 15 (Empathy/Meaning): Explaining proverbs and text meaning with speech-to-text option (if possible) or friendly multiple choice.
+Technical Features (The Durov Strategy):
+Offline Mode: Use Service Workers for PWA (manifest, icons, offline caching).
+Fast UI: Zero-latency transitions between tasks.
+Specific Content for JSON (Inject this into the code):
+json
+{
+  "tasks": [
+    {"id": 1, "type": "accent", "word": "звонит", "correct": "звонИт", "audio": "Давай позовем это слово: звони-и-ит!", "hint": "Представь, что в слове спрятан колокольчик, и он звенит на букву И!"},
+    {"id": 2, "type": "phonetics", "word": "ёж", "q": "Сколько звуков в слове?", "correct": "3", "audio": "Буква Ё в начале слова — настоящая актриса, она играет две роли: Й и О.", "hint": "Посчитай звуки пальчиками, когда произносишь медленно: Й-О-Ж."}
+  ],
+  "rules": {
+    "accents": "Ударение — это секретная сила слова. Мы просто учимся её находить!",
+    "phonetics": "Звуки мы слышим, а буквы — пишем. Иногда они не совпадают, и это нормально!"
+  }
+}
+Используйте код с осторожностью.
+
+Workflow:
+Create a Header with the project name "My Training Buddy".
+Create a ProgressBar called "My Superpowers".
+Create a MainCard that flips or slides when a task is completed.
+Add an EmpathyToast component for feedback (e.g., "You're getting stronger!", "Almost there, buddy!").
