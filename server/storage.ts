@@ -1,38 +1,83 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { eq, and } from "drizzle-orm";
+import { db } from "./db";
+import {
+  taskContent,
+  studentProgress,
+  sessionState,
+  type TaskContent,
+  type InsertTaskContent,
+  type StudentProgress,
+  type InsertStudentProgress,
+  type SessionState,
+  type InsertSessionState,
+} from "@shared/schema";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getAllTasks(): Promise<TaskContent[]>;
+  getTasksByCategory(category: string): Promise<TaskContent[]>;
+  insertTask(task: InsertTaskContent): Promise<TaskContent>;
+  getTaskCount(): Promise<number>;
+
+  saveProgress(progress: InsertStudentProgress): Promise<StudentProgress>;
+  getSessionProgress(sessionId: string): Promise<StudentProgress[]>;
+
+  getOrCreateSession(sessionId: string): Promise<SessionState>;
+  updateSession(sessionId: string, data: Partial<InsertSessionState>): Promise<SessionState | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getAllTasks(): Promise<TaskContent[]> {
+    return db.select().from(taskContent);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getTasksByCategory(category: string): Promise<TaskContent[]> {
+    return db.select().from(taskContent).where(eq(taskContent.category, category));
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async insertTask(task: InsertTaskContent): Promise<TaskContent> {
+    const [result] = await db.insert(taskContent).values(task).returning();
+    return result;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async getTaskCount(): Promise<number> {
+    const tasks = await db.select().from(taskContent);
+    return tasks.length;
+  }
+
+  async saveProgress(progress: InsertStudentProgress): Promise<StudentProgress> {
+    const [result] = await db.insert(studentProgress).values(progress).returning();
+    return result;
+  }
+
+  async getSessionProgress(sessionId: string): Promise<StudentProgress[]> {
+    return db.select().from(studentProgress).where(eq(studentProgress.sessionId, sessionId));
+  }
+
+  async getOrCreateSession(sessionId: string): Promise<SessionState> {
+    const existing = await db
+      .select()
+      .from(sessionState)
+      .where(eq(sessionState.sessionId, sessionId));
+
+    if (existing.length > 0) {
+      return existing[0];
+    }
+
+    const [result] = await db
+      .insert(sessionState)
+      .values({ sessionId, currentTaskIndex: 0, totalScore: 0, level: "beginner", discoveryCompleted: false })
+      .returning();
+    return result;
+  }
+
+  async updateSession(sessionId: string, data: Partial<InsertSessionState>): Promise<SessionState | undefined> {
+    const [result] = await db
+      .update(sessionState)
+      .set(data)
+      .where(eq(sessionState.sessionId, sessionId))
+      .returning();
+    return result;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

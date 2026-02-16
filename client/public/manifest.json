@@ -1,0 +1,22 @@
+{
+  "name": "My Training Buddy",
+  "short_name": "TrainBuddy",
+  "description": "Твой друг для подготовки к ВПР",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#E6FFFA",
+  "theme_color": "#E6FFFA",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
