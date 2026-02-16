@@ -3,16 +3,24 @@ import { AnimatePresence } from "framer-motion";
 import { Header, type StarType } from "@/components/Header";
 import { ProgressBar } from "@/components/ProgressBar";
 import { TaskCard } from "@/components/TaskCard";
-import { WelcomeScreen } from "@/components/WelcomeScreen";
+import { AvatarPicker, type AvatarChoice } from "@/components/AvatarPicker";
+import { PowerCard } from "@/components/PowerCard";
+import { IslandMap } from "@/components/IslandMap";
 import { CompletionScreen } from "@/components/CompletionScreen";
-import { CategoryPicker } from "@/components/CategoryPicker";
 import { EmpathyToast } from "@/components/EmpathyToast";
 import { LevelUpOverlay } from "@/components/LevelUpOverlay";
-import { tasksData, discoveryTasks, encouragements, type Task } from "@/lib/taskData";
+import { tasksData, encouragements, type Task } from "@/lib/taskData";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import confetti from "canvas-confetti";
 
-type GamePhase = "welcome" | "discovery" | "categoryPick" | "training" | "complete";
+type GamePhase = "avatarSelect" | "diagnostic" | "powerCard" | "islandMap" | "training" | "complete";
+
+interface UserProfile {
+  avatar: AvatarChoice;
+  stars: StarType[];
+  level: number;
+}
 
 function getStoredSessionId(): string {
   const stored = localStorage.getItem("buddy_session_id");
@@ -22,72 +30,71 @@ function getStoredSessionId(): string {
   return newId;
 }
 
-function getStoredStars(): StarType[] {
+function getStoredProfile(): UserProfile | null {
   try {
-    const stored = localStorage.getItem("buddy_user_stars");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) return parsed;
-    }
+    const stored = localStorage.getItem("buddy_profile");
+    if (stored) return JSON.parse(stored);
   } catch {}
-  return [];
+  return null;
 }
 
-function saveStars(stars: StarType[]) {
-  localStorage.setItem("buddy_user_stars", JSON.stringify(stars));
+function saveProfile(profile: UserProfile) {
+  localStorage.setItem("buddy_profile", JSON.stringify(profile));
+}
+
+function fireConfetti() {
+  const duration = 2000;
+  const end = Date.now() + duration;
+  const colors = ["#fbbf24", "#a78bfa", "#38bdf8", "#34d399", "#fb923c"];
+
+  (function frame() {
+    confetti({
+      particleCount: 3,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.7 },
+      colors,
+    });
+    confetti({
+      particleCount: 3,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.7 },
+      colors,
+    });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
 }
 
 export default function Home() {
-  const [phase, setPhase] = useState<GamePhase>("welcome");
+  const storedProfile = getStoredProfile();
+  const initialPhase: GamePhase = storedProfile ? "islandMap" : "avatarSelect";
+
+  const [phase, setPhase] = useState<GamePhase>(initialPhase);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [completedTasks, setCompletedTasks] = useState(0);
   const [correctTasks, setCorrectTasks] = useState(0);
   const [categoryScores, setCategoryScores] = useState<Record<string, number>>({});
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [diagnosticScores, setDiagnosticScores] = useState<Record<string, { correct: number; total: number }>>({});
   const [activeTasks, setActiveTasks] = useState<Task[]>([]);
   const [mascotMood, setMascotMood] = useState<"idle" | "happy" | "thinking" | "celebrating" | "encouraging">("idle");
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "encouragement" | "hint">("success");
   const [toastVisible, setToastVisible] = useState(false);
   const [sessionId] = useState(getStoredSessionId);
-  const [userStars, setUserStars] = useState<StarType[]>(getStoredStars);
+  const [profile, setProfile] = useState<UserProfile | null>(storedProfile);
   const [showLevelUp, setShowLevelUp] = useState(false);
+
+  const userStars = profile?.stars || [];
 
   const { data: serverTasks } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
 
   const allTasks = useMemo(() => {
-    if (serverTasks && serverTasks.length > 0) {
-      return serverTasks;
-    }
+    if (serverTasks && serverTasks.length > 0) return serverTasks;
     return tasksData;
   }, [serverTasks]);
-
-  const { data: sessionProgress } = useQuery<Array<{ taskId: number; correct: boolean; completed: boolean }>>({
-    queryKey: ["/api/progress", sessionId],
-  });
-
-  useEffect(() => {
-    if (sessionProgress && sessionProgress.length > 0 && allTasks.length > 0 && phase === "welcome") {
-      const scores: Record<string, number> = {};
-      let correct = 0;
-      sessionProgress.forEach((p) => {
-        if (p.correct) {
-          correct++;
-          const task = allTasks.find((t) => t.id === p.taskId);
-          if (task) {
-            scores[task.category] = (scores[task.category] || 0) + 1;
-          }
-        }
-      });
-      if (sessionProgress.length > 0) {
-        setCategoryScores(scores);
-        setCorrectTasks(correct);
-        setCompletedTasks(sessionProgress.length);
-      }
-    }
-  }, [sessionProgress, allTasks, phase]);
 
   const saveProgressMutation = useMutation({
     mutationFn: async (data: { sessionId: string; taskId: number; correct: boolean; hintsUsed: number }) => {
@@ -106,36 +113,52 @@ export default function Home() {
 
   const addStar = useCallback((starType: StarType) => {
     if (starType === "empty") return;
-    setUserStars((prev) => {
-      const updated = [...prev, starType];
-      saveStars(updated);
-      if (updated.length % 5 === 0) {
-        setTimeout(() => setShowLevelUp(true), 600);
+    setProfile((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, stars: [...prev.stars, starType] };
+      saveProfile(updated);
+      if (updated.stars.length % 5 === 0) {
+        setTimeout(() => {
+          fireConfetti();
+          setShowLevelUp(true);
+        }, 600);
       }
       return updated;
     });
   }, []);
 
-  const handleStartDiscovery = useCallback(() => {
-    const discoveryFromServer = allTasks.length >= 3
-      ? [allTasks[0], allTasks.find(t => t.type === "phonetics") || allTasks[1], allTasks.find(t => t.type === "meaning") || allTasks[2]]
-      : discoveryTasks;
-    setActiveTasks(discoveryFromServer as Task[]);
+  const handleAvatarSelect = useCallback((avatar: AvatarChoice) => {
+    const newProfile: UserProfile = { avatar, stars: [], level: 1 };
+    setProfile(newProfile);
+    saveProfile(newProfile);
+
+    const diagnosticTasks: Task[] = [];
+    const accentTask = allTasks.find((t) => t.category === "accent");
+    const phoneticsTask = allTasks.find((t) => t.category === "phonetics");
+    const meaningTask = allTasks.find((t) => t.category === "meaning");
+    if (accentTask) diagnosticTasks.push(accentTask);
+    if (phoneticsTask) diagnosticTasks.push(phoneticsTask);
+    if (meaningTask) diagnosticTasks.push(meaningTask);
+
+    setActiveTasks(diagnosticTasks);
     setCurrentTaskIndex(0);
-    setPhase("discovery");
+    setCompletedTasks(0);
+    setCorrectTasks(0);
+    setCategoryScores({});
+    setDiagnosticScores({});
+    setPhase("diagnostic");
     setMascotMood("thinking");
   }, [allTasks]);
 
-  const handleSelectCategory = useCallback(
+  const handleSelectIsland = useCallback(
     (category: string) => {
-      setSelectedCategory(category);
-      const filtered =
-        category === "all" ? allTasks : allTasks.filter((t) => t.category === category);
+      const filtered = category === "all" ? allTasks : allTasks.filter((t) => t.category === category);
       const shuffled = [...filtered].sort(() => Math.random() - 0.5);
       setActiveTasks(shuffled);
       setCurrentTaskIndex(0);
       setCompletedTasks(0);
       setCorrectTasks(0);
+      setCategoryScores({});
       setPhase("training");
       setMascotMood("idle");
     },
@@ -170,14 +193,24 @@ export default function Home() {
         showToast("Ничего страшного! Ты обязательно запомнишь!", "encouragement");
       }
 
+      if (phase === "diagnostic") {
+        setDiagnosticScores((prev) => ({
+          ...prev,
+          [currentTask.category]: {
+            correct: (prev[currentTask.category]?.correct || 0) + (correct ? 1 : 0),
+            total: (prev[currentTask.category]?.total || 0) + 1,
+          },
+        }));
+      }
+
       setCompletedTasks((prev) => prev + 1);
 
       const nextIndex = currentTaskIndex + 1;
       if (nextIndex >= activeTasks.length) {
         setTimeout(() => {
-          if (phase === "discovery") {
-            setPhase("categoryPick");
-            setMascotMood("happy");
+          if (phase === "diagnostic") {
+            setPhase("powerCard");
+            setMascotMood("celebrating");
           } else {
             setPhase("complete");
             setMascotMood("celebrating");
@@ -195,15 +228,20 @@ export default function Home() {
 
   const handleLevelUpNext = useCallback(() => {
     setShowLevelUp(false);
-    setPhase("categoryPick");
+    setPhase("islandMap");
     setMascotMood("happy");
   }, []);
 
   const handleRestart = useCallback(() => {
     const newSessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     localStorage.setItem("buddy_session_id", newSessionId);
-    localStorage.removeItem("buddy_user_stars");
+    localStorage.removeItem("buddy_profile");
     window.location.reload();
+  }, []);
+
+  const handleBackToMap = useCallback(() => {
+    setPhase("islandMap");
+    setMascotMood("happy");
   }, []);
 
   const currentTask = activeTasks[currentTaskIndex];
@@ -224,9 +262,11 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header mascotMood={mascotMood} stars={currentBatchStars} />
+        {phase !== "avatarSelect" && (
+          <Header mascotMood={mascotMood} stars={currentBatchStars} />
+        )}
 
-        {(phase === "training" || phase === "discovery") && (
+        {(phase === "training" || phase === "diagnostic") && (
           <ProgressBar
             completed={completedTasks}
             total={totalTasks}
@@ -236,19 +276,29 @@ export default function Home() {
 
         <main className="flex-1 flex items-start justify-center pt-4 pb-8">
           <AnimatePresence mode="wait">
-            {phase === "welcome" && (
-              <WelcomeScreen key="welcome" onStart={handleStartDiscovery} />
+            {phase === "avatarSelect" && (
+              <AvatarPicker key="avatar" onSelect={handleAvatarSelect} />
             )}
-            {(phase === "discovery" || phase === "training") && currentTask && (
+            {(phase === "diagnostic" || phase === "training") && currentTask && (
               <TaskCard
                 key={`task-${currentTask.id}-${currentTaskIndex}`}
                 task={currentTask}
                 onComplete={handleTaskComplete}
-                isDiscovery={phase === "discovery"}
+                isDiscovery={phase === "diagnostic"}
               />
             )}
-            {phase === "categoryPick" && (
-              <CategoryPicker key="category" onSelect={handleSelectCategory} />
+            {phase === "powerCard" && (
+              <PowerCard
+                key="power"
+                categoryScores={diagnosticScores}
+                onContinue={() => {
+                  setPhase("islandMap");
+                  setMascotMood("happy");
+                }}
+              />
+            )}
+            {phase === "islandMap" && (
+              <IslandMap key="islands" onSelect={handleSelectIsland} />
             )}
             {phase === "complete" && (
               <CompletionScreen
@@ -256,7 +306,7 @@ export default function Home() {
                 totalCorrect={correctTasks}
                 totalTasks={totalTasks}
                 categoryScores={categoryScores}
-                onRestart={handleRestart}
+                onRestart={handleBackToMap}
               />
             )}
           </AnimatePresence>

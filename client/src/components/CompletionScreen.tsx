@@ -113,7 +113,7 @@ export function CompletionScreen({
             data-testid="button-restart"
           >
             <RotateCcw className="w-5 h-5" />
-            Попробовать ещё раз
+            К островам знаний
           </Button>
         </CardContent>
       </Card>
