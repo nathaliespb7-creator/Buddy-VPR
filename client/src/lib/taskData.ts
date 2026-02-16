@@ -205,9 +205,9 @@ export const tasksData: Task[] = [
 ];
 
 export const discoveryTasks: Task[] = [
-  tasksData[0],
-  tasksData[5],
-  tasksData[9],
+  tasksData.find(t => t.id === 1)!,
+  tasksData.find(t => t.id === 6)!,
+  tasksData.find(t => t.id === 10)!,
 ];
 
 export const rules: Record<string, string> = {

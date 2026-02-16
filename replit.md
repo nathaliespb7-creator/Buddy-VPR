@@ -4,7 +4,10 @@
 Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation. Designed for 10-year-old children with a soothing, friendly interface that reduces exam stress.
 
 ## Recent Changes
-- Initial build: Full MVP with soothing cloud theme, animated mascot, 3-tier hint system, voice synthesis, 12 Russian VPR tasks, PostgreSQL persistence
+- Added 2 FIOKO VPR tasks: КВАРТАЛ (stress) and ВЬЮГА (sounds) — now 14 tasks total
+- Star reward system: gold stars (first try, no hints), silver stars (with hints), 5-star level-up overlay
+- Removed voice synthesis; redesigned Header with 5 visual star slots
+- Initial build: Full MVP with soothing cloud theme, animated mascot, 3-tier hint system, 12 Russian VPR tasks, PostgreSQL persistence
 
 ## Architecture
 - **Frontend**: React + Vite + TailwindCSS with Framer Motion animations
