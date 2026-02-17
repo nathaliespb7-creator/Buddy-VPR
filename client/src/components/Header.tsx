@@ -29,7 +29,7 @@ export function Header({ mascotMood, stars }: HeaderProps) {
               ВПР Бадди
             </h1>
             <p className="text-sm text-muted-foreground" data-testid="text-subtitle">
-              Твой напарник в подготовке
+              Твой напарник в подготовке к ВПР
             </p>
           </div>
         </div>
