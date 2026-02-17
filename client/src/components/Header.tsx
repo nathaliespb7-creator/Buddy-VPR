@@ -14,7 +14,7 @@ export function Header({ mascotMood, stars }: HeaderProps) {
 
   return (
     <header className="w-full py-3 px-4 sm:px-6" data-testid="header">
-      <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
+      <div className="max-w-2xl mx-auto flex items-start justify-between gap-2">
         <div className="flex items-center gap-3 min-w-0">
           <motion.div
             animate={{ y: [0, -4, 0] }}
@@ -25,27 +25,27 @@ export function Header({ mascotMood, stars }: HeaderProps) {
           </motion.div>
           <div className="min-w-0">
             <h1
-              className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight"
+              className="text-xl sm:text-2xl font-bold tracking-tight leading-tight"
               data-testid="text-app-title"
             >
               Бадди ВПР
             </h1>
-            <p className="text-sm text-muted-foreground truncate" data-testid="text-subtitle">
-              Умный помощник в подготовке к ВПР
+            <p className="text-xs sm:text-sm text-muted-foreground leading-snug" data-testid="text-subtitle">
+              Умный помощник в подготовке к&nbsp;ВПР
             </p>
           </div>
         </div>
         <motion.div
-          className="flex items-center gap-1.5 shrink-0"
+          className="flex items-center gap-1.5 shrink-0 pt-0.5"
           data-testid="star-counter"
           key={totalStars}
         >
           <AnimatePresence mode="wait">
             <motion.span
               key={totalStars}
-              initial={{ scale: 1.6, y: -4 }}
+              initial={{ scale: 1.4, y: -3 }}
               animate={{ scale: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               className="text-xl font-bold tabular-nums text-foreground"
               data-testid="text-star-count"
             >
@@ -54,9 +54,9 @@ export function Header({ mascotMood, stars }: HeaderProps) {
           </AnimatePresence>
           <motion.div
             key={`star-icon-${totalStars}`}
-            initial={{ rotate: -30, scale: 1.4 }}
+            initial={{ rotate: -20, scale: 1.3 }}
             animate={{ rotate: 0, scale: 1 }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
           >
             <Star
               className="w-6 h-6 fill-amber-400 text-amber-400 drop-shadow-sm"
