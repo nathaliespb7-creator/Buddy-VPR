@@ -1,0 +1,132 @@
+html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Training Buddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net"></script>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        body { font-family: 'Nunito', sans-serif; background-color: #F0FFF4; }
+        .card { transition: transform 0.3s ease; }
+        .card:active { transform: scale(0.95); }
+        .star-empty { color: #CBD5E0; }
+        .star-filled { color: #F6AD55; animation: pop 0.3s ease; }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Экран выбора аватара -->
+    <div id="setup-screen" class="text-center">
+        <h1 class="text-3xl font-bold text-green-600 mb-6">Кто ты сегодня?</h1>
+        <div class="flex gap-4 justify-center">
+            <button onclick="startApp('🐱')" class="card bg-white p-6 rounded-3xl shadow-xl text-5xl">🐱<br><span class="text-sm font-bold text-gray-500">Котик</span></button>
+            <button onclick="startApp('🤖')" class="card bg-white p-6 rounded-3xl shadow-xl text-5xl">🤖<br><span class="text-sm font-bold text-gray-500">Робот</span></button>
+            <button onclick="startApp('🚀')" class="card bg-white p-6 rounded-3xl shadow-xl text-5xl">🚀<br><span class="text-sm font-bold text-gray-500">Профи</span></button>
+        </div>
+    </div>
+
+    <!-- Главный экран тренажера -->
+    <div id="app-screen" class="hidden w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl relative">
+        <div class="flex justify-between items-center mb-6">
+            <span id="user-avatar" class="text-3xl"></span>
+            <div id="stars-container" class="flex text-2xl">
+                <span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span><span class="star-empty">★</span>
+            </div>
+        </div>
+
+        <div id="task-container">
+            <h2 id="task-text" class="text-xl font-bold text-gray-800 mb-4">Загрузка...</h2>
+            <div id="options" class="grid gap-3"></div>
+        </div>
+
+        <!-- Кнопка "Слушать" -->
+        <button onclick="speakTask()" class="mt-6 flex items-center gap-2 text-green-500 font-bold hover:underline">
+            <span>🔊</span> Послушать напарника
+        </button>
+
+        <!-- Модалка с магической подсказкой -->
+        <div id="hint-modal" class="hidden absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center p-6 text-center rounded-3xl border-4 border-yellow-400">
+            <p id="hint-text" class="text-lg text-gray-700 mb-6 italic"></p>
+            <button onclick="closeHint()" class="bg-yellow-400 text-white px-6 py-2 rounded-full font-bold">Понятно!</button>
+        </div>
+    </div>
+
+    <script>
+        // База знаний (Твои 20 правил)
+        const RULES_DB = {
+            3: "Приложи руку к горлышку: если оно дрожит — звук звонкий! 🔔",
+            4: "Позови слово домой из леса: Алфави-и-ит! Слышишь ударную букву?",
+            12: "Приставка всегда стоит ПЕРЕД корнем, как кепка на голове! 🧢"
+        };
+
+        // Задания
+        const TASKS = [
+            { id: 1, type: "stress", text: "Где ударение в слове КВАРТАЛ?", options: ["квАртал", "квартАл"], correct: "квартАл", ruleId: 4, audio: "Квартал. Где спрятался сильный звук?" },
+            { id: 2, type: "morph", text: "Найди приставку в слове ЗАБЕГ", options: ["ЗА", "БЕГ", "Г"], correct: "ЗА", ruleId: 12, audio: "Забег. Что стоит перед корнем?" }
+        ];
+
+        let currentTaskIndex = 0;
+        let starsCollected = 0;
+
+        function startApp(avatar) {
+            document.getElementById('user-avatar').innerText = avatar;
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            loadTask();
+        }
+
+        function loadTask() {
+            const task = TASKS[currentTaskIndex];
+            document.getElementById('task-text').innerText = task.text;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            task.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl text-lg font-bold hover:border-green-400 transition";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, task);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, task) {
+            if (selected === task.correct) {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ECC94B', '#48BB78'] });
+                addStar();
+                currentTaskIndex++;
+                if (currentTaskIndex < TASKS.length) setTimeout(loadTask, 1500);
+                else alert("Ура! Первый уровень пройден!");
+            } else {
+                showHint(task.ruleId);
+            }
+        }
+
+        function addStar() {
+            starsCollected++;
+            const stars = document.getElementById('stars-container').children;
+            if (starsCollected <= 5) {
+                stars[starsCollected - 1].className = 'star-filled';
+                stars[starsCollected - 1].innerText = '★';
+            }
+        }
+
+        function showHint(ruleId) {
+            document.getElementById('hint-text').innerText = "Магическая подсказка: " + RULES_DB[ruleId];
+            document.getElementById('hint-modal').classList.remove('hidden');
+        }
+
+        function closeHint() { document.getElementById('hint-modal').classList.add('hidden'); }
+
+        function speakTask() {
+            const msg = new SpeechSynthesisUtterance(TASKS[currentTaskIndex].audio);
+            msg.lang = 'ru-RU';
+            msg.rate = 0.9;
+            window.speechSynthesis.speak(msg);
+        }
+    </script>
+</body>
+</html>
