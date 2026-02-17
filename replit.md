@@ -11,7 +11,8 @@ Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation.
 - **Branding**: Updated manifest.json, index.html to "ВПР Бадди"
 - **Mascot**: Transparent PNG, gentle animations (no anxious shaking)
 - **Splash screen**: Loading screen with animated Buddy mascot, progress bar, "ВПР Бадди" branding
-- Knowledge Tree: 20 golden rules database, 33 tasks across 6 categories
+- **Падежи module**: 2 new rules (noun_declension, case_check) + 2 tasks (склонение + определение падежа) in morphology category
+- Knowledge Tree: 22 golden rules database, 35 tasks across 6 categories
 - Star reward system: gold stars (first try), silver stars (with hints), 5-star level-up overlay
 
 ## Architecture
@@ -61,7 +62,7 @@ Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation.
 - **Wrong answer**: "Не переживай, напарник! Мы разберёмся вместе!"
 - **Hints**: "Бадди подсказывает" → "Секретная подсказка" → "Золотое правило"
 
-## Data: 20 Golden Rules
+## Data: 22 Golden Rules
 Each task links to a golden rule via ruleId. Rules cover all VPR topics.
 
 ## Categories (6)
