@@ -47,7 +47,7 @@ export function LevelUpOverlay({ visible, onNext }: LevelUpOverlayProps) {
               className="text-3xl font-bold text-white drop-shadow-lg text-center"
               data-testid="text-level-up"
             >
-              Вот это мощь!
+              Отлично!
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -55,7 +55,7 @@ export function LevelUpOverlay({ visible, onNext }: LevelUpOverlayProps) {
               transition={{ delay: 0.7 }}
               className="text-lg text-amber-200 text-center"
             >
-              Напарник, 5 звёзд собрано!
+              5 звёзд собрано!
             </motion.p>
 
             <motion.div
