@@ -9,9 +9,10 @@ interface MascotProps {
   size?: "sm" | "md" | "lg" | "xl";
   isSpeaking?: boolean;
   bookOpen?: boolean;
+  noAnimation?: boolean;
 }
 
-export function Mascot({ mood, className, size = "md", isSpeaking = false }: MascotProps) {
+export function Mascot({ mood, className, size = "md", isSpeaking = false, noAnimation = false }: MascotProps) {
   const sizeClasses = {
     sm: "w-16 h-16",
     md: "w-24 h-24",
@@ -53,7 +54,7 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false }: Mas
       className={cn(
         "relative inline-flex items-center justify-center",
         sizeClasses[size],
-        bodyAnimation,
+        !noAnimation && bodyAnimation,
         isSpeaking && "buddy-speaking-pulse",
         className
       )}
