@@ -24,7 +24,7 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false }: Mas
       case "idle": return "animate-breathe";
       case "happy": return "animate-bounce-soft";
       case "thinking": return "animate-buddy-thinking";
-      case "celebrating": return "animate-celebrate";
+      case "celebrating": return "buddy-celebrate-gentle";
       case "encouraging": return "animate-nod";
       case "wrong": return "buddy-emotion-wrong";
       case "hint": return "animate-buddy-surprise";
@@ -54,7 +54,7 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false }: Mas
         "relative inline-flex items-center justify-center",
         sizeClasses[size],
         bodyAnimation,
-        isSpeaking && "buddy-mic-speaking",
+        isSpeaking && "buddy-speaking-pulse",
         className
       )}
       data-testid="mascot"

@@ -319,18 +319,33 @@
 .animate-thought-3 { animation: thought-float 2.5s ease-in-out infinite 0.8s; }
 
 @keyframes buddy-wrong-shake {
-  0%, 100% { transform: translateX(0) rotate(0deg); }
-  10% { transform: translateX(-4px) rotate(-3deg); }
-  20% { transform: translateX(4px) rotate(3deg); }
-  30% { transform: translateX(-3px) rotate(-2deg); }
-  40% { transform: translateX(3px) rotate(2deg); }
-  50% { transform: translateX(-2px) rotate(-1deg); }
-  60% { transform: translateX(2px) rotate(1deg); }
-  70% { transform: translateX(-1px) rotate(0deg); }
-  80% { transform: translateX(1px) rotate(0deg); }
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-3px); }
+  30% { transform: translateX(3px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
 }
 .buddy-emotion-wrong {
-  animation: buddy-wrong-shake 0.6s ease-out;
+  animation: buddy-wrong-shake 0.5s ease-out forwards;
+}
+
+@keyframes buddy-celebrate-anim {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.05) rotate(-2deg); }
+  75% { transform: scale(1.05) rotate(2deg); }
+}
+.buddy-celebrate-gentle {
+  animation: buddy-celebrate-anim 1.5s ease-in-out infinite;
+}
+
+@keyframes buddy-speaking {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+.buddy-speaking-pulse {
+  animation: buddy-speaking 1.2s ease-in-out infinite;
 }
 
 .buddy-glow-happy {
