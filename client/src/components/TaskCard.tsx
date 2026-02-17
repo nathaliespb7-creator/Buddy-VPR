@@ -3,9 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
-import { type Task, getRuleForTask } from "@/lib/taskData";
+import { type Task } from "@/lib/taskData";
 import { Mascot } from "./Mascot";
-import { RuleCard } from "./RuleCard";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
 
@@ -24,9 +23,6 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const [showStarBurst, setShowStarBurst] = useState(false);
   const [earnedStarType, setEarnedStarType] = useState<StarType>("empty");
   const [usedHintButton, setUsedHintButton] = useState(false);
-  const [showRuleCard, setShowRuleCard] = useState(false);
-
-  const linkedRule = getRuleForTask(task);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -45,7 +41,6 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
       setEarnedStarType(starType);
       setShowResult(true);
       setShowStarBurst(true);
-      setShowRuleCard(false);
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
@@ -54,10 +49,8 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
         setShowResult(true);
         setIsCorrect(false);
         setEarnedStarType("empty");
-        if (linkedRule) setShowRuleCard(true);
       } else {
         setSelectedOption(null);
-        if (linkedRule) setShowRuleCard(true);
         if (hintLevel < 3) {
           setHintLevel((prev) => prev + 1);
         }
@@ -192,7 +185,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
           </div>
 
           <AnimatePresence>
-            {hintLevel > 0 && !showResult && !showRuleCard && (
+            {hintLevel > 0 && !showResult && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -219,19 +212,6 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     </p>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {showRuleCard && linkedRule && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-4"
-              >
-                <RuleCard rule={linkedRule} visible={true} />
               </motion.div>
             )}
           </AnimatePresence>
