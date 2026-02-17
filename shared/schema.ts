@@ -13,6 +13,7 @@ export const taskContent = pgTable("task_content", {
   audio: text("audio").notNull(),
   hint: text("hint").notNull(),
   rule: text("rule"),
+  ruleId: integer("rule_id"),
   difficulty: integer("difficulty").notNull().default(1),
   category: text("category").notNull().default("general"),
 });

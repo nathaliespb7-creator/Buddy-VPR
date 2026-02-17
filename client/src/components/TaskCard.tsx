@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
-import { type Task } from "@/lib/taskData";
+import { type Task, getRuleForTask } from "@/lib/taskData";
 import { Mascot } from "./Mascot";
+import { RuleCard } from "./RuleCard";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
 
@@ -23,6 +24,9 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const [showStarBurst, setShowStarBurst] = useState(false);
   const [earnedStarType, setEarnedStarType] = useState<StarType>("empty");
   const [usedHintButton, setUsedHintButton] = useState(false);
+  const [showRuleCard, setShowRuleCard] = useState(false);
+
+  const linkedRule = getRuleForTask(task);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -41,6 +45,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
       setEarnedStarType(starType);
       setShowResult(true);
       setShowStarBurst(true);
+      setShowRuleCard(false);
     } else {
       const newAttempts = attempts + 1;
       setAttempts(newAttempts);
@@ -49,8 +54,10 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
         setShowResult(true);
         setIsCorrect(false);
         setEarnedStarType("empty");
+        if (linkedRule) setShowRuleCard(true);
       } else {
         setSelectedOption(null);
+        if (linkedRule) setShowRuleCard(true);
         if (hintLevel < 3) {
           setHintLevel((prev) => prev + 1);
         }
@@ -73,12 +80,18 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
     accent: "Ударение",
     phonetics: "Звуки и буквы",
     meaning: "Смысл",
+    morphemics: "Состав слова",
+    morphology: "Части речи",
+    syntax: "Предложение",
   };
 
   const typeColors: Record<string, string> = {
     accent: "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300",
     phonetics: "bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300",
     meaning: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
+    morphemics: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300",
+    morphology: "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300",
+    syntax: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300",
   };
 
   const isGold = earnedStarType === "gold";
@@ -102,11 +115,11 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
               <span
                 className={cn(
                   "inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold",
-                  typeColors[task.type]
+                  typeColors[task.type] || typeColors.accent
                 )}
                 data-testid="badge-task-type"
               >
-                {typeLabels[task.type]}
+                {typeLabels[task.type] || task.type}
               </span>
               {isDiscovery && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
@@ -179,7 +192,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
           </div>
 
           <AnimatePresence>
-            {hintLevel > 0 && !showResult && (
+            {hintLevel > 0 && !showResult && !showRuleCard && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -206,6 +219,19 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     </p>
                   </div>
                 </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showRuleCard && linkedRule && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-4"
+              >
+                <RuleCard rule={linkedRule} visible={true} />
               </motion.div>
             )}
           </AnimatePresence>

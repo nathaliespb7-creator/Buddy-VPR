@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText } from "lucide-react";
 import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +31,39 @@ const islands = [
     position: "self-end",
   },
   {
+    key: "morphemics",
+    label: "Остров Слов-Конструктор",
+    description: "Разбери слова на части: корень, приставка, суффикс!",
+    icon: Puzzle,
+    gradient: "from-emerald-200 to-emerald-100 dark:from-emerald-900/40 dark:to-emerald-800/30",
+    iconBg: "bg-emerald-300 dark:bg-emerald-700",
+    iconColor: "text-emerald-800 dark:text-emerald-200",
+    borderColor: "border-emerald-300 dark:border-emerald-700",
+    position: "self-start",
+  },
+  {
+    key: "morphology",
+    label: "Остров Частей Речи",
+    description: "Узнай, кто такие глагол, существительное и их друзья!",
+    icon: Users,
+    gradient: "from-rose-200 to-rose-100 dark:from-rose-900/40 dark:to-rose-800/30",
+    iconBg: "bg-rose-300 dark:bg-rose-700",
+    iconColor: "text-rose-800 dark:text-rose-200",
+    borderColor: "border-rose-300 dark:border-rose-700",
+    position: "self-end",
+  },
+  {
+    key: "syntax",
+    label: "Остров Предложений",
+    description: "Найди подлежащее, сказуемое и расставь запятые!",
+    icon: FileText,
+    gradient: "from-indigo-200 to-indigo-100 dark:from-indigo-900/40 dark:to-indigo-800/30",
+    iconBg: "bg-indigo-300 dark:bg-indigo-700",
+    iconColor: "text-indigo-800 dark:text-indigo-200",
+    borderColor: "border-indigo-300 dark:border-indigo-700",
+    position: "self-start",
+  },
+  {
     key: "meaning",
     label: "Остров Мудрости",
     description: "Разгадай тайны пословиц и слов!",
@@ -39,7 +72,7 @@ const islands = [
     iconBg: "bg-amber-300 dark:bg-amber-700",
     iconColor: "text-amber-800 dark:text-amber-200",
     borderColor: "border-amber-300 dark:border-amber-700",
-    position: "self-start",
+    position: "self-end",
   },
 ];
 
@@ -78,7 +111,7 @@ export function IslandMap({ onSelect }: IslandMapProps) {
         </div>
       </button>
 
-      <div className="relative flex flex-col gap-4" data-testid="island-list">
+      <div className="relative flex flex-col gap-3" data-testid="island-list">
         <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2 hidden sm:block" />
 
         {islands.map((island, i) => {
@@ -88,13 +121,13 @@ export function IslandMap({ onSelect }: IslandMapProps) {
               key={island.key}
               initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15 + i * 0.12, type: "spring", stiffness: 200, damping: 20 }}
+              transition={{ delay: 0.1 + i * 0.08, type: "spring", stiffness: 200, damping: 20 }}
               className={cn("sm:w-4/5", island.position)}
             >
               <button
                 onClick={() => onSelect(island.key)}
                 className={cn(
-                  "w-full text-left rounded-2xl border-2 bg-gradient-to-br p-5",
+                  "w-full text-left rounded-2xl border-2 bg-gradient-to-br p-4",
                   "transition-all hover-elevate active-elevate-2",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   island.gradient,
@@ -105,15 +138,15 @@ export function IslandMap({ onSelect }: IslandMapProps) {
                 <div className="flex items-start gap-3">
                   <div
                     className={cn(
-                      "flex items-center justify-center w-12 h-12 rounded-xl shrink-0",
+                      "flex items-center justify-center w-11 h-11 rounded-xl shrink-0",
                       island.iconBg
                     )}
                   >
-                    <Icon className={cn("w-6 h-6", island.iconColor)} />
+                    <Icon className={cn("w-5 h-5", island.iconColor)} />
                   </div>
                   <div>
-                    <p className="font-bold text-base mb-0.5">{island.label}</p>
-                    <p className="text-sm text-muted-foreground leading-snug">
+                    <p className="font-bold text-sm mb-0.5">{island.label}</p>
+                    <p className="text-xs text-muted-foreground leading-snug">
                       {island.description}
                     </p>
                   </div>

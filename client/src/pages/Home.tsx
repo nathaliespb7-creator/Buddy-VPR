@@ -132,13 +132,19 @@ export default function Home() {
     setProfile(newProfile);
     saveProfile(newProfile);
 
+    const categories = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax"];
     const diagnosticTasks: Task[] = [];
-    const accentTask = allTasks.find((t) => t.category === "accent");
-    const phoneticsTask = allTasks.find((t) => t.category === "phonetics");
-    const meaningTask = allTasks.find((t) => t.category === "meaning");
-    if (accentTask) diagnosticTasks.push(accentTask);
-    if (phoneticsTask) diagnosticTasks.push(phoneticsTask);
-    if (meaningTask) diagnosticTasks.push(meaningTask);
+    const shuffledCats = [...categories].sort(() => Math.random() - 0.5).slice(0, 3);
+    for (const cat of shuffledCats) {
+      const catTasks = allTasks.filter((t) => t.category === cat);
+      if (catTasks.length > 0) {
+        diagnosticTasks.push(catTasks[Math.floor(Math.random() * catTasks.length)]);
+      }
+    }
+    if (diagnosticTasks.length === 0) {
+      const fallback = allTasks.slice(0, 3);
+      diagnosticTasks.push(...fallback);
+    }
 
     setActiveTasks(diagnosticTasks);
     setCurrentTaskIndex(0);
