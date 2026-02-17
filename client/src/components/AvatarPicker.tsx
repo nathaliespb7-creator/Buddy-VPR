@@ -65,7 +65,7 @@ export function AvatarPicker({ onSelect }: AvatarPickerProps) {
         </motion.div>
 
         <p className="text-sm text-muted-foreground mt-1 mb-1" data-testid="text-buddy-role">
-          Твой помощник в подготовке к ВПР
+          Умный помощник в подготовке к ВПР
         </p>
 
         <h2
