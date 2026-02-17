@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Mascot } from "./Mascot";
 import { Cat, Bot, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,24 +36,25 @@ const avatars: { key: AvatarChoice; label: string; icon: typeof Cat; gradient: s
 export function AvatarPicker({ onSelect }: AvatarPickerProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="w-full max-w-lg mx-auto px-4 sm:px-6"
       data-testid="avatar-picker"
     >
       <div className="flex flex-col items-center text-center mb-6">
         <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
         >
           <Mascot mood="happy" size="lg" bookOpen />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
           className="relative mt-3 mb-3 max-w-xs mx-auto bg-white dark:bg-card border border-border rounded-xl px-4 py-3 shadow-sm"
           data-testid="buddy-greeting-bubble"
         >
@@ -64,16 +64,25 @@ export function AvatarPicker({ onSelect }: AvatarPickerProps) {
           </p>
         </motion.div>
 
-        <p className="text-sm text-muted-foreground mt-1 mb-1" data-testid="text-buddy-role">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
+          className="text-sm text-muted-foreground mt-1 mb-1"
+          data-testid="text-buddy-role"
+        >
           Умный помощник в подготовке к ВПР
-        </p>
+        </motion.p>
 
-        <h2
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
           className="text-2xl sm:text-3xl font-bold mt-2 mb-2"
           data-testid="text-avatar-title"
         >
           Выбери героя!
-        </h2>
+        </motion.h2>
       </div>
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4" data-testid="avatar-grid">
@@ -82,9 +91,9 @@ export function AvatarPicker({ onSelect }: AvatarPickerProps) {
           return (
             <motion.div
               key={av.key}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.1 }}
+              transition={{ duration: 0.5, delay: 0.7 + i * 0.1, ease: "easeOut" }}
             >
               <button
                 onClick={() => onSelect(av.key)}

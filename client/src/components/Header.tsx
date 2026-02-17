@@ -31,7 +31,7 @@ export function Header({ mascotMood, stars }: HeaderProps) {
               Бадди ВПР
             </h1>
             <p className="text-sm text-muted-foreground truncate" data-testid="text-subtitle">
-              Твой напарник в подготовке к ВПР
+              Умный помощник в подготовке к ВПР
             </p>
           </div>
         </div>
