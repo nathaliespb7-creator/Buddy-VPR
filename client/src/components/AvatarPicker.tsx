@@ -48,17 +48,28 @@ export function AvatarPicker({ onSelect }: AvatarPickerProps) {
           animate={{ y: [0, -8, 0] }}
           transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
         >
-          <Mascot mood="happy" size="lg" />
+          <Mascot mood="happy" size="lg" bookOpen />
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+          className="relative mt-3 mb-3 max-w-xs mx-auto bg-white dark:bg-card border border-border rounded-xl px-4 py-3 shadow-sm"
+          data-testid="buddy-greeting-bubble"
+        >
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-card border-l border-t border-border rotate-45" />
+          <p className="relative text-sm sm:text-base leading-relaxed font-medium" data-testid="text-buddy-greeting">
+            Привет! Я Бадди. Я уже открыл свою книгу на нужной странице. Погнали за звёздами?
+          </p>
+        </motion.div>
+
         <h2
-          className="text-2xl sm:text-3xl font-bold mt-4 mb-2"
+          className="text-2xl sm:text-3xl font-bold mt-2 mb-2"
           data-testid="text-avatar-title"
         >
-          Привет, напарник!
+          Выбери героя!
         </h2>
-        <p className="text-muted-foreground max-w-sm leading-relaxed">
-          Я — ВПР Бадди. Выбери, каким героем ты будешь сегодня!
-        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4" data-testid="avatar-grid">
