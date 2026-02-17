@@ -54,10 +54,10 @@ export function AvatarPicker({ onSelect }: AvatarPickerProps) {
           className="text-2xl sm:text-3xl font-bold mt-4 mb-2"
           data-testid="text-avatar-title"
         >
-          Кто ты сегодня?
+          Привет, напарник!
         </h2>
         <p className="text-muted-foreground max-w-sm leading-relaxed">
-          Выбери своего напарника для тренировки!
+          Я — ВПР Бадди. Выбери, каким героем ты будешь сегодня!
         </p>
       </div>
 

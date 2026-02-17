@@ -47,7 +47,7 @@ export function LevelUpOverlay({ visible, onNext }: LevelUpOverlayProps) {
               className="text-3xl font-bold text-white drop-shadow-lg text-center"
               data-testid="text-level-up"
             >
-              Отличная работа!
+              Вот это мощь!
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -55,7 +55,7 @@ export function LevelUpOverlay({ visible, onNext }: LevelUpOverlayProps) {
               transition={{ delay: 0.7 }}
               className="text-lg text-amber-200 text-center"
             >
-              Ты собрал 5 звёзд!
+              Напарник, 5 звёзд собрано!
             </motion.p>
 
             <motion.div
@@ -69,7 +69,7 @@ export function LevelUpOverlay({ visible, onNext }: LevelUpOverlayProps) {
                 className="gap-2 text-base bg-amber-500 border-amber-600 text-white"
                 data-testid="button-level-up-next"
               >
-                Следующая тема
+                Вперёд, напарник!
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </motion.div>

@@ -26,14 +26,14 @@ export function CompletionScreen({
 }: CompletionScreenProps) {
   const percent = Math.round((totalCorrect / totalTasks) * 100);
 
-  let titleText = "Супер результат!";
-  let descText = "Ты настоящий чемпион! Все задания выполнены!";
+  let titleText = "Герой, ты справился!";
+  let descText = "Вот это мощь! Все задания позади!";
   if (percent < 50) {
-    titleText = "Хорошее начало!";
-    descText = "Ты уже многому научился. Давай попробуем ещё раз!";
+    titleText = "Отличный старт!";
+    descText = "Напарник, мы уже продвинулись! Давай закрепим?";
   } else if (percent < 80) {
-    titleText = "Отлично!";
-    descText = "Ты очень хорошо справился! Немного практики, и будет идеально!";
+    titleText = "Сильный результат!";
+    descText = "Ещё чуть-чуть — и будет идеально. Я в тебя верю!";
   }
 
   return (
@@ -113,7 +113,7 @@ export function CompletionScreen({
             data-testid="button-restart"
           >
             <RotateCcw className="w-5 h-5" />
-            К островам знаний
+            К карте знаний
           </Button>
         </CardContent>
       </Card>

@@ -26,10 +26,10 @@ export function Header({ mascotMood, stars }: HeaderProps) {
               className="text-xl sm:text-2xl font-bold tracking-tight"
               data-testid="text-app-title"
             >
-              My Training Buddy
+              ВПР Бадди
             </h1>
             <p className="text-sm text-muted-foreground" data-testid="text-subtitle">
-              Твой друг для подготовки к ВПР
+              Твой напарник в подготовке
             </p>
           </div>
         </div>

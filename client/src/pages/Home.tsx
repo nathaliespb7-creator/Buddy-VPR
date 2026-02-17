@@ -9,6 +9,7 @@ import { IslandMap } from "@/components/IslandMap";
 import { CompletionScreen } from "@/components/CompletionScreen";
 import { EmpathyToast } from "@/components/EmpathyToast";
 import { LevelUpOverlay } from "@/components/LevelUpOverlay";
+import { SplashScreen } from "@/components/SplashScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -66,10 +67,17 @@ function fireConfetti() {
   })();
 }
 
+function getAvatarPrefix(avatar?: AvatarChoice): string {
+  if (avatar === "cat") return "Мур! ";
+  if (avatar === "robot") return "Бип-боп! ";
+  return "";
+}
+
 export default function Home() {
   const storedProfile = getStoredProfile();
   const initialPhase: GamePhase = storedProfile ? "islandMap" : "avatarSelect";
 
+  const [showSplash, setShowSplash] = useState(true);
   const [phase, setPhase] = useState<GamePhase>(initialPhase);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [completedTasks, setCompletedTasks] = useState(0);
@@ -182,6 +190,8 @@ export default function Home() {
         hintsUsed,
       });
 
+      const prefix = getAvatarPrefix(profile?.avatar);
+
       if (correct) {
         setCorrectTasks((prev) => prev + 1);
         setCategoryScores((prev) => ({
@@ -191,12 +201,12 @@ export default function Home() {
         setMascotMood("celebrating");
         addStar(starType);
         showToast(
-          encouragements[Math.floor(Math.random() * encouragements.length)],
+          prefix + encouragements[Math.floor(Math.random() * encouragements.length)],
           "success"
         );
       } else {
         setMascotMood("encouraging");
-        showToast("Ничего страшного! Ты обязательно запомнишь!", "encouragement");
+        showToast(prefix + "Не переживай, напарник! Мы разберёмся вместе!", "encouragement");
       }
 
       if (phase === "diagnostic") {
@@ -261,6 +271,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col" data-testid="home-page">
+      <AnimatePresence>
+        {showSplash && (
+          <SplashScreen onFinish={() => setShowSplash(false)} />
+        )}
+      </AnimatePresence>
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-accent/30 rounded-full blur-3xl" />

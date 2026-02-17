@@ -58,11 +58,11 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
                 className="text-xl sm:text-2xl font-bold"
                 data-testid="text-power-card-title"
               >
-                Твоя Карта Силы
+                Твоя карта силы
               </h2>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              Разведка пройдена! Вот твои суперсилы:
+              Разведка пройдена, напарник! Вот что мы узнали:
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
               className="gap-2 text-base"
               data-testid="button-power-card-continue"
             >
-              К островам знаний
+              К карте знаний
               <ArrowRight className="w-5 h-5" />
             </Button>
           </motion.div>

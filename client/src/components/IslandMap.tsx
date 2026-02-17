@@ -92,7 +92,7 @@ export function IslandMap({ onSelect }: IslandMapProps) {
             Карта знаний
           </h2>
           <p className="text-sm text-muted-foreground">
-            Выбери остров для тренировки!
+            Выбирай остров, напарник!
           </p>
         </div>
       </div>

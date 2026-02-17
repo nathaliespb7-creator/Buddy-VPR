@@ -1,47 +1,67 @@
-# My Training Buddy
+# ВПР Бадди
 
 ## Overview
-Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation. Designed for 10-year-old children with a soothing, friendly interface that reduces exam stress.
+Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation. Designed for 10-year-old children with a soothing, friendly interface that reduces exam stress. Branded as "ВПР Бадди" — a supportive partner character.
 
 ## Recent Changes
-- Knowledge Tree: 20 golden rules database (Core 20 rules covering 90% VPR traps), magic hint RuleCard on mistakes
-- Expanded to 6 categories: Accent, Phonetics, Morphemics, Morphology, Syntax, Meaning — 33 tasks total
-- RuleCard component: slides up when child makes a mistake, shows linked golden rule with empathic hint
-- Island Map expanded to 6 islands matching Knowledge Tree clusters
-- Major redesign: Avatar picker (Cat/Robot/Astronaut), Power Card diagnostics, Island Map for training
-- Canvas-confetti celebration at every 5th star
-- Star reward system: gold stars (first try, no hints), silver stars (with hints), 5-star level-up overlay
+- **Mascot redesign**: Round mint-green body with headphones, boom mic, and book in hand (matching logo)
+- **Splash screen**: Loading screen with animated Buddy mascot, progress bar, "ВПР Бадди" branding
+- **Mic vibration**: Microphone subtly vibrates when Buddy "speaks" (result shown after answer)
+- **Book animation**: Book opens wider when child clicks Hint button (bookOpen prop)
+- **ВПР Бадди personality**: All system messages updated — friendly, supportive, addresses user as "напарник/герой"
+- **Avatar personalization**: Cat → "Мур!" prefix, Robot → "Бип-боп!" prefix in toast messages
+- Knowledge Tree: 20 golden rules database, 33 tasks across 6 categories
+- Star reward system: gold stars (first try), silver stars (with hints), 5-star level-up overlay
 
 ## Architecture
 - **Frontend**: React + Vite + TailwindCSS with Framer Motion animations
 - **Backend**: Express.js with PostgreSQL via Drizzle ORM
-- **Theme**: "Soothing Cloud" - soft mint, pastel blue, warm sand
+- **Theme**: "Soothing Cloud" - soft mint, pastel green, warm sand
 - **Font**: Nunito (kid-friendly rounded font)
 - **Knowledge Tree**: 4 clusters (Phonetics/Orthoepy, Morphemics, Morphology, Syntax) + 2 extra (Accent, Meaning)
 
 ## Key Components
-- `AvatarPicker.tsx` - First screen: "Who are you today?" with Cat/Robot/Astronaut cards
-- `PowerCard.tsx` - "Your Power Card" showing diagnostic results per category as percentages
-- `IslandMap.tsx` - Training mode map with 6 islands (Accent, Phonetics, Morphemics, Morphology, Syntax, Meaning)
-- `RuleCard.tsx` - Magic hint card that slides up on mistakes, shows linked golden rule
-- `Mascot.tsx` - SVG blob mascot with mood-based animations (idle, happy, thinking, celebrating, encouraging)
-- `TaskCard.tsx` - Main quiz card with 3-tier hint system, answer validation, and RuleCard integration
-- `CompletionScreen.tsx` - Results with star ratings per category
-- `LevelUpOverlay.tsx` - Celebration overlay at every 5 stars with confetti
-- `Header.tsx` - App header with 5 visual star slots (gold/silver/empty)
-- `EmpathyToast.tsx` - Empathic feedback notifications
-- `ProgressBar.tsx` - "My Superpowers" progress tracker
+- `SplashScreen.tsx` - Loading screen with animated Buddy, progress bar, "ВПР Бадди" title
+- `AvatarPicker.tsx` - "Привет, напарник!" screen with Cat/Robot/Astronaut cards
+- `PowerCard.tsx` - "Твоя карта силы" showing diagnostic results per category
+- `IslandMap.tsx` - Training map with 6 islands + "Все острова"
+- `Mascot.tsx` - SVG round green mascot with headphones, mic, book; mood animations; props: isSpeaking, bookOpen
+- `TaskCard.tsx` - Main quiz card with 3-tier hint system ("Бадди подсказывает", "Секретная подсказка", "Золотое правило")
+- `CompletionScreen.tsx` - Results with ВПР Бадди personality messages
+- `LevelUpOverlay.tsx` - "Вот это мощь!" celebration at every 5 stars
+- `Header.tsx` - "ВПР Бадди" header with star slots
+- `EmpathyToast.tsx` - Empathic feedback with mascot
+- `ProgressBar.tsx` - "Наш прогресс" tracker
+
+## Mascot Details
+- **Body**: Circle, mint-green radial gradient (#D4F5E0 → #9EDCB0)
+- **Headphones**: Dark navy (#3D5A80) band over head, ear cups on sides
+- **Mic**: Boom mic from left ear cup, vibrates (CSS `buddy-mic-speaking`) when `isSpeaking=true`
+- **Book**: Orange book held in right hand, opens wider when `bookOpen=true` (rotate transition)
+- **Eyes**: White sclera circles with dark pupils, follow cursor, blink every 5s
+- **Moods**: idle, happy, thinking, celebrating, encouraging, wrong, hint
+- **Sizes**: sm (16), md (24), lg (32), xl (48)
 
 ## Game Flow
-1. Avatar picker → Choose Cat/Robot/Astronaut (saved to localStorage)
-2. Diagnostic test: 3 random tasks from different categories
-3. Power Card → Shows category percentages
-4. Island Map → Choose training island (6 islands + All)
-5. Training tasks → Complete all tasks with star rewards, RuleCard on mistakes
-6. Completion screen → Back to island map
+1. Splash screen → Animated Buddy loading
+2. Avatar picker → Choose Cat/Robot/Astronaut (saved to localStorage)
+3. Diagnostic test: 3 random tasks from different categories
+4. Power Card → Shows category percentages
+5. Island Map → Choose training island (6 islands + All)
+6. Training tasks → Complete with star rewards, Бадди hints on mistakes
+7. Completion screen → Back to island map
+
+## ВПР Бадди Personality
+- **Style**: Friendly, supportive, modern (no slang)
+- **Address**: User as "напарник" (partner) or "герой" (hero)
+- **Auto-reactions**: Short phrases (up to 4 words): "Так держать, герой!", "Верный путь!", "Вот это сила!"
+- **Cat avatar prefix**: "Мур! " before toast messages
+- **Robot avatar prefix**: "Бип-боп! " before toast messages
+- **Wrong answer**: "Не переживай, напарник! Мы разберёмся вместе!"
+- **Hints**: "Бадди подсказывает" → "Секретная подсказка" → "Золотое правило"
 
 ## Data: 20 Golden Rules
-Each task links to a golden rule via ruleId. When a child makes a mistake, the RuleCard shows the linked rule's topic and magic hint. Rules cover: безударные гласные, непроизносимые, ударения, главные члены, глагол, существительное, прилагательное, корень, приставка, суффикс, окончание, однородные члены, мягкий знак, предлоги/приставки, местоимения, спряжение, твёрдый знак, заглавная буква, перенос, основная мысль.
+Each task links to a golden rule via ruleId. Rules cover all VPR topics.
 
 ## Categories (6)
 - `accent` - Ударения (Орфоэпия)

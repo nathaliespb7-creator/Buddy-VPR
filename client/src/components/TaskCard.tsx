@@ -91,7 +91,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const starColorClass = isGold
     ? "fill-amber-400 text-amber-400"
     : "fill-slate-300 text-slate-400";
-  const starLabel = isGold ? "Золотая звезда!" : "Серебряная звезда!";
+  const starLabel = isGold ? "Золотая звезда, напарник!" : "Серебряная звезда!";
 
   return (
     <motion.div
@@ -137,6 +137,8 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     : "idle"
               }
               size="md"
+              isSpeaking={showResult}
+              bookOpen={hintLevel > 0}
             />
           </div>
 
@@ -204,14 +206,14 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                   <div>
                     <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-1">
                       {hintLevel === 1
-                        ? "Подсказка"
+                        ? "Бадди подсказывает"
                         : hintLevel === 2
-                        ? "Волшебная подсказка"
-                        : "Правило"}
+                        ? "Секретная подсказка"
+                        : "Золотое правило"}
                     </p>
                     <p className="text-sm text-amber-700 dark:text-amber-300" data-testid="text-hint">
                       {hintLevel === 1
-                        ? "Ты можешь! Подумай ещё немножко!"
+                        ? "Напарник, подумай ещё! Ты справишься!"
                         : hintLevel === 2
                         ? task.hint
                         : task.rule || task.hint}
@@ -280,7 +282,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     )}
                     data-testid="text-result-label"
                   >
-                    {isCorrect ? starLabel : "Давай запомним!"}
+                    {isCorrect ? starLabel : "Запомним вместе!"}
                   </p>
                   <p
                     className={cn(

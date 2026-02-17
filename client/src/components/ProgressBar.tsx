@@ -21,7 +21,7 @@ export function ProgressBar({ completed, total, categoryScores }: ProgressBarPro
     <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 mb-6" data-testid="progress-section">
       <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
         <h2 className="text-base font-semibold" data-testid="text-progress-title">
-          Мои суперсилы
+          Наш прогресс
         </h2>
         <span className="text-sm text-muted-foreground" data-testid="text-progress-count">
           {completed} из {total}
