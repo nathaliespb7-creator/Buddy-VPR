@@ -42,7 +42,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         className="text-3xl sm:text-4xl font-bold tracking-tight mb-1"
         data-testid="text-splash-title"
       >
-        ВПР Бадди
+        Бадди ВПР
       </motion.h1>
 
       <motion.p

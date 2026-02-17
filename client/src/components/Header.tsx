@@ -28,7 +28,7 @@ export function Header({ mascotMood, stars }: HeaderProps) {
               className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight"
               data-testid="text-app-title"
             >
-              ВПР Бадди
+              Бадди ВПР
             </h1>
             <p className="text-sm text-muted-foreground truncate" data-testid="text-subtitle">
               Твой напарник в подготовке к ВПР

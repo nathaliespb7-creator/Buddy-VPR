@@ -61,7 +61,7 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false }: Mas
     >
       <img
         src={buddyImage}
-        alt="ВПР Бадди"
+        alt="Бадди ВПР"
         className={cn("w-full h-full object-contain transition-all duration-300", emotionOverlay)}
         draggable={false}
       />
