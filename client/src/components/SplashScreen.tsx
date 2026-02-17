@@ -23,7 +23,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         className="mb-6"
       >
-        <Mascot mood="happy" size="xl" className="w-56 h-56 sm:w-64 sm:h-64" />
+        <Mascot mood="idle" size="xl" className="w-56 h-56 sm:w-64 sm:h-64" />
       </motion.div>
 
       <motion.h1

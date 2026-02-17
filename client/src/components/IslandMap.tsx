@@ -84,9 +84,9 @@ export function IslandMap({ onSelect }: IslandMapProps) {
       className="w-full max-w-lg mx-auto px-4 sm:px-6"
       data-testid="island-map"
     >
-      <div className="flex items-center gap-2 mb-5">
+      <div className="flex items-center justify-center gap-2 mb-5">
         <MapPin className="w-6 h-6 text-primary shrink-0" />
-        <h2 className="text-2xl font-bold" data-testid="text-island-title">
+        <h2 className="text-2xl font-bold text-center" data-testid="text-island-title">
           Выбирай остров!
         </h2>
       </div>
