@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mascot } from "./Mascot";
 
 interface EmpathyToastProps {
   message: string;
@@ -12,7 +11,7 @@ interface EmpathyToastProps {
 export function EmpathyToast({ message, type, visible, onClose }: EmpathyToastProps) {
   useEffect(() => {
     if (visible) {
-      const timer = setTimeout(onClose, 4000);
+      const timer = setTimeout(onClose, 2000);
       return () => clearTimeout(timer);
     }
   }, [visible, onClose]);
@@ -31,23 +30,31 @@ export function EmpathyToast({ message, type, visible, onClose }: EmpathyToastPr
       ? "text-amber-800 dark:text-amber-200"
       : "text-sky-800 dark:text-sky-200";
 
-  const mood = type === "success" ? "celebrating" : type === "hint" ? "thinking" : "encouraging";
+  const icon = type === "success" ? "✓" : type === "hint" ? "?" : "!";
+  const iconBg =
+    type === "success"
+      ? "bg-emerald-200 dark:bg-emerald-700 text-emerald-700 dark:text-emerald-200"
+      : type === "hint"
+      ? "bg-amber-200 dark:bg-amber-700 text-amber-700 dark:text-amber-200"
+      : "bg-sky-200 dark:bg-sky-700 text-sky-700 dark:text-sky-200";
 
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          className="fixed bottom-6 left-0 right-0 mx-auto z-[60] w-[90vw] max-w-md"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 15 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="fixed bottom-6 left-0 right-0 mx-auto z-[60] w-[80vw] max-w-sm pointer-events-none"
           data-testid="empathy-toast"
         >
           <div
-            className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 shadow-lg ${bgClass}`}
+            className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 shadow-md ${bgClass}`}
           >
-            <Mascot mood={mood} size="sm" />
+            <div className={`flex items-center justify-center w-7 h-7 rounded-full shrink-0 text-sm font-bold ${iconBg}`}>
+              {icon}
+            </div>
             <p className={`text-sm font-medium leading-snug ${textClass}`} data-testid="text-toast-message">
               {message}
             </p>
