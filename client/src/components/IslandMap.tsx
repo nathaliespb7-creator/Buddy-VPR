@@ -86,7 +86,12 @@ export function IslandMap({ onSelect }: IslandMapProps) {
       data-testid="island-map"
     >
       <div className="flex items-center gap-3 mb-5">
-        <Mascot mood="happy" size="sm" />
+        <motion.div
+          animate={{ y: [0, -5, 0] }}
+          transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+        >
+          <Mascot mood="happy" size="sm" />
+        </motion.div>
         <div>
           <h2 className="text-xl font-bold" data-testid="text-island-title">
             Карта знаний

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import buddyImage from "@assets/Снимок_экрана_2026-02-17_в_16.20.55_1771336673012.png";
+import buddyImage from "@/assets/images/buddy-mascot.png";
 
 export type MascotMood = "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong" | "hint";
 
@@ -26,9 +26,25 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false }: Mas
       case "thinking": return "animate-buddy-thinking";
       case "celebrating": return "animate-celebrate";
       case "encouraging": return "animate-nod";
-      case "wrong": return "animate-nod";
+      case "wrong": return "buddy-emotion-wrong";
       case "hint": return "animate-buddy-surprise";
       default: return "animate-breathe";
+    }
+  })();
+
+  const emotionOverlay = (() => {
+    switch (mood) {
+      case "happy":
+      case "celebrating":
+        return "buddy-glow-happy";
+      case "wrong":
+        return "buddy-glow-wrong";
+      case "encouraging":
+        return "buddy-glow-encourage";
+      case "hint":
+        return "buddy-glow-hint";
+      default:
+        return "";
     }
   })();
 
@@ -46,7 +62,7 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false }: Mas
       <img
         src={buddyImage}
         alt="ВПР Бадди"
-        className="w-full h-full object-contain"
+        className={cn("w-full h-full object-contain transition-all duration-300", emotionOverlay)}
         draggable={false}
       />
     </div>

@@ -318,6 +318,34 @@
 .animate-thought-2 { animation: thought-float 2.5s ease-in-out infinite 0.4s; }
 .animate-thought-3 { animation: thought-float 2.5s ease-in-out infinite 0.8s; }
 
+@keyframes buddy-wrong-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-4px) rotate(-3deg); }
+  20% { transform: translateX(4px) rotate(3deg); }
+  30% { transform: translateX(-3px) rotate(-2deg); }
+  40% { transform: translateX(3px) rotate(2deg); }
+  50% { transform: translateX(-2px) rotate(-1deg); }
+  60% { transform: translateX(2px) rotate(1deg); }
+  70% { transform: translateX(-1px) rotate(0deg); }
+  80% { transform: translateX(1px) rotate(0deg); }
+}
+.buddy-emotion-wrong {
+  animation: buddy-wrong-shake 0.6s ease-out;
+}
+
+.buddy-glow-happy {
+  filter: brightness(1.08) saturate(1.15);
+}
+.buddy-glow-wrong {
+  filter: brightness(0.95) saturate(0.85) hue-rotate(-5deg);
+}
+.buddy-glow-encourage {
+  filter: brightness(1.05) saturate(1.1);
+}
+.buddy-glow-hint {
+  filter: brightness(1.1) saturate(1.2) drop-shadow(0 0 6px rgba(251, 191, 36, 0.4));
+}
+
 /**
  * Using the elevate system.
  * Automatic contrast adjustment.
