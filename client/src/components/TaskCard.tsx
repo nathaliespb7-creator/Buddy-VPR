@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Sparkles, Star, Volume2, VolumeX } from "lucide-react";
-import { type Task } from "@/lib/taskData";
+import { type Task, getBuddyHint } from "@/lib/taskData";
 import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
@@ -58,9 +58,15 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
     if (isSpeechPlaying) {
       stopSpeech();
     } else {
-      speak(task.audio);
+      let textToSpeak = task.audio;
+      if (hintLevel === 3 && task.ruleId) {
+        textToSpeak = getBuddyHint(task.ruleId);
+      } else if (hintLevel === 2) {
+        textToSpeak = task.hint;
+      }
+      speak(textToSpeak);
     }
-  }, [isSpeechPlaying, task.audio, speak, stopSpeech]);
+  }, [isSpeechPlaying, task, hintLevel, speak, stopSpeech]);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -268,7 +274,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                         ? "Напарник, подумай ещё! Ты справишься!"
                         : hintLevel === 2
                         ? task.hint
-                        : task.rule || task.hint}
+                        : (task.ruleId ? getBuddyHint(task.ruleId) : task.rule || task.hint)}
                     </p>
                   </div>
                 </div>

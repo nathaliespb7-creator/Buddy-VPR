@@ -4,12 +4,13 @@
 Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation. Designed for 10-year-old children with a soothing, friendly interface that reduces exam stress. Branded as "ВПР Бадди" — a supportive partner character.
 
 ## Recent Changes
-- **Mascot redesign**: Round mint-green body with headphones, boom mic, and book in hand (matching logo)
+- **Methodology-based hints**: Each golden rule has hints for 3 methodologies (school_of_russia, zankov, elkonin) + default fallback
+- **getBuddyHint(ruleId)**: Returns methodology-specific hint text, used in TaskCard level 3 hints and voice assistant
+- **Voice assistant**: "Послушай" button using window.speechSynthesis (Russian, rate 0.9), reads audio/hint/rule based on context
+- **PWA offline**: Service Worker (sw.js) caches assets for offline use
+- **Branding**: Updated manifest.json, index.html to "ВПР Бадди"
+- **Mascot**: Transparent PNG, gentle animations (no anxious shaking)
 - **Splash screen**: Loading screen with animated Buddy mascot, progress bar, "ВПР Бадди" branding
-- **Mic vibration**: Microphone subtly vibrates when Buddy "speaks" (result shown after answer)
-- **Book animation**: Book opens wider when child clicks Hint button (bookOpen prop)
-- **ВПР Бадди personality**: All system messages updated — friendly, supportive, addresses user as "напарник/герой"
-- **Avatar personalization**: Cat → "Мур!" prefix, Robot → "Бип-боп!" prefix in toast messages
 - Knowledge Tree: 20 golden rules database, 33 tasks across 6 categories
 - Star reward system: gold stars (first try), silver stars (with hints), 5-star level-up overlay
 
