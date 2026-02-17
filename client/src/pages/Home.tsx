@@ -280,7 +280,7 @@ export default function Home() {
           />
         )}
 
-        <main className="flex-1 flex items-start justify-center pt-4 pb-8">
+        <main className="flex-1 flex items-start justify-center pt-4 pb-8 overflow-y-auto">
           <AnimatePresence mode="wait">
             {phase === "avatarSelect" && (
               <AvatarPicker key="avatar" onSelect={handleAvatarSelect} />
