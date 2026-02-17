@@ -77,7 +77,7 @@ export default function Home() {
   const [categoryScores, setCategoryScores] = useState<Record<string, number>>({});
   const [diagnosticScores, setDiagnosticScores] = useState<Record<string, { correct: number; total: number }>>({});
   const [activeTasks, setActiveTasks] = useState<Task[]>([]);
-  const [mascotMood, setMascotMood] = useState<"idle" | "happy" | "thinking" | "celebrating" | "encouraging">("idle");
+  const [mascotMood, setMascotMood] = useState<"idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong">("idle");
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<"success" | "encouragement" | "hint">("success");
   const [toastVisible, setToastVisible] = useState(false);

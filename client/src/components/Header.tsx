@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export type StarType = "gold" | "silver" | "empty";
 
 interface HeaderProps {
-  mascotMood: "idle" | "happy" | "thinking" | "celebrating" | "encouraging";
+  mascotMood: "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong";
   stars: StarType[];
 }
 
