@@ -129,7 +129,13 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
         <CardContent className="pb-4">
           <div className="flex justify-center mb-5">
             <Mascot
-              mood={showResult ? (isCorrect ? "celebrating" : "wrong") : "idle"}
+              mood={
+                showResult
+                  ? (isCorrect ? "celebrating" : "wrong")
+                  : hintLevel > 0
+                    ? "hint"
+                    : "idle"
+              }
               size="md"
             />
           </div>

@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 
-type MascotMood = "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong";
+export type MascotMood = "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong" | "hint";
 
 interface MascotProps {
   mood: MascotMood;
@@ -10,12 +10,12 @@ interface MascotProps {
 }
 
 export function Mascot({ mood, className, size = "md" }: MascotProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
   const [reactionMouth, setReactionMouth] = useState<string | null>(null);
   const [reactionBounce, setReactionBounce] = useState(false);
   const [reactionWide, setReactionWide] = useState(false);
+  const [reactionSurprised, setReactionSurprised] = useState(false);
 
   const sizeClasses = {
     sm: "w-16 h-16",
@@ -32,6 +32,7 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
 
     let clientX: number, clientY: number;
     if ("touches" in e) {
+      if (!e.touches[0]) return;
       clientX = e.touches[0].clientX;
       clientY = e.touches[0].clientY;
     } else {
@@ -64,6 +65,7 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
       setReactionMouth("M 85 110 Q 100 125 115 110");
       setReactionBounce(true);
       setReactionWide(false);
+      setReactionSurprised(false);
       const timer = setTimeout(() => {
         setReactionMouth(null);
         setReactionBounce(false);
@@ -73,15 +75,22 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
       setReactionMouth("M 90 118 L 110 118");
       setReactionWide(true);
       setReactionBounce(false);
+      setReactionSurprised(false);
       const timer = setTimeout(() => {
         setReactionMouth(null);
         setReactionWide(false);
       }, 1500);
       return () => clearTimeout(timer);
+    } else if (mood === "hint") {
+      setReactionSurprised(true);
+      setReactionBounce(false);
+      setReactionWide(false);
+      setReactionMouth(null);
     } else {
       setReactionMouth(null);
       setReactionBounce(false);
       setReactionWide(false);
+      setReactionSurprised(false);
     }
   }, [mood]);
 
@@ -101,19 +110,23 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
     }
   };
 
-  const mouthPath = reactionMouth || getBaseMouthPath();
+  const useSurprisedMouth = reactionSurprised || mood === "hint";
+  const mouthPath = useSurprisedMouth ? null : (reactionMouth || getBaseMouthPath());
 
   const getEyeStyle = () => {
+    if (reactionSurprised || mood === "hint") {
+      return { leftRx: 7, leftRy: 8, rightRx: 7, rightRy: 8, squint: false, surprised: true };
+    }
     if (reactionWide || mood === "wrong") {
-      return { leftRy: 8, rightRy: 8, squint: false };
+      return { leftRx: 6, leftRy: 8, rightRx: 6, rightRy: 8, squint: false, surprised: false };
     }
     if (mood === "happy" || mood === "celebrating") {
-      return { leftRy: 3, rightRy: 3, squint: true };
+      return { leftRx: 6, leftRy: 3, rightRx: 6, rightRy: 3, squint: true, surprised: false };
     }
     if (mood === "thinking") {
-      return { leftRy: 6, rightRy: 4, squint: false };
+      return { leftRx: 6, leftRy: 6, rightRx: 6, rightRy: 4, squint: false, surprised: false };
     }
-    return { leftRy: 6, rightRy: 6, squint: false };
+    return { leftRx: 6, leftRy: 6, rightRx: 6, rightRy: 6, squint: false, surprised: false };
   };
 
   const eyes = getEyeStyle();
@@ -123,12 +136,19 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
     switch (mood) {
       case "idle": return "animate-breathe";
       case "happy": return "animate-bounce-soft";
-      case "thinking": return "animate-tilt";
+      case "thinking": return "animate-buddy-thinking";
       case "celebrating": return "animate-celebrate";
       case "encouraging": return "animate-nod";
       case "wrong": return "animate-nod";
+      case "hint": return "animate-buddy-surprise";
       default: return "animate-breathe";
     }
+  })();
+
+  const eyeBlinkClass = (() => {
+    if (eyes.squint || eyes.surprised) return "";
+    if (mood === "thinking") return "buddy-eyes-slow";
+    return "buddy-eyes";
   })();
 
   return (
@@ -138,7 +158,6 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
       data-testid="mascot"
     >
       <svg
-        ref={svgRef}
         viewBox="0 0 200 200"
         className="w-full h-full"
       >
@@ -152,36 +171,53 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
           {mood === "celebrating" && (
             <circle cx="100" cy="25" r="4" fill="#FBBF24" className="animate-sparkle" />
           )}
+          {mood === "hint" && (
+            <circle cx="100" cy="25" r="4" fill="#60A5FA" className="animate-sparkle" />
+          )}
 
           <rect x="38" y="85" width="14" height="8" rx="4" fill="#90CDF4" stroke="#63B3ED" strokeWidth="2" />
           <rect x="148" y="85" width="14" height="8" rx="4" fill="#90CDF4" stroke="#63B3ED" strokeWidth="2" />
 
           <rect x="65" y="72" width="70" height="52" rx="18" fill="white" stroke="#E2E8F0" strokeWidth="1.5" />
 
-          <g className={cn(!eyes.squint && "buddy-eyes")}>
+          <g className={eyeBlinkClass}>
             {eyes.squint ? (
               <>
                 <path d="M 78 95 Q 85 88 92 95" stroke="#2D3748" strokeWidth="3" fill="none" strokeLinecap="round" />
                 <path d="M 108 95 Q 115 88 122 95" stroke="#2D3748" strokeWidth="3" fill="none" strokeLinecap="round" />
               </>
+            ) : eyes.surprised ? (
+              <>
+                <circle cx={85 + pupilOffset.x * 0.3} cy={94 + pupilOffset.y * 0.3} r="9" fill="white" stroke="#2D3748" strokeWidth="2" />
+                <circle cx={85 + pupilOffset.x} cy={94 + pupilOffset.y} r="4.5" fill="#2D3748" />
+                <circle cx={86.5 + pupilOffset.x * 0.5} cy={92 + pupilOffset.y * 0.5} r="1.5" fill="white" />
+
+                <circle cx={115 + pupilOffset.x * 0.3} cy={94 + pupilOffset.y * 0.3} r="9" fill="white" stroke="#2D3748" strokeWidth="2" />
+                <circle cx={115 + pupilOffset.x} cy={94 + pupilOffset.y} r="4.5" fill="#2D3748" />
+                <circle cx={116.5 + pupilOffset.x * 0.5} cy={92 + pupilOffset.y * 0.5} r="1.5" fill="white" />
+              </>
             ) : (
               <>
-                <ellipse cx={85 + pupilOffset.x} cy={95 + pupilOffset.y} rx="6" ry={eyes.leftRy} fill="#2D3748" />
-                <ellipse cx={115 + pupilOffset.x} cy={95 + pupilOffset.y} rx="6" ry={eyes.rightRy} fill="#2D3748" />
+                <ellipse cx={85 + pupilOffset.x} cy={95 + pupilOffset.y} rx={eyes.leftRx} ry={eyes.leftRy} fill="#2D3748" />
+                <ellipse cx={115 + pupilOffset.x} cy={95 + pupilOffset.y} rx={eyes.rightRx} ry={eyes.rightRy} fill="#2D3748" />
                 <circle cx={87 + pupilOffset.x * 0.5} cy={93 + pupilOffset.y * 0.5} r="2" fill="white" opacity="0.8" />
                 <circle cx={117 + pupilOffset.x * 0.5} cy={93 + pupilOffset.y * 0.5} r="2" fill="white" opacity="0.8" />
               </>
             )}
           </g>
 
-          <path
-            d={mouthPath}
-            stroke="#2D3748"
-            strokeWidth="2.5"
-            fill="none"
-            strokeLinecap="round"
-            className="transition-all duration-300"
-          />
+          {useSurprisedMouth ? (
+            <ellipse cx="100" cy="118" rx="5" ry="6" fill="#2D3748" opacity="0.85" />
+          ) : (
+            <path
+              d={mouthPath!}
+              stroke="#2D3748"
+              strokeWidth="2.5"
+              fill="none"
+              strokeLinecap="round"
+              className="transition-all duration-300"
+            />
+          )}
 
           {(mood === "happy" || mood === "celebrating") && !reactionWide && (
             <>
@@ -204,9 +240,9 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
 
         {mood === "thinking" && (
           <>
-            <circle cx="160" cy="50" r="5" fill="#E2E8F0" opacity="0.7" />
-            <circle cx="172" cy="38" r="7" fill="#E2E8F0" opacity="0.5" />
-            <circle cx="178" cy="22" r="4" fill="#E2E8F0" opacity="0.3" />
+            <circle cx="160" cy="50" r="5" fill="#E2E8F0" opacity="0.7" className="animate-thought-1" />
+            <circle cx="172" cy="38" r="7" fill="#E2E8F0" opacity="0.5" className="animate-thought-2" />
+            <circle cx="178" cy="22" r="4" fill="#E2E8F0" opacity="0.3" className="animate-thought-3" />
           </>
         )}
 
@@ -214,6 +250,13 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
           <>
             <circle cx="70" cy="60" r="3" fill="#93C5FD" opacity="0.4" />
             <circle cx="130" cy="55" r="2" fill="#93C5FD" opacity="0.3" />
+          </>
+        )}
+
+        {mood === "hint" && (
+          <>
+            <circle cx="140" cy="48" r="3" fill="#FBBF24" className="animate-sparkle" />
+            <circle cx="58" cy="42" r="2.5" fill="#60A5FA" className="animate-sparkle-delay" />
           </>
         )}
       </svg>

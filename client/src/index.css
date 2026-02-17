@@ -222,8 +222,16 @@
   0%, 90%, 100% { transform: scaleY(1); }
   95% { transform: scaleY(0.1); }
 }
+@keyframes blink-slow {
+  0%, 88%, 100% { transform: scaleY(1); }
+  93%, 95% { transform: scaleY(0.1); }
+}
 .buddy-eyes {
   animation: blink 4s infinite;
+  transform-origin: center;
+}
+.buddy-eyes-slow {
+  animation: blink-slow 5s infinite;
   transform-origin: center;
 }
 .buddy-body {
@@ -242,6 +250,33 @@
 .animate-buddy-jump {
   animation: buddy-jump 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
+@keyframes buddy-thinking {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-2px) rotate(-5deg); }
+  70% { transform: translateY(-1px) rotate(3deg); }
+}
+.animate-buddy-thinking {
+  animation: buddy-thinking 3.5s ease-in-out infinite;
+}
+
+@keyframes buddy-surprise {
+  0% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(-4px) scale(1.06); }
+  40% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(0) scale(1); }
+}
+.animate-buddy-surprise {
+  animation: buddy-surprise 0.6s ease-out;
+}
+
+@keyframes thought-float {
+  0%, 100% { opacity: 0.4; transform: translateY(0) scale(1); }
+  50% { opacity: 0.8; transform: translateY(-3px) scale(1.15); }
+}
+.animate-thought-1 { animation: thought-float 2.5s ease-in-out infinite; }
+.animate-thought-2 { animation: thought-float 2.5s ease-in-out infinite 0.4s; }
+.animate-thought-3 { animation: thought-float 2.5s ease-in-out infinite 0.8s; }
 
 /**
  * Using the elevate system.
