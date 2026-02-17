@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
 import { Star } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export type StarType = "gold" | "silver" | "empty";
 
@@ -11,10 +10,7 @@ interface HeaderProps {
 }
 
 export function Header({ mascotMood, stars }: HeaderProps) {
-  const displayStars: StarType[] = [];
-  for (let i = 0; i < 5; i++) {
-    displayStars.push(stars[i] || "empty");
-  }
+  const totalStars = stars.filter(s => s !== "empty").length;
 
   return (
     <header className="w-full py-3 px-4 sm:px-6" data-testid="header">
@@ -39,31 +35,35 @@ export function Header({ mascotMood, stars }: HeaderProps) {
             </p>
           </div>
         </div>
-        <div
-          className="flex items-center gap-1 rounded-md bg-muted/50 border border-border px-2 py-1.5 shrink-0"
+        <motion.div
+          className="flex items-center gap-1.5 shrink-0"
           data-testid="star-counter"
+          key={totalStars}
         >
-          {displayStars.map((type, i) => (
-            <motion.div
-              key={i}
-              initial={type !== "empty" ? { scale: 0 } : false}
-              animate={type !== "empty" ? { scale: [0, 1.4, 1] } : {}}
-              transition={{ duration: 0.4, delay: 0.05 }}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={totalStars}
+              initial={{ scale: 1.6, y: -4 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="text-xl font-bold tabular-nums text-foreground"
+              data-testid="text-star-count"
             >
-              <Star
-                className={cn(
-                  "w-5 h-5 transition-all",
-                  type === "gold"
-                    ? "fill-amber-400 text-amber-400 drop-shadow-sm"
-                    : type === "silver"
-                    ? "fill-slate-300 text-slate-400 dark:fill-slate-400 dark:text-slate-500"
-                    : "text-muted-foreground/25"
-                )}
-                data-testid={`star-slot-${i}`}
-              />
-            </motion.div>
-          ))}
-        </div>
+              {totalStars}
+            </motion.span>
+          </AnimatePresence>
+          <motion.div
+            key={`star-icon-${totalStars}`}
+            initial={{ rotate: -30, scale: 1.4 }}
+            animate={{ rotate: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          >
+            <Star
+              className="w-6 h-6 fill-amber-400 text-amber-400 drop-shadow-sm"
+              data-testid="star-slot-0"
+            />
+          </motion.div>
+        </motion.div>
       </div>
     </header>
   );
