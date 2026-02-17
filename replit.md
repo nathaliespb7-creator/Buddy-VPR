@@ -55,7 +55,7 @@ Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation.
 - **Style**: Friendly, supportive, modern (no slang)
 - **Address**: User as "напарник" (partner) or "герой" (hero)
 - **Auto-reactions**: Short phrases (up to 4 words): "Так держать, герой!", "Верный путь!", "Вот это сила!"
-- **Cat avatar prefix**: "Мур! " before toast messages
+- **Cat avatar prefix**: none (no prefix)
 - **Robot avatar prefix**: "Бип-боп! " before toast messages
 - **Wrong answer**: "Не переживай, напарник! Мы разберёмся вместе!"
 - **Hints**: "Бадди подсказывает" → "Секретная подсказка" → "Золотое правило"

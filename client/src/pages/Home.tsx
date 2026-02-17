@@ -68,7 +68,7 @@ function fireConfetti() {
 }
 
 function getAvatarPrefix(avatar?: AvatarChoice): string {
-  if (avatar === "cat") return "Мур! ";
+  if (avatar === "cat") return "";
   if (avatar === "robot") return "Бип-боп! ";
   return "";
 }
