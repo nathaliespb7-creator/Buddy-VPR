@@ -46,7 +46,7 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false, bookO
     const dx = clientX - cx;
     const dy = clientY - cy;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const maxShift = 3;
+    const maxShift = 2.5;
     const factor = Math.min(dist / 200, 1);
     setPupilOffset({
       x: (dx / (dist || 1)) * maxShift * factor,
@@ -161,138 +161,151 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false, bookO
         className="w-full h-full"
       >
         <defs>
-          <radialGradient id="buddy-body-grad" cx="45%" cy="35%" r="55%">
-            <stop offset="0%" stopColor="#D4F5E0" />
-            <stop offset="60%" stopColor="#B8E8C8" />
+          <radialGradient id="buddy-body-grad" cx="40%" cy="30%" r="60%">
+            <stop offset="0%" stopColor="#E0F7E9" />
+            <stop offset="40%" stopColor="#C5EDCF" />
             <stop offset="100%" stopColor="#9EDCB0" />
           </radialGradient>
-          <radialGradient id="buddy-cheek" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FFD6E0" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#FFD6E0" stopOpacity="0" />
+          <radialGradient id="buddy-body-shine" cx="35%" cy="25%" r="30%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="buddy-cheek-l" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFCBAD" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#FFCBAD" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="buddy-cheek-r" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#FFCBAD" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#FFCBAD" stopOpacity="0" />
           </radialGradient>
           <linearGradient id="book-cover" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#F2994A" />
             <stop offset="100%" stopColor="#E07B30" />
           </linearGradient>
           <linearGradient id="book-pages" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#FFF8EC" />
+            <stop offset="0%" stopColor="#FFFDF5" />
             <stop offset="100%" stopColor="#FFEFD5" />
           </linearGradient>
-          <linearGradient id="headphone-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3D5A80" />
-            <stop offset="100%" stopColor="#2C3E5A" />
+          <linearGradient id="earcup-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#B0BEC5" />
+            <stop offset="50%" stopColor="#90A4AE" />
+            <stop offset="100%" stopColor="#78909C" />
+          </linearGradient>
+          <linearGradient id="earcup-shine" x1="0.3" y1="0" x2="0.7" y2="1">
+            <stop offset="0%" stopColor="white" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
         </defs>
 
-        <ellipse cx="100" cy="185" rx="40" ry="6" fill="#94A3B8" opacity="0.15" />
+        <ellipse cx="100" cy="185" rx="38" ry="5" fill="#94A3B8" opacity="0.12" />
 
         <g className={cn("buddy-body", bodyAnimation)}>
-          <circle cx="100" cy="100" r="58" fill="url(#buddy-body-grad)" />
-          <circle cx="100" cy="100" r="56" fill="none" stroke="#8BCFA0" strokeWidth="2" opacity="0.6" />
+          <circle cx="100" cy="100" r="62" fill="url(#buddy-body-grad)" />
+          <circle cx="100" cy="100" r="62" fill="url(#buddy-body-shine)" />
 
           <path
-            d="M 42 85 Q 38 60 55 45 Q 60 40 60 48 L 60 80 Q 60 88 52 88 L 48 88 Q 42 88 42 82 Z"
-            fill="url(#headphone-grad)"
-          />
-          <rect x="42" y="72" width="20" height="22" rx="6" fill="#3D5A80" />
-          <rect x="44" y="74" width="16" height="18" rx="5" fill="#4A6D8C" />
-          <ellipse cx="52" cy="83" rx="6" ry="7" fill="#5A7D9C" opacity="0.4" />
-
-          <path
-            d="M 158 85 Q 162 60 145 45 Q 140 40 140 48 L 140 80 Q 140 88 148 88 L 152 88 Q 158 88 158 82 Z"
-            fill="url(#headphone-grad)"
-          />
-          <rect x="138" y="72" width="20" height="22" rx="6" fill="#3D5A80" />
-          <rect x="140" y="74" width="16" height="18" rx="5" fill="#4A6D8C" />
-          <ellipse cx="148" cy="83" rx="6" ry="7" fill="#5A7D9C" opacity="0.4" />
-
-          <path
-            d="M 55 45 Q 70 22 100 20 Q 130 22 145 45"
+            d="M 38 78 Q 42 38 100 28 Q 158 38 162 78"
             fill="none"
-            stroke="#3D5A80"
-            strokeWidth="5"
+            stroke="#546E7A"
+            strokeWidth="4.5"
             strokeLinecap="round"
           />
 
+          <ellipse cx="38" cy="85" rx="11" ry="13" fill="url(#earcup-grad)" />
+          <ellipse cx="38" cy="85" rx="11" ry="13" fill="url(#earcup-shine)" />
+          <ellipse cx="38" cy="85" rx="9" ry="11" fill="none" stroke="#607D8B" strokeWidth="1" opacity="0.4" />
+          <ellipse cx="36" cy="82" rx="4" ry="5" fill="white" opacity="0.15" />
+
+          <ellipse cx="162" cy="85" rx="11" ry="13" fill="url(#earcup-grad)" />
+          <ellipse cx="162" cy="85" rx="11" ry="13" fill="url(#earcup-shine)" />
+          <ellipse cx="162" cy="85" rx="9" ry="11" fill="none" stroke="#607D8B" strokeWidth="1" opacity="0.4" />
+          <ellipse cx="160" cy="82" rx="4" ry="5" fill="white" opacity="0.15" />
+
           <g className={isSpeaking ? "buddy-mic-speaking" : ""}>
-            <line x1="48" y1="92" x2="36" y2="120" stroke="#3D5A80" strokeWidth="3.5" strokeLinecap="round" />
-            <circle cx="34" cy="124" r="5" fill="#3D5A80" />
-            <circle cx="34" cy="124" r="3" fill="#4A6D8C" />
-            <rect x="30" y="119" width="8" height="6" rx="2" fill="#3D5A80" />
+            <path
+              d="M 35 96 Q 30 112 28 128 Q 27 135 32 138"
+              fill="none"
+              stroke="#546E7A"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
+            <circle cx="33" cy="140" r="5.5" fill="#546E7A" />
+            <circle cx="33" cy="140" r="3.5" fill="#78909C" />
+            <circle cx="32" cy="139" r="1.5" fill="white" opacity="0.2" />
           </g>
 
           <g className={eyeBlinkClass}>
             {eyes.squint ? (
               <>
-                <path d="M 78 95 Q 85 87 92 95" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                <path d="M 108 95 Q 115 87 122 95" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                <path d="M 72 106 Q 82 96 92 106" stroke="#2D3748" strokeWidth="3" fill="none" strokeLinecap="round" />
+                <path d="M 108 106 Q 118 96 128 106" stroke="#2D3748" strokeWidth="3" fill="none" strokeLinecap="round" />
               </>
             ) : eyes.surprised ? (
               <>
-                <circle cx={85 + pupilOffset.x * 0.3} cy={95 + pupilOffset.y * 0.3} r="10" fill="white" stroke="#2D3748" strokeWidth="1.5" />
-                <circle cx={85 + pupilOffset.x} cy={95 + pupilOffset.y} r="5" fill="#2D3748" />
-                <circle cx={86.5 + pupilOffset.x * 0.5} cy={93 + pupilOffset.y * 0.5} r="2" fill="white" />
+                <circle cx={82} cy={103} r="13" fill="white" />
+                <circle cx={82 + pupilOffset.x} cy={103 + pupilOffset.y} r="8" fill="#2D3748" />
+                <circle cx={79 + pupilOffset.x * 0.3} cy={99 + pupilOffset.y * 0.3} r="3.5" fill="white" />
+                <circle cx={85 + pupilOffset.x * 0.3} cy={105 + pupilOffset.y * 0.3} r="1.5" fill="white" opacity="0.6" />
 
-                <circle cx={115 + pupilOffset.x * 0.3} cy={95 + pupilOffset.y * 0.3} r="10" fill="white" stroke="#2D3748" strokeWidth="1.5" />
-                <circle cx={115 + pupilOffset.x} cy={95 + pupilOffset.y} r="5" fill="#2D3748" />
-                <circle cx={116.5 + pupilOffset.x * 0.5} cy={93 + pupilOffset.y * 0.5} r="2" fill="white" />
+                <circle cx={118} cy={103} r="13" fill="white" />
+                <circle cx={118 + pupilOffset.x} cy={103 + pupilOffset.y} r="8" fill="#2D3748" />
+                <circle cx={115 + pupilOffset.x * 0.3} cy={99 + pupilOffset.y * 0.3} r="3.5" fill="white" />
+                <circle cx={121 + pupilOffset.x * 0.3} cy={105 + pupilOffset.y * 0.3} r="1.5" fill="white" opacity="0.6" />
               </>
             ) : (
               <>
-                <circle cx={85 + pupilOffset.x * 0.3} cy={95 + pupilOffset.y * 0.3} r={eyes.wide ? 9 : 8} fill="white" stroke="#2D3748" strokeWidth="1.2" />
-                <circle cx={85 + pupilOffset.x} cy={95 + pupilOffset.y} r={eyes.wide ? 5 : 4.5} fill="#2D3748" />
-                <circle cx={86.5 + pupilOffset.x * 0.5} cy={93 + pupilOffset.y * 0.5} r="2" fill="white" />
+                <circle cx={82} cy={103} r={eyes.wide ? 14 : 12} fill="white" />
+                <circle cx={82 + pupilOffset.x} cy={103 + pupilOffset.y} r={eyes.wide ? 8 : 7} fill="#2D3748" />
+                <circle cx={79 + pupilOffset.x * 0.3} cy={99 + pupilOffset.y * 0.3} r="3" fill="white" />
+                <circle cx={85 + pupilOffset.x * 0.3} cy={105 + pupilOffset.y * 0.3} r="1.5" fill="white" opacity="0.5" />
 
-                <circle cx={115 + pupilOffset.x * 0.3} cy={95 + pupilOffset.y * 0.3} r={eyes.wide ? 9 : 8} fill="white" stroke="#2D3748" strokeWidth="1.2" />
-                <circle cx={115 + pupilOffset.x} cy={95 + pupilOffset.y} r={eyes.wide ? 5 : 4.5} fill="#2D3748" />
-                <circle cx={116.5 + pupilOffset.x * 0.5} cy={93 + pupilOffset.y * 0.5} r="2" fill="white" />
+                <circle cx={118} cy={103} r={eyes.wide ? 14 : 12} fill="white" />
+                <circle cx={118 + pupilOffset.x} cy={103 + pupilOffset.y} r={eyes.wide ? 8 : 7} fill="#2D3748" />
+                <circle cx={115 + pupilOffset.x * 0.3} cy={99 + pupilOffset.y * 0.3} r="3" fill="white" />
+                <circle cx={121 + pupilOffset.x * 0.3} cy={105 + pupilOffset.y * 0.3} r="1.5" fill="white" opacity="0.5" />
               </>
             )}
           </g>
 
+          <circle cx="65" cy="116" r="8" fill="url(#buddy-cheek-l)" />
+          <circle cx="135" cy="116" r="8" fill="url(#buddy-cheek-r)" />
+
           {mouthType === "surprised" && (
-            <ellipse cx="100" cy="115" rx="4" ry="5" fill="#2D3748" opacity="0.8" />
+            <ellipse cx="100" cy="126" rx="4" ry="5" fill="#2D3748" opacity="0.8" />
           )}
           {mouthType === "happy" && (
-            <path d="M 87 112 Q 100 126 113 112" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 88 122 Q 100 136 112 122" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           )}
           {mouthType === "flat" && (
-            <path d="M 90 115 L 110 115" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 90 126 L 110 126" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           )}
           {mouthType === "smile" && (
-            <path d="M 89 112 Q 100 122 111 112" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 90 123 Q 100 132 110 123" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           )}
           {mouthType === "thinking" && (
-            <path d="M 93 116 Q 100 113 107 116" stroke="#2D3748" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path d="M 94 127 Q 100 124 106 127" stroke="#2D3748" strokeWidth="2" fill="none" strokeLinecap="round" />
           )}
           {mouthType === "default" && (
-            <path d="M 91 113 Q 100 120 109 113" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-          )}
-
-          {(mood === "happy" || mood === "celebrating") && (
-            <>
-              <circle cx="72" cy="105" r="6" fill="url(#buddy-cheek)" />
-              <circle cx="128" cy="105" r="6" fill="url(#buddy-cheek)" />
-            </>
+            <path d="M 91 123 Q 102 131 111 124" stroke="#2D3748" strokeWidth="2.5" fill="none" strokeLinecap="round" />
           )}
 
           <g
             className="buddy-book-hand"
             style={{
-              transformOrigin: "160px 135px",
+              transformOrigin: "158px 145px",
               transform: `rotate(${bookAngle}deg)`,
               transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}
           >
-            <circle cx="155" cy="130" r="7" fill="#9EDCB0" stroke="#8BCFA0" strokeWidth="1" />
+            <circle cx="150" cy="142" r="6" fill="#9EDCB0" stroke="#8BCFA0" strokeWidth="1" opacity="0.8" />
 
-            <rect x="155" y="115" width="28" height="35" rx="2" fill="url(#book-cover)" />
-            <rect x="156" y="116" width="2" height="33" rx="1" fill="#D4824A" />
+            <rect x="150" y="128" width="30" height="36" rx="3" fill="url(#book-cover)" />
+            <rect x="151" y="129" width="3" height="34" rx="1" fill="#D4824A" />
 
             <path
               d={bookOpen
-                ? "M 158 117 L 182 115 L 182 148 L 158 150 Z"
-                : "M 158 117 L 181 117 L 181 150 L 158 150 Z"
+                ? "M 155 130 L 179 128 L 179 162 L 155 164 Z"
+                : "M 155 130 L 178 130 L 178 163 L 155 163 Z"
               }
               fill="url(#book-pages)"
               stroke="#E0D5C0"
@@ -302,10 +315,10 @@ export function Mascot({ mood, className, size = "md", isSpeaking = false, bookO
 
             {bookOpen && (
               <>
-                <line x1="162" y1="122" x2="178" y2="121" stroke="#C8B89A" strokeWidth="0.7" opacity="0.5" />
-                <line x1="162" y1="127" x2="178" y2="126" stroke="#C8B89A" strokeWidth="0.7" opacity="0.5" />
-                <line x1="162" y1="132" x2="178" y2="131" stroke="#C8B89A" strokeWidth="0.7" opacity="0.5" />
-                <line x1="162" y1="137" x2="175" y2="136" stroke="#C8B89A" strokeWidth="0.7" opacity="0.4" />
+                <line x1="159" y1="136" x2="175" y2="135" stroke="#C8B89A" strokeWidth="0.7" opacity="0.5" />
+                <line x1="159" y1="141" x2="175" y2="140" stroke="#C8B89A" strokeWidth="0.7" opacity="0.5" />
+                <line x1="159" y1="146" x2="175" y2="145" stroke="#C8B89A" strokeWidth="0.7" opacity="0.5" />
+                <line x1="159" y1="151" x2="172" y2="150" stroke="#C8B89A" strokeWidth="0.7" opacity="0.4" />
               </>
             )}
           </g>
