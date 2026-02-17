@@ -69,7 +69,7 @@ export function LevelUpOverlay({ visible, onNext }: LevelUpOverlayProps) {
                 className="gap-2 text-base bg-amber-500 border-amber-600 text-white"
                 data-testid="button-level-up-next"
               >
-                Вперёд, напарник!
+                Вперёд!
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </motion.div>

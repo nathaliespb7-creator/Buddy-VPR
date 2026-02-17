@@ -135,7 +135,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const starColorClass = isGold
     ? "fill-amber-400 text-amber-400"
     : "fill-slate-300 text-slate-400";
-  const starLabel = isGold ? "Золотая звезда, напарник!" : "Серебряная звезда!";
+  const starLabel = isGold ? "Золотая звезда!" : "Серебряная звезда!";
 
   return (
     <motion.div

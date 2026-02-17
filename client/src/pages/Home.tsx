@@ -206,7 +206,7 @@ export default function Home() {
         );
       } else {
         setMascotMood("encouraging");
-        showToast(prefix + "Не переживай, напарник! Мы разберёмся вместе!", "encouragement");
+        showToast(prefix + "Не переживай! Мы разберёмся вместе!", "encouragement");
       }
 
       if (phase === "diagnostic") {

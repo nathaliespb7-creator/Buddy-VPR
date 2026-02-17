@@ -815,7 +815,7 @@ export const rules: Record<string, string> = {
 };
 
 export const encouragements = [
-  "Ты растёшь, напарник!",
+  "Ты растёшь!",
   "Так держать, герой!",
   "Классный ход!",
   "Верный путь!",

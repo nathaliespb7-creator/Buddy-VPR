@@ -62,7 +62,7 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
               </h2>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              Разведка пройдена, напарник! Вот что мы узнали:
+              Разведка пройдена! Вот что мы узнали:
             </p>
           </div>
 
