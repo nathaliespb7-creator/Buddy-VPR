@@ -64,6 +64,10 @@ export function AvatarPicker({ onSelect }: AvatarPickerProps) {
           </p>
         </motion.div>
 
+        <p className="text-sm text-muted-foreground mt-1 mb-1" data-testid="text-buddy-role">
+          Твой помощник в подготовке к ВПР
+        </p>
+
         <h2
           className="text-2xl sm:text-3xl font-bold mt-2 mb-2"
           data-testid="text-avatar-title"
