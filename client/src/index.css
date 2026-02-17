@@ -218,6 +218,18 @@
 .animate-sparkle { animation: sparkle 1.2s ease-in-out infinite; }
 .animate-sparkle-delay { animation: sparkle-delay 1.5s ease-in-out infinite 0.3s; }
 
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+.buddy-eyes {
+  animation: blink 4s infinite;
+  transform-origin: center;
+}
+.buddy-body {
+  transform-origin: center bottom;
+}
+
 /**
  * Using the elevate system.
  * Automatic contrast adjustment.

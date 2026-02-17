@@ -15,93 +15,114 @@ export function Mascot({ mood, className, size = "md" }: MascotProps) {
     lg: "w-32 h-32",
   };
 
+  const getMouthPath = () => {
+    switch (mood) {
+      case "happy":
+      case "celebrating":
+        return "M 85 118 Q 100 132 115 118";
+      case "encouraging":
+        return "M 87 118 Q 100 126 113 118";
+      case "thinking":
+        return "M 93 120 Q 100 118 107 120";
+      default:
+        return "M 90 118 Q 100 124 110 118";
+    }
+  };
+
+  const getEyeStyle = () => {
+    if (mood === "happy" || mood === "celebrating") {
+      return { leftRy: 3, rightRy: 3, squint: true };
+    }
+    if (mood === "thinking") {
+      return { leftRy: 6, rightRy: 4, squint: false };
+    }
+    return { leftRy: 6, rightRy: 6, squint: false };
+  };
+
+  const eyes = getEyeStyle();
+
   return (
     <div
       className={cn("relative inline-flex items-center justify-center", sizeClasses[size], className)}
       data-testid="mascot"
     >
       <svg
-        viewBox="0 0 120 120"
-        className={cn(
-          "w-full h-full drop-shadow-lg",
+        viewBox="0 0 200 200"
+        className="w-full h-full"
+      >
+        <ellipse cx="100" cy="178" rx="38" ry="8" fill="#CBD5E1" opacity="0.5" />
+
+        <g className={cn(
+          "buddy-body",
           mood === "idle" && "animate-breathe",
           mood === "happy" && "animate-bounce-soft",
           mood === "thinking" && "animate-tilt",
           mood === "celebrating" && "animate-celebrate",
           mood === "encouraging" && "animate-nod"
-        )}
-      >
-        <defs>
-          <radialGradient id="bodyGrad" cx="50%" cy="40%" r="50%">
-            <stop offset="0%" stopColor="#A7F3D0" />
-            <stop offset="100%" stopColor="#6EE7B7" />
-          </radialGradient>
-          <radialGradient id="cheekGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#FBBF24" stopOpacity="0" />
-          </radialGradient>
-        </defs>
+        )}>
+          <rect x="50" y="45" width="100" height="115" rx="50" fill="#BEE3F8" stroke="#63B3ED" strokeWidth="3.5" />
 
-        <ellipse cx="60" cy="65" rx="42" ry="38" fill="url(#bodyGrad)" stroke="#34D399" strokeWidth="2" />
+          <circle cx="100" cy="35" r="6" fill="#63B3ED" />
+          <rect x="97" y="28" width="6" height="10" rx="3" fill="#63B3ED" />
+          {mood === "celebrating" && (
+            <circle cx="100" cy="25" r="4" fill="#FBBF24" className="animate-sparkle" />
+          )}
 
-        <ellipse cx="60" cy="95" rx="30" ry="6" fill="#34D399" opacity="0.15" />
+          <rect x="38" y="85" width="14" height="8" rx="4" fill="#90CDF4" stroke="#63B3ED" strokeWidth="2" />
+          <rect x="148" y="85" width="14" height="8" rx="4" fill="#90CDF4" stroke="#63B3ED" strokeWidth="2" />
 
-        {mood === "happy" || mood === "celebrating" ? (
-          <>
-            <ellipse cx="45" cy="55" rx="6" ry="7" fill="#1F2937" />
-            <ellipse cx="75" cy="55" rx="6" ry="7" fill="#1F2937" />
-            <ellipse cx="46" cy="53" rx="2.5" ry="2.5" fill="white" />
-            <ellipse cx="76" cy="53" rx="2.5" ry="2.5" fill="white" />
-          </>
-        ) : mood === "thinking" ? (
-          <>
-            <ellipse cx="45" cy="55" rx="6" ry="7" fill="#1F2937" />
-            <ellipse cx="75" cy="58" rx="6" ry="5" fill="#1F2937" />
-            <ellipse cx="46" cy="53" rx="2.5" ry="2.5" fill="white" />
-            <ellipse cx="76" cy="56" rx="2.5" ry="2.5" fill="white" />
-          </>
-        ) : (
-          <>
-            <ellipse cx="45" cy="55" rx="5.5" ry="6.5" fill="#1F2937" />
-            <ellipse cx="75" cy="55" rx="5.5" ry="6.5" fill="#1F2937" />
-            <ellipse cx="46" cy="53" rx="2" ry="2" fill="white" />
-            <ellipse cx="76" cy="53" rx="2" ry="2" fill="white" />
-          </>
-        )}
+          <rect x="65" y="72" width="70" height="52" rx="18" fill="white" stroke="#E2E8F0" strokeWidth="1.5" />
 
-        <circle cx="33" cy="65" r="8" fill="url(#cheekGrad)" />
-        <circle cx="87" cy="65" r="8" fill="url(#cheekGrad)" />
+          <g className="buddy-eyes">
+            {eyes.squint ? (
+              <>
+                <path d="M 78 95 Q 85 88 92 95" stroke="#2D3748" strokeWidth="3" fill="none" strokeLinecap="round" />
+                <path d="M 108 95 Q 115 88 122 95" stroke="#2D3748" strokeWidth="3" fill="none" strokeLinecap="round" />
+              </>
+            ) : (
+              <>
+                <ellipse cx="85" cy="95" rx="6" ry={eyes.leftRy} fill="#2D3748" />
+                <ellipse cx="115" cy="95" rx="6" ry={eyes.rightRy} fill="#2D3748" />
+                <circle cx="87" cy="93" r="2" fill="white" opacity="0.8" />
+                <circle cx="117" cy="93" r="2" fill="white" opacity="0.8" />
+              </>
+            )}
+          </g>
 
-        {mood === "happy" || mood === "celebrating" ? (
-          <path d="M 48 72 Q 60 84 72 72" fill="none" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" />
-        ) : mood === "encouraging" ? (
-          <path d="M 48 74 Q 60 80 72 74" fill="none" stroke="#1F2937" strokeWidth="2.5" strokeLinecap="round" />
-        ) : mood === "thinking" ? (
-          <ellipse cx="62" cy="75" rx="5" ry="4" fill="#1F2937" opacity="0.7" />
-        ) : (
-          <path d="M 50 73 Q 60 78 70 73" fill="none" stroke="#1F2937" strokeWidth="2" strokeLinecap="round" />
-        )}
+          <path
+            d={getMouthPath()}
+            stroke="#2D3748"
+            strokeWidth="2.5"
+            fill="none"
+            strokeLinecap="round"
+          />
+
+          {mood === "happy" && (
+            <>
+              <circle cx="72" cy="102" r="5" fill="#FBBF24" opacity="0.2" />
+              <circle cx="128" cy="102" r="5" fill="#FBBF24" opacity="0.2" />
+            </>
+          )}
+        </g>
 
         {mood === "celebrating" && (
           <>
             <circle cx="25" cy="30" r="3" fill="#FBBF24" className="animate-sparkle" />
-            <circle cx="95" cy="25" r="2.5" fill="#F472B6" className="animate-sparkle-delay" />
-            <circle cx="15" cy="50" r="2" fill="#60A5FA" className="animate-sparkle" />
-            <circle cx="105" cy="45" r="2.5" fill="#34D399" className="animate-sparkle-delay" />
-            <circle cx="55" cy="15" r="2" fill="#A78BFA" className="animate-sparkle" />
+            <circle cx="175" cy="25" r="2.5" fill="#F472B6" className="animate-sparkle-delay" />
+            <circle cx="20" cy="70" r="2" fill="#60A5FA" className="animate-sparkle" />
+            <circle cx="180" cy="65" r="2.5" fill="#34D399" className="animate-sparkle-delay" />
+            <circle cx="60" cy="15" r="2" fill="#A78BFA" className="animate-sparkle" />
+            <circle cx="140" cy="12" r="2" fill="#FB923C" className="animate-sparkle-delay" />
           </>
         )}
 
         {mood === "thinking" && (
           <>
-            <circle cx="98" cy="35" r="4" fill="#E5E7EB" opacity="0.7" />
-            <circle cx="105" cy="25" r="6" fill="#E5E7EB" opacity="0.5" />
-            <circle cx="108" cy="13" r="3" fill="#E5E7EB" opacity="0.3" />
+            <circle cx="160" cy="50" r="5" fill="#E2E8F0" opacity="0.7" />
+            <circle cx="172" cy="38" r="7" fill="#E2E8F0" opacity="0.5" />
+            <circle cx="178" cy="22" r="4" fill="#E2E8F0" opacity="0.3" />
           </>
         )}
-
-        <ellipse cx="30" cy="50" rx="8" ry="5" fill="#6EE7B7" transform="rotate(-20, 30, 50)" />
-        <ellipse cx="90" cy="50" rx="8" ry="5" fill="#6EE7B7" transform="rotate(20, 90, 50)" />
       </svg>
     </div>
   );
