@@ -1,7 +1,7 @@
 {
-  "name": "My Training Buddy",
-  "short_name": "TrainBuddy",
-  "description": "Твой друг для подготовки к ВПР",
+  "name": "ВПР Бадди",
+  "short_name": "ВПР Бадди",
+  "description": "Твой напарник для подготовки к ВПР. Учись играя!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#E6FFFA",

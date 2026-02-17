@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
+import { Lightbulb, ArrowRight, Sparkles, Star, Volume2, VolumeX } from "lucide-react";
 import { type Task } from "@/lib/taskData";
 import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,44 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
   const [showStarBurst, setShowStarBurst] = useState(false);
   const [earnedStarType, setEarnedStarType] = useState<StarType>("empty");
   const [usedHintButton, setUsedHintButton] = useState(false);
+  const [isSpeechPlaying, setIsSpeechPlaying] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  const findRuVoice = useCallback(() => {
+    const voices = window.speechSynthesis.getVoices();
+    return voices.find(v => v.lang.startsWith("ru") && v.name.toLowerCase().includes("female"))
+      || voices.find(v => v.lang.startsWith("ru"))
+      || null;
+  }, []);
+
+  const speak = useCallback((text: string) => {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "ru-RU";
+    utterance.rate = 0.9;
+    utterance.pitch = 1.1;
+    const voice = findRuVoice();
+    if (voice) utterance.voice = voice;
+    utterance.onstart = () => setIsSpeechPlaying(true);
+    utterance.onend = () => setIsSpeechPlaying(false);
+    utterance.onerror = () => setIsSpeechPlaying(false);
+    utteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  }, [findRuVoice]);
+
+  const stopSpeech = useCallback(() => {
+    window.speechSynthesis.cancel();
+    setIsSpeechPlaying(false);
+  }, []);
+
+  const handleListen = useCallback(() => {
+    if (isSpeechPlaying) {
+      stopSpeech();
+    } else {
+      speak(task.audio);
+    }
+  }, [isSpeechPlaying, task.audio, speak, stopSpeech]);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -127,7 +165,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
         </CardHeader>
 
         <CardContent className="pb-4">
-          <div className="flex justify-center mb-5">
+          <div className="flex flex-col items-center gap-2 mb-5">
             <Mascot
               mood={
                 showResult
@@ -137,9 +175,23 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     : "idle"
               }
               size="md"
-              isSpeaking={showResult}
+              isSpeaking={isSpeechPlaying}
               bookOpen={hintLevel > 0}
             />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleListen}
+              className="gap-1.5 text-xs"
+              data-testid="button-listen"
+            >
+              {isSpeechPlaying ? (
+                <VolumeX className="w-4 h-4" />
+              ) : (
+                <Volume2 className="w-4 h-4" />
+              )}
+              {isSpeechPlaying ? "Стоп" : "Послушай"}
+            </Button>
           </div>
 
           <div className="space-y-2.5 mb-5" data-testid="options-list">
