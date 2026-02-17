@@ -17,24 +17,30 @@ export function Header({ mascotMood, stars }: HeaderProps) {
   }
 
   return (
-    <header className="w-full py-4 px-4 sm:px-6" data-testid="header">
-      <div className="max-w-2xl mx-auto flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-3">
-          <Mascot mood={mascotMood} size="sm" />
-          <div>
+    <header className="w-full py-3 px-4 sm:px-6" data-testid="header">
+      <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
+        <div className="flex items-center gap-3 min-w-0">
+          <motion.div
+            animate={{ y: [0, -4, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            className="shrink-0"
+          >
+            <Mascot mood={mascotMood} size="sm" />
+          </motion.div>
+          <div className="min-w-0">
             <h1
-              className="text-xl sm:text-2xl font-bold tracking-tight"
+              className="text-2xl sm:text-3xl font-bold tracking-tight leading-tight"
               data-testid="text-app-title"
             >
               ВПР Бадди
             </h1>
-            <p className="text-sm text-muted-foreground" data-testid="text-subtitle">
+            <p className="text-sm text-muted-foreground truncate" data-testid="text-subtitle">
               Твой напарник в подготовке к ВПР
             </p>
           </div>
         </div>
         <div
-          className="flex items-center gap-1 rounded-md bg-muted/50 border border-border px-2.5 py-1.5"
+          className="flex items-center gap-1 rounded-md bg-muted/50 border border-border px-2 py-1.5 shrink-0"
           data-testid="star-counter"
         >
           {displayStars.map((type, i) => (

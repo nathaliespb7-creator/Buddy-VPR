@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText } from "lucide-react";
-import { Mascot } from "./Mascot";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface IslandMapProps {
@@ -17,7 +16,7 @@ const islands = [
     iconBg: "bg-violet-300 dark:bg-violet-700",
     iconColor: "text-violet-800 dark:text-violet-200",
     borderColor: "border-violet-300 dark:border-violet-700",
-    position: "self-start",
+    dotColor: "bg-violet-400",
   },
   {
     key: "phonetics",
@@ -28,7 +27,7 @@ const islands = [
     iconBg: "bg-sky-300 dark:bg-sky-700",
     iconColor: "text-sky-800 dark:text-sky-200",
     borderColor: "border-sky-300 dark:border-sky-700",
-    position: "self-end",
+    dotColor: "bg-sky-400",
   },
   {
     key: "morphemics",
@@ -39,7 +38,7 @@ const islands = [
     iconBg: "bg-emerald-300 dark:bg-emerald-700",
     iconColor: "text-emerald-800 dark:text-emerald-200",
     borderColor: "border-emerald-300 dark:border-emerald-700",
-    position: "self-start",
+    dotColor: "bg-emerald-400",
   },
   {
     key: "morphology",
@@ -50,7 +49,7 @@ const islands = [
     iconBg: "bg-rose-300 dark:bg-rose-700",
     iconColor: "text-rose-800 dark:text-rose-200",
     borderColor: "border-rose-300 dark:border-rose-700",
-    position: "self-end",
+    dotColor: "bg-rose-400",
   },
   {
     key: "syntax",
@@ -61,7 +60,7 @@ const islands = [
     iconBg: "bg-indigo-300 dark:bg-indigo-700",
     iconColor: "text-indigo-800 dark:text-indigo-200",
     borderColor: "border-indigo-300 dark:border-indigo-700",
-    position: "self-start",
+    dotColor: "bg-indigo-400",
   },
   {
     key: "meaning",
@@ -72,7 +71,7 @@ const islands = [
     iconBg: "bg-amber-300 dark:bg-amber-700",
     iconColor: "text-amber-800 dark:text-amber-200",
     borderColor: "border-amber-300 dark:border-amber-700",
-    position: "self-end",
+    dotColor: "bg-amber-400",
   },
 ];
 
@@ -85,26 +84,16 @@ export function IslandMap({ onSelect }: IslandMapProps) {
       className="w-full max-w-lg mx-auto px-4 sm:px-6"
       data-testid="island-map"
     >
-      <div className="flex items-center gap-3 mb-5">
-        <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-        >
-          <Mascot mood="happy" size="sm" />
-        </motion.div>
-        <div>
-          <h2 className="text-xl font-bold" data-testid="text-island-title">
-            Карта знаний
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Выбирай скорее остров!
-          </p>
-        </div>
+      <div className="flex items-center gap-2 mb-5">
+        <MapPin className="w-6 h-6 text-primary shrink-0" />
+        <h2 className="text-2xl font-bold" data-testid="text-island-title">
+          Выбирай остров!
+        </h2>
       </div>
 
       <button
         onClick={() => onSelect("all")}
-        className="w-full mb-4 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-4 py-3.5 transition-all hover-elevate active-elevate-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="w-full mb-5 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-4 py-3.5 transition-all hover-elevate active-elevate-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         data-testid="button-island-all"
       >
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 shrink-0">
@@ -116,19 +105,29 @@ export function IslandMap({ onSelect }: IslandMapProps) {
         </div>
       </button>
 
-      <div className="relative flex flex-col gap-3" data-testid="island-list">
-        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2 hidden sm:block" />
+      <div className="relative flex flex-col gap-3 pb-4" data-testid="island-list">
+        <div className="absolute left-1/2 top-4 bottom-4 w-0.5 bg-border/50 -translate-x-1/2" />
 
         {islands.map((island, i) => {
           const Icon = island.icon;
+          const isLeft = i % 2 === 0;
           return (
             <motion.div
               key={island.key}
-              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+              initial={{ opacity: 0, x: isLeft ? -40 : 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 + i * 0.08, type: "spring", stiffness: 200, damping: 20 }}
-              className={cn("sm:w-4/5", island.position)}
+              className={cn(
+                "relative w-[85%]",
+                isLeft ? "self-start" : "self-end"
+              )}
             >
+              <div className={cn(
+                "absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full z-10",
+                island.dotColor,
+                isLeft ? "-right-[calc(7.5%+5px)]" : "-left-[calc(7.5%+5px)]"
+              )} />
+
               <button
                 onClick={() => onSelect(island.key)}
                 className={cn(
@@ -149,7 +148,7 @@ export function IslandMap({ onSelect }: IslandMapProps) {
                   >
                     <Icon className={cn("w-5 h-5", island.iconColor)} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-bold text-sm mb-0.5">{island.label}</p>
                     <p className="text-xs text-muted-foreground leading-snug">
                       {island.description}
