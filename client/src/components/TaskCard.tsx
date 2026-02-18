@@ -358,40 +358,43 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
             </motion.div>
           )}
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-col gap-3">
             {!showResult ? (
               <>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   onClick={handleShowHint}
                   disabled={hintLevel >= 3}
-                  className="gap-1.5"
+                  size="lg"
+                  className="w-full gap-2 text-base border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300"
                   data-testid="button-hint"
                 >
-                  <Lightbulb className="w-4 h-4" />
+                  <Lightbulb className="w-5 h-5" />
                   Подсказка
                   {hintLevel > 0 && (
-                    <span className="text-xs text-muted-foreground">({hintLevel}/3)</span>
+                    <span className="text-sm text-muted-foreground">({hintLevel}/3)</span>
                   )}
                 </Button>
                 <Button
                   onClick={handleSubmit}
                   disabled={!selectedOption}
-                  className="ml-auto gap-1.5"
+                  size="lg"
+                  className="w-full gap-2 text-base"
                   data-testid="button-submit"
                 >
                   Проверить
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-5 h-5" />
                 </Button>
               </>
             ) : (
               <Button
                 onClick={handleNext}
-                className="ml-auto gap-1.5"
+                size="lg"
+                className="w-full gap-2 text-base"
                 data-testid="button-next"
               >
                 Дальше
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-5 h-5" />
               </Button>
             )}
           </div>
