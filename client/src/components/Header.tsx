@@ -13,53 +13,67 @@ interface HeaderProps {
 }
 
 function ProgressRing({ progress }: { progress: number }) {
-  const size = 52;
-  const strokeWidth = 4;
+  const size = 56;
+  const strokeWidth = 4.5;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
+  const isComplete = progress >= 100;
 
-  const color =
-    progress >= 100
-      ? "text-amber-400"
+  const strokeColor =
+    isComplete
+      ? "#f59e0b"
       : progress >= 60
-        ? "text-emerald-500"
+        ? "#10b981"
         : progress >= 30
-          ? "text-sky-500"
-          : "text-sky-400";
+          ? "#38bdf8"
+          : "#94a3b8";
+
+  const bgTrack = isComplete ? "rgba(245,158,11,0.15)" : "rgba(148,163,184,0.15)";
 
   return (
-    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+    <div
+      className="relative flex items-center justify-center shrink-0"
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} className="rotate-[-90deg]">
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="currentColor"
+          stroke={bgTrack}
           strokeWidth={strokeWidth}
-          className="text-muted/40"
         />
         <motion.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="currentColor"
+          stroke={strokeColor}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className={color}
+          transition={{ duration: 1.2, ease: "easeOut" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {progress >= 100 ? (
-          <Trophy className="w-4 h-4 text-amber-400 fill-amber-400" />
+        {isComplete ? (
+          <motion.div
+            initial={{ scale: 0, rotate: -20 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 12 }}
+          >
+            <Trophy className="w-5 h-5 text-amber-400 fill-amber-400" />
+          </motion.div>
         ) : (
-          <span className="text-xs font-bold tabular-nums leading-none" data-testid="text-overall-pct">
+          <span
+            className="text-sm font-extrabold tabular-nums leading-none"
+            style={{ color: strokeColor }}
+            data-testid="text-overall-pct"
+          >
             {Math.round(progress)}%
           </span>
         )}
@@ -74,10 +88,10 @@ export function Header({ mascotMood, stars, onExit, overallProgress }: HeaderPro
 
   return (
     <header className="w-full py-3 px-4 sm:px-6" data-testid="header">
-      <div className="max-w-2xl mx-auto flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
           <motion.div
-            animate={{ y: [0, -4, 0] }}
+            animate={{ y: [0, -3, 0] }}
             transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
             className="shrink-0"
           >
@@ -85,61 +99,60 @@ export function Header({ mascotMood, stars, onExit, overallProgress }: HeaderPro
           </motion.div>
           <div className="min-w-0">
             <h1
-              className="text-xl sm:text-2xl font-bold tracking-tight leading-tight"
+              className="text-lg sm:text-xl font-bold tracking-tight leading-tight"
               data-testid="text-app-title"
             >
               Бадди ВПР
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-snug" data-testid="text-subtitle">
-              Умный помощник в подготовке к&nbsp;ВПР
+            <p className="text-[11px] sm:text-xs text-muted-foreground leading-snug" data-testid="text-subtitle">
+              Умный помощник к&nbsp;ВПР
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0" data-testid="header-stats">
           {overallProgress !== undefined && (
             <div
-              className="flex flex-col items-center gap-0.5"
+              className="flex flex-col items-center"
               data-testid="overall-progress-widget"
             >
               <ProgressRing progress={overallProgress} />
-              <span className="text-[9px] font-medium text-muted-foreground leading-none">
+              <span className="text-[10px] font-semibold text-muted-foreground mt-0.5 tracking-wide uppercase">
                 готовность
               </span>
             </div>
           )}
-          <div className="flex flex-col items-center gap-1 rounded-xl bg-muted/50 px-3 py-1.5" data-testid="star-counter">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={goldCount}
-                    initial={{ scale: 1.3 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.25 }}
-                    className="text-base font-bold tabular-nums"
-                    data-testid="text-gold-count"
-                  >
-                    {goldCount}
-                  </motion.span>
-                </AnimatePresence>
-                <Star className="w-4.5 h-4.5 fill-amber-400 text-amber-400" />
-              </div>
-              <div className="flex items-center gap-1">
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={silverCount}
-                    initial={{ scale: 1.3 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.25 }}
-                    className="text-base font-bold tabular-nums"
-                    data-testid="text-silver-count"
-                  >
-                    {silverCount}
-                  </motion.span>
-                </AnimatePresence>
-                <Star className="w-4.5 h-4.5 fill-slate-300 text-slate-400" />
-              </div>
+
+          <div className="flex flex-col items-center gap-0.5 ml-1" data-testid="star-counter">
+            <div className="flex items-center gap-0.5">
+              <Star className="w-5 h-5 fill-amber-400 text-amber-400 drop-shadow-sm" />
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={goldCount}
+                  initial={{ scale: 1.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-base font-bold tabular-nums min-w-[1.2rem] text-center"
+                  data-testid="text-gold-count"
+                >
+                  {goldCount}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <Star className="w-4 h-4 fill-slate-300 text-slate-400" />
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={silverCount}
+                  initial={{ scale: 1.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.25 }}
+                  className="text-sm font-semibold tabular-nums text-muted-foreground min-w-[1.2rem] text-center"
+                  data-testid="text-silver-count"
+                >
+                  {silverCount}
+                </motion.span>
+              </AnimatePresence>
             </div>
           </div>
 
@@ -148,7 +161,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress }: HeaderPro
               variant="ghost"
               size="icon"
               onClick={onExit}
-              className="text-muted-foreground"
+              className="text-muted-foreground ml-0.5"
               data-testid="button-exit"
             >
               <LogOut className="w-5 h-5" />
