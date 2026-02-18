@@ -134,6 +134,31 @@ export default function Home() {
     return counts;
   }, [allTasks]);
 
+  const { data: categoryProgressData } = useQuery<{ category: string; correctCount: number; totalTasksInCategory: number; status: string; wrongCount: number; roundNumber: number }[]>({
+    queryKey: ["/api/categories/progress", sessionId],
+    queryFn: async () => {
+      const res = await fetch(`/api/categories/progress?sessionId=${sessionId}`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!sessionId,
+    refetchOnWindowFocus: true,
+  });
+
+  const overallProgress = useMemo(() => {
+    const totalAllTasks = allTasks.length;
+    if (!totalAllTasks || !categoryProgressData) return 0;
+    let masteredCount = 0;
+    for (const cp of categoryProgressData) {
+      if (cp.status === "completed" && cp.wrongCount === 0 && cp.roundNumber > 1) {
+        masteredCount += cp.totalTasksInCategory;
+      } else {
+        masteredCount += cp.correctCount;
+      }
+    }
+    return Math.min(100, Math.round((masteredCount / totalAllTasks) * 100));
+  }, [categoryProgressData, allTasks]);
+
   const taskById = useMemo(() => {
     const map = new Map<number, Task>();
     for (const t of allTasks) {
@@ -399,7 +424,7 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {phase !== "avatarSelect" && (
-          <Header mascotMood={mascotMood} stars={userStars} onExit={() => setPhase("islandMap")} />
+          <Header mascotMood={mascotMood} stars={userStars} onExit={() => setPhase("islandMap")} overallProgress={overallProgress} />
         )}
 
         {(phase === "training" || phase === "diagnostic") && (
