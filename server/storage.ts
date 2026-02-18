@@ -1,9 +1,12 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "./db";
 import {
+  goldenRules,
   taskContent,
   studentProgress,
   sessionState,
+  type GoldenRule,
+  type InsertGoldenRule,
   type TaskContent,
   type InsertTaskContent,
   type StudentProgress,
@@ -13,10 +16,17 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
+  getAllRules(): Promise<GoldenRule[]>;
+  getRulesByCategory(category: string): Promise<GoldenRule[]>;
+  insertRule(rule: InsertGoldenRule): Promise<GoldenRule>;
+  getRuleCount(): Promise<number>;
+  clearRules(): Promise<void>;
+
   getAllTasks(): Promise<TaskContent[]>;
   getTasksByCategory(category: string): Promise<TaskContent[]>;
   insertTask(task: InsertTaskContent): Promise<TaskContent>;
   getTaskCount(): Promise<number>;
+  clearTasks(): Promise<void>;
 
   saveProgress(progress: InsertStudentProgress): Promise<StudentProgress>;
   getSessionProgress(sessionId: string): Promise<StudentProgress[]>;
@@ -26,6 +36,28 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  async getAllRules(): Promise<GoldenRule[]> {
+    return db.select().from(goldenRules);
+  }
+
+  async getRulesByCategory(category: string): Promise<GoldenRule[]> {
+    return db.select().from(goldenRules).where(eq(goldenRules.category, category));
+  }
+
+  async insertRule(rule: InsertGoldenRule): Promise<GoldenRule> {
+    const [result] = await db.insert(goldenRules).values(rule).returning();
+    return result;
+  }
+
+  async getRuleCount(): Promise<number> {
+    const rules = await db.select().from(goldenRules);
+    return rules.length;
+  }
+
+  async clearRules(): Promise<void> {
+    await db.delete(goldenRules);
+  }
+
   async getAllTasks(): Promise<TaskContent[]> {
     return db.select().from(taskContent);
   }
@@ -42,6 +74,10 @@ export class DatabaseStorage implements IStorage {
   async getTaskCount(): Promise<number> {
     const tasks = await db.select().from(taskContent);
     return tasks.length;
+  }
+
+  async clearTasks(): Promise<void> {
+    await db.delete(taskContent);
   }
 
   async saveProgress(progress: InsertStudentProgress): Promise<StudentProgress> {

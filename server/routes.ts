@@ -7,6 +7,25 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  app.get("/api/rules", async (_req, res) => {
+    try {
+      const rules = await storage.getAllRules();
+      res.json(rules);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch rules" });
+    }
+  });
+
+  app.get("/api/rules/:category", async (req, res) => {
+    try {
+      const { category } = req.params;
+      const rules = await storage.getRulesByCategory(category);
+      res.json(rules);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch rules" });
+    }
+  });
+
   app.get("/api/tasks", async (_req, res) => {
     try {
       const tasks = await storage.getAllTasks();

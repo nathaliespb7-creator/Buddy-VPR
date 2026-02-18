@@ -3,6 +3,21 @@ import { pgTable, text, varchar, integer, boolean, jsonb, timestamp } from "driz
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const goldenRules = pgTable("golden_rules", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  topic: text("topic").notNull(),
+  category: text("category").notNull(),
+  magicHint: text("magic_hint").notNull(),
+  hintsDefault: text("hints_default").notNull(),
+  hintsSchoolOfRussia: text("hints_school_of_russia").notNull(),
+  hintsZankov: text("hints_zankov").notNull(),
+  hintsElkonin: text("hints_elkonin").notNull(),
+  vprTask: text("vpr_task").notNull(),
+  block: text("block"),
+  taskNumber: integer("task_number"),
+  algorithm: text("algorithm"),
+});
+
 export const taskContent = pgTable("task_content", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   type: text("type").notNull(),
@@ -39,16 +54,19 @@ export const sessionState = pgTable("session_state", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertTaskContentSchema = createInsertSchema(taskContent).omit({ id: true });
-export const insertStudentProgressSchema = createInsertSchema(studentProgress).omit({ id: true });
-export const insertSessionStateSchema = createInsertSchema(sessionState).omit({ id: true });
+export const insertGoldenRuleSchema = createInsertSchema(goldenRules);
+export const insertTaskContentSchema = createInsertSchema(taskContent);
+export const insertStudentProgressSchema = createInsertSchema(studentProgress);
+export const insertSessionStateSchema = createInsertSchema(sessionState);
 
+export type GoldenRule = typeof goldenRules.$inferSelect;
+export type InsertGoldenRule = Omit<GoldenRule, "id">;
 export type TaskContent = typeof taskContent.$inferSelect;
-export type InsertTaskContent = z.infer<typeof insertTaskContentSchema>;
+export type InsertTaskContent = Omit<TaskContent, "id">;
 export type StudentProgress = typeof studentProgress.$inferSelect;
-export type InsertStudentProgress = z.infer<typeof insertStudentProgressSchema>;
+export type InsertStudentProgress = Omit<StudentProgress, "id">;
 export type SessionState = typeof sessionState.$inferSelect;
-export type InsertSessionState = z.infer<typeof insertSessionStateSchema>;
+export type InsertSessionState = Omit<SessionState, "id">;
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -59,7 +77,7 @@ export const users = pgTable("users", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
-});
+} as any);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
