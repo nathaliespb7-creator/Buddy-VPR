@@ -395,12 +395,14 @@ const tasksDataSeed = [
   { type: "syntax", word: "На столе лежат книги тетради и ручки", question: "Расставь запятые: «На столе лежат книги тетради и ручки»", correct: "книги, тетради и ручки", options: ["книги, тетради и ручки", "книги тетради, и ручки", "книги, тетради, и ручки"], audio: "Книги, тетради и ручки — однородные подлежащие! Запятая между первыми двумя, а перед «и» — нет!", hint: "Как в списке покупок: перечисляем через запятую, перед «и» не ставим!", rule: "Если слова перечисляются как в списке покупок, ставь запятую: яблоки, груши, сливы.", ruleId: 21, difficulty: 2, category: "syntax" },
 ];
 
-async function seed() {
-  console.log("Starting database seed...");
+export async function seedDatabase() {
+  const existingTasks = await db.select().from(taskContent).limit(1);
+  if (existingTasks.length > 0) {
+    console.log("Database already seeded, skipping...");
+    return;
+  }
 
-  console.log("Clearing existing data...");
-  await db.delete(taskContent);
-  await db.delete(goldenRules);
+  console.log("Starting database seed...");
 
   console.log(`Inserting ${rulesData.length} golden rules...`);
   for (const rule of rulesData) {
@@ -415,11 +417,4 @@ async function seed() {
   console.log("Seed completed successfully!");
   console.log(`  Rules: ${rulesData.length}`);
   console.log(`  Tasks: ${tasksDataSeed.length}`);
-
-  process.exit(0);
 }
-
-seed().catch((err) => {
-  console.error("Seed failed:", err);
-  process.exit(1);
-});
