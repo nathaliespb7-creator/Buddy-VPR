@@ -30,7 +30,7 @@ export function CompletionScreen({
   let descText = "Вот это мощь! Все задания позади!";
   if (percent < 50) {
     titleText = "Отличный старт!";
-    descText = "Напарник, мы уже продвинулись! Давай закрепим?";
+    descText = "Мы уже продвинулись! Давай закрепим?";
   } else if (percent < 80) {
     titleText = "Сильный результат!";
     descText = "Ещё чуть-чуть — и будет идеально. Я в тебя верю!";

@@ -271,7 +271,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     </p>
                     <p className="text-sm text-amber-700 dark:text-amber-300" data-testid="text-hint">
                       {hintLevel === 1
-                        ? "Напарник, подумай ещё! Ты справишься!"
+                        ? "Подумай ещё! Ты справишься!"
                         : hintLevel === 2
                         ? task.hint
                         : (task.ruleId ? getBuddyHint(task.ruleId) : task.rule || task.hint)}
