@@ -252,8 +252,6 @@ export default function Home() {
 
   const handleLevelUpNext = useCallback(() => {
     setShowLevelUp(false);
-    setPhase("islandMap");
-    setMascotMood("happy");
   }, []);
 
   const handleRestart = useCallback(() => {
