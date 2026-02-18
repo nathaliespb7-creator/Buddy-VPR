@@ -263,11 +263,6 @@ export default function Home() {
   const currentTask = activeTasks[currentTaskIndex];
   const totalTasks = activeTasks.length;
 
-  const currentBatchStars = useMemo(() => {
-    const batchIndex = Math.floor(userStars.length / 5);
-    const batchStart = batchIndex * 5;
-    return userStars.slice(batchStart, batchStart + 5);
-  }, [userStars]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col" data-testid="home-page">
@@ -285,7 +280,7 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {phase !== "avatarSelect" && (
-          <Header mascotMood={mascotMood} stars={currentBatchStars} onExit={() => setPhase("islandMap")} />
+          <Header mascotMood={mascotMood} stars={userStars} onExit={() => setPhase("islandMap")} />
         )}
 
         {(phase === "training" || phase === "diagnostic") && (
