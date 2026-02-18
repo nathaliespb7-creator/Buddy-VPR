@@ -285,7 +285,7 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         {phase !== "avatarSelect" && (
-          <Header mascotMood={mascotMood} stars={currentBatchStars} />
+          <Header mascotMood={mascotMood} stars={currentBatchStars} onExit={() => setPhase("islandMap")} />
         )}
 
         {(phase === "training" || phase === "diagnostic") && (

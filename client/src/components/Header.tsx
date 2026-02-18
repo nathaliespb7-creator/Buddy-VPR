@@ -1,15 +1,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { Star } from "lucide-react";
+import { Star, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type StarType = "gold" | "silver" | "empty";
 
 interface HeaderProps {
   mascotMood: "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong" | "hint";
   stars: StarType[];
+  onExit?: () => void;
 }
 
-export function Header({ mascotMood, stars }: HeaderProps) {
+export function Header({ mascotMood, stars, onExit }: HeaderProps) {
   const totalStars = stars.filter(s => s !== "empty").length;
   const starsInLevel = totalStars % 5;
   const progressPercent = (starsInLevel / 5) * 100;
@@ -38,7 +40,19 @@ export function Header({ mascotMood, stars }: HeaderProps) {
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0 pt-0.5" data-testid="star-progress">
+        <div className="flex items-start gap-2 shrink-0 pt-0.5">
+          {onExit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onExit}
+              className="text-muted-foreground"
+              data-testid="button-exit"
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
+          )}
+        <div className="flex flex-col items-end gap-1" data-testid="star-progress">
           <motion.div
             className="flex items-center gap-1.5"
             data-testid="star-counter"
@@ -80,6 +94,7 @@ export function Header({ mascotMood, stars }: HeaderProps) {
           <p className="text-[10px] text-muted-foreground leading-none" data-testid="text-level">
             Уровень {level}
           </p>
+        </div>
         </div>
       </div>
     </header>
