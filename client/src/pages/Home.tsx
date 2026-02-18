@@ -133,12 +133,6 @@ export default function Home() {
       if (!prev) return prev;
       const updated = { ...prev, stars: [...prev.stars, starType] };
       saveProfile(updated);
-      if (updated.stars.length % 5 === 0) {
-        setTimeout(() => {
-          fireConfetti();
-          setShowLevelUp(true);
-        }, 300);
-      }
       return updated;
     });
   }, []);
@@ -347,7 +341,6 @@ export default function Home() {
         />
       </div>
 
-      <LevelUpOverlay visible={showLevelUp} onNext={handleLevelUpNext} />
     </div>
   );
 }
