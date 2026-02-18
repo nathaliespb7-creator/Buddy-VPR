@@ -95,7 +95,7 @@ export default function Home() {
 
   const userStars = profile?.stars || [];
 
-  const { data: serverTasks } = useQuery<Task[]>({
+  const { data: serverTasks, isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
 
@@ -103,6 +103,14 @@ export default function Home() {
     if (serverTasks && serverTasks.length > 0) return serverTasks;
     return tasksData;
   }, [serverTasks]);
+
+  const taskCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of allTasks) {
+      counts[t.category] = (counts[t.category] || 0) + 1;
+    }
+    return counts;
+  }, [allTasks]);
 
   const saveProgressMutation = useMutation({
     mutationFn: async (data: { sessionId: string; taskId: number; correct: boolean; hintsUsed: number }) => {
@@ -320,14 +328,13 @@ export default function Home() {
               />
             )}
             {phase === "islandMap" && (
-              <IslandMap key="islands" onSelect={handleSelectIsland} />
+              <IslandMap key="islands" onSelect={handleSelectIsland} taskCounts={taskCounts} isLoading={tasksLoading} />
             )}
             {phase === "complete" && (
               <CompletionScreen
                 key="complete"
                 totalCorrect={correctTasks}
                 totalTasks={totalTasks}
-                categoryScores={categoryScores}
                 onRestart={handleBackToMap}
               />
             )}

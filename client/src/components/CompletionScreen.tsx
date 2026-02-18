@@ -2,39 +2,39 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mascot } from "./Mascot";
-import { RotateCcw, Trophy, Star, Zap, BookOpen } from "lucide-react";
-import { categoryLabels } from "@/lib/taskData";
+import { RotateCcw, Trophy, CheckCircle2, XCircle, Target } from "lucide-react";
 
 interface CompletionScreenProps {
   totalCorrect: number;
   totalTasks: number;
-  categoryScores: Record<string, number>;
   onRestart: () => void;
 }
-
-const categoryIconMap: Record<string, typeof Star> = {
-  accent: Zap,
-  phonetics: BookOpen,
-  meaning: Star,
-};
 
 export function CompletionScreen({
   totalCorrect,
   totalTasks,
-  categoryScores,
   onRestart,
 }: CompletionScreenProps) {
-  const percent = Math.round((totalCorrect / totalTasks) * 100);
+  const totalWrong = totalTasks - totalCorrect;
+  const percent = totalTasks > 0 ? Math.round((totalCorrect / totalTasks) * 100) : 0;
 
-  let titleText = "Герой, ты справился!";
-  let descText = "Вот это мощь! Все задания позади!";
+  let titleText = "Все задания пройдены!";
+  let descText = "Вот это мощь! Отличная работа!";
   if (percent < 50) {
     titleText = "Отличный старт!";
-    descText = "Мы уже продвинулись! Давай закрепим?";
+    descText = "Мы уже продвинулись! Попробуем ещё раз?";
   } else if (percent < 80) {
     titleText = "Сильный результат!";
-    descText = "Ещё чуть-чуть — и будет идеально. Я в тебя верю!";
+    descText = "Ещё чуть-чуть — и будет идеально!";
   }
+
+  const progressWidth = `${percent}%`;
+  const progressColor =
+    percent >= 80
+      ? "bg-emerald-400 dark:bg-emerald-500"
+      : percent >= 50
+      ? "bg-amber-400 dark:bg-amber-500"
+      : "bg-orange-400 dark:bg-orange-500";
 
   return (
     <motion.div
@@ -63,46 +63,39 @@ export function CompletionScreen({
           </p>
 
           <div className="w-full max-w-sm mb-6">
-            <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="flex items-center justify-center mb-3">
               <span className="text-4xl font-bold text-primary" data-testid="text-score-percent">
                 {percent}%
               </span>
-              <span className="text-muted-foreground text-sm">
-                ({totalCorrect}/{totalTasks})
-              </span>
             </div>
 
-            <div className="space-y-2">
-              {Object.entries(categoryLabels).map(([key, label]) => {
-                const Icon = categoryIconMap[key] || Star;
-                const score = categoryScores[key] || 0;
-                return (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-2.5"
-                    data-testid={`score-category-${key}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-medium">{label}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: score }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-4 h-4 fill-amber-400 text-amber-400"
-                        />
-                      ))}
-                      {Array.from({ length: Math.max(0, 4 - score) }).map((_, i) => (
-                        <Star
-                          key={`empty-${i}`}
-                          className="w-4 h-4 text-muted-foreground/30"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="w-full h-3 rounded-full bg-muted mb-5 overflow-hidden" data-testid="progress-bar-result">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: progressWidth }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+                className={`h-full rounded-full ${progressColor}`}
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-2">
+              <div className="flex flex-col items-center gap-1 rounded-xl bg-muted/50 py-3 px-2" data-testid="stat-total">
+                <Target className="w-5 h-5 text-primary" />
+                <span className="text-2xl font-bold">{totalTasks}</span>
+                <span className="text-[11px] text-muted-foreground leading-tight">
+                  {totalTasks === 1 ? "задание" : totalTasks < 5 ? "задания" : "заданий"}
+                </span>
+              </div>
+              <div className="flex flex-col items-center gap-1 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 py-3 px-2" data-testid="stat-correct">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <span className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{totalCorrect}</span>
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 leading-tight">верно</span>
+              </div>
+              <div className="flex flex-col items-center gap-1 rounded-xl bg-orange-50 dark:bg-orange-900/20 py-3 px-2" data-testid="stat-wrong">
+                <XCircle className="w-5 h-5 text-orange-500" />
+                <span className="text-2xl font-bold text-orange-700 dark:text-orange-300">{totalWrong}</span>
+                <span className="text-[11px] text-orange-600 dark:text-orange-400 leading-tight">ошибок</span>
+              </div>
             </div>
           </div>
 

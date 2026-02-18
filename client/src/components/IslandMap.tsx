@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface IslandMapProps {
   onSelect: (category: string) => void;
+  taskCounts?: Record<string, number>;
+  isLoading?: boolean;
 }
 
 const islands = [
@@ -75,7 +77,28 @@ const islands = [
   },
 ];
 
-export function IslandMap({ onSelect }: IslandMapProps) {
+function taskCountLabel(n: number): string {
+  if (n % 10 === 1 && n % 100 !== 11) return `${n} задание`;
+  if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return `${n} задания`;
+  return `${n} заданий`;
+}
+
+export function IslandMap({ onSelect, taskCounts, isLoading }: IslandMapProps) {
+  const totalTasks = taskCounts ? Object.values(taskCounts).reduce((a, b) => a + b, 0) : 0;
+
+  if (isLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="w-full max-w-lg mx-auto px-4 sm:px-6 flex flex-col items-center justify-center gap-3 py-16"
+      >
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-muted-foreground text-sm">Загружаем задания...</p>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -99,10 +122,15 @@ export function IslandMap({ onSelect }: IslandMapProps) {
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 shrink-0">
           <Layers className="w-5 h-5 text-primary" />
         </div>
-        <div className="text-left">
+        <div className="text-left flex-1">
           <p className="font-semibold text-sm">Все острова</p>
           <p className="text-xs text-muted-foreground">Смешанные задания</p>
         </div>
+        {totalTasks > 0 && (
+          <span className="text-xs font-medium text-muted-foreground shrink-0" data-testid="text-total-tasks">
+            {taskCountLabel(totalTasks)}
+          </span>
+        )}
       </button>
 
       <div className="relative flex flex-col gap-3 pb-4" data-testid="island-list">
@@ -148,8 +176,15 @@ export function IslandMap({ onSelect }: IslandMapProps) {
                   >
                     <Icon className={cn("w-5 h-5", island.iconColor)} />
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-sm mb-0.5">{island.label}</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-1 flex-wrap">
+                      <p className="font-bold text-sm mb-0.5">{island.label}</p>
+                      {taskCounts && taskCounts[island.key] > 0 && (
+                        <span className="text-[11px] font-medium text-muted-foreground shrink-0" data-testid={`text-count-${island.key}`}>
+                          {taskCountLabel(taskCounts[island.key])}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-muted-foreground leading-snug">
                       {island.description}
                     </p>
