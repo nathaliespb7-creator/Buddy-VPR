@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,45 @@ import { type Task, getBuddyHint } from "@/lib/taskData";
 import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
+
+function highlightKeyWord(text: string, correct: string): ReactNode {
+  const cleaned = correct
+    .replace(/^Приставка\s+/i, "")
+    .replace(/\s*\+\s*корень\s+/i, "|")
+    .replace(/[-]/g, "")
+    .trim();
+
+  const keywords = cleaned
+    .split("|")
+    .map(k => k.trim())
+    .filter(k => k.length >= 2);
+
+  if (keywords.length === 0 && correct.length >= 2) {
+    keywords.push(correct.replace(/[-]/g, "").trim());
+  }
+
+  const finalKeywords = keywords.filter(k => k.length >= 2);
+  if (finalKeywords.length === 0) return text;
+
+  const escaped = finalKeywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const pattern = new RegExp(`(${escaped.join("|")})`, "gi");
+
+  const parts = text.split(pattern);
+  if (parts.length <= 1) return text;
+
+  return parts.map((part, i) => {
+    if (pattern.test(part)) {
+      pattern.lastIndex = 0;
+      return (
+        <strong key={i} className="font-bold underline decoration-2 underline-offset-2">
+          {part}
+        </strong>
+      );
+    }
+    pattern.lastIndex = 0;
+    return part;
+  });
+}
 
 interface TaskCardProps {
   task: Task;
@@ -351,7 +390,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     )}
                     data-testid="text-result-explanation"
                   >
-                    {task.audio}
+                    {highlightKeyWord(task.audio, task.correct)}
                   </p>
                 </div>
               </div>
