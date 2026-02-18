@@ -68,6 +68,37 @@ export type InsertStudentProgress = Omit<StudentProgress, "id">;
 export type SessionState = typeof sessionState.$inferSelect;
 export type InsertSessionState = Omit<SessionState, "id">;
 
+export const categoryRounds = pgTable("category_rounds", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  sessionId: text("session_id").notNull(),
+  category: text("category").notNull(),
+  roundNumber: integer("round_number").notNull().default(1),
+  status: text("status").notNull().default("active"),
+  currentIndex: integer("current_index").notNull().default(0),
+  totalTasks: integer("total_tasks").notNull().default(0),
+  correctCount: integer("correct_count").notNull().default(0),
+  wrongCount: integer("wrong_count").notNull().default(0),
+  startedAt: timestamp("started_at").defaultNow(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const roundTaskResults = pgTable("round_task_results", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  roundId: integer("round_id").notNull(),
+  taskId: integer("task_id").notNull(),
+  correctFirstAttempt: boolean("correct_first_attempt"),
+  attempts: integer("attempts").notNull().default(0),
+  completedAt: timestamp("completed_at"),
+});
+
+export const insertCategoryRoundSchema = createInsertSchema(categoryRounds);
+export const insertRoundTaskResultSchema = createInsertSchema(roundTaskResults);
+
+export type CategoryRound = typeof categoryRounds.$inferSelect;
+export type InsertCategoryRound = Omit<CategoryRound, "id">;
+export type RoundTaskResult = typeof roundTaskResults.$inferSelect;
+export type InsertRoundTaskResult = Omit<RoundTaskResult, "id">;
+
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),

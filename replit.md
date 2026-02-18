@@ -4,16 +4,14 @@
 Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation. Designed for 10-year-old children with a soothing, friendly interface that reduces exam stress. Branded as "ВПР Бадди" — a supportive partner character.
 
 ## Recent Changes
-- **Methodology-based hints**: Each golden rule has hints for 3 methodologies (school_of_russia, zankov, elkonin) + default fallback
-- **getBuddyHint(ruleId)**: Returns methodology-specific hint text, used in TaskCard level 3 hints and voice assistant
-- **Voice assistant**: "Послушай" button using window.speechSynthesis (Russian, rate 0.9), reads audio/hint/rule based on context
-- **PWA offline**: Service Worker (sw.js) caches assets for offline use
-- **Branding**: Updated manifest.json, index.html to "ВПР Бадди"
-- **Mascot**: Transparent PNG, gentle animations (no anxious shaking)
-- **Splash screen**: Loading screen with animated Buddy mascot, progress bar, "ВПР Бадди" branding
-- **Падежи module**: 2 new rules (noun_declension, case_check) + 2 tasks (склонение + определение падежа) in morphology category
-- Knowledge Tree: 22 golden rules database, 35 tasks across 6 categories
-- Star reward system: gold stars (first try), silver stars (with hints), 5-star level-up overlay
+- **Round-based spaced repetition**: Full mastery loop — student goes through all tasks in a category (Round 1), mistakes repeat in Round 2+, until 0 errors
+- **Persistent progress**: Progress saved in PostgreSQL (category_rounds + round_task_results tables). Student can stop mid-round and resume later
+- **Island map progress**: Each island shows current round number, completion %, and correct/wrong counts
+- **Completion screen**: Shows wrong words list, offers "Next round" button to practice only mistakes
+- **Mastery detection**: When all words answered correctly, category marked as "Освоено!"
+- **Header star counter**: Shows cumulative gold (first attempt) and silver (with hints) star counts
+- **Idempotent answer submission**: Duplicate submissions don't inflate counts
+- Previous: Methodology-based hints, voice assistant, PWA offline, splash screen, 22 golden rules, 175+ tasks
 
 ## Architecture
 - **Frontend**: React + Vite + TailwindCSS with Framer Motion animations
@@ -53,18 +51,6 @@ Empathic educational PWA for 4th grade Russian VPR (National Exams) preparation.
 6. Training tasks → Complete with star rewards, Бадди hints on mistakes
 7. Completion screen → Back to island map
 
-## ВПР Бадди Personality
-- **Style**: Friendly, supportive, modern (no slang)
-- **Address**: User as "напарник" (partner) or "герой" (hero)
-- **Auto-reactions**: Short phrases (up to 4 words): "Так держать, герой!", "Верный путь!", "Вот это сила!"
-- **Cat avatar prefix**: none (no prefix)
-- **Robot avatar prefix**: "Бип-боп! " before toast messages
-- **Wrong answer**: "Не переживай, напарник! Мы разберёмся вместе!"
-- **Hints**: "Бадди подсказывает" → "Секретная подсказка" → "Золотое правило"
-
-## Data: 22 Golden Rules
-Each task links to a golden rule via ruleId. Rules cover all VPR topics.
-
 ## Categories (6)
 - `accent` - Ударения (Орфоэпия)
 - `phonetics` - Звуки и буквы (Фонетика)
@@ -76,15 +62,30 @@ Each task links to a golden rule via ruleId. Rules cover all VPR topics.
 ## Data Persistence
 - `localStorage.buddy_profile` - Avatar choice, stars array, level
 - `localStorage.buddy_session_id` - Session identifier
-- PostgreSQL: task_content (33 tasks), student_progress, session_state tables
+- PostgreSQL tables: task_content (175+ tasks), student_progress, session_state, category_rounds, round_task_results
 
 ## API Routes
 - `GET /api/tasks` - All tasks
 - `GET /api/tasks/:category` - Tasks by category
-- `POST /api/progress` - Save task progress
-- `GET /api/progress/:sessionId` - Get session progress
+- `POST /api/progress` - Save task progress (legacy)
+- `GET /api/progress/:sessionId` - Get session progress (legacy)
 - `GET /api/session/:sessionId` - Get/create session
 - `PUT /api/session/:sessionId` - Update session
+- `GET /api/round/:category?sessionId=X` - Get/create active round for category
+- `POST /api/round/:category/answer` - Submit answer {sessionId, taskId, correctFirstAttempt, attempts}
+- `GET /api/round/:category/summary?sessionId=X` - Get round summary with wrong words
+- `GET /api/categories/progress?sessionId=X` - Get all category progress summaries
+
+## Game Flow
+1. Splash screen -> Animated Buddy loading
+2. Avatar picker -> Choose Cat/Robot/Astronaut (saved to localStorage)
+3. Diagnostic test: 3 random tasks from different categories
+4. Power Card -> Shows category percentages
+5. Island Map -> Choose training island (shows round progress per category)
+6. Training tasks -> Round-based: all tasks in category = Round 1
+7. Completion screen -> Shows correct/wrong counts, wrong words list
+8. If errors exist -> "Next round" button starts Round N+1 with only wrong words
+9. Repeat until mastery (0 errors) -> "Освоено!" badge on island map
 
 ## User Preferences
 - Target audience: Russian-speaking children (age 10)

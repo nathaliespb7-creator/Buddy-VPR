@@ -1,11 +1,24 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2 } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+
+interface CategoryProgress {
+  category: string;
+  roundNumber: number;
+  status: string;
+  totalTasks: number;
+  correctCount: number;
+  wrongCount: number;
+  currentIndex: number;
+  totalTasksInCategory: number;
+}
 
 interface IslandMapProps {
   onSelect: (category: string) => void;
   taskCounts?: Record<string, number>;
   isLoading?: boolean;
+  sessionId: string;
 }
 
 const islands = [
@@ -19,6 +32,7 @@ const islands = [
     iconColor: "text-violet-800 dark:text-violet-200",
     borderColor: "border-violet-300 dark:border-violet-700",
     dotColor: "bg-violet-400",
+    progressColor: "bg-violet-400",
   },
   {
     key: "phonetics",
@@ -30,6 +44,7 @@ const islands = [
     iconColor: "text-sky-800 dark:text-sky-200",
     borderColor: "border-sky-300 dark:border-sky-700",
     dotColor: "bg-sky-400",
+    progressColor: "bg-sky-400",
   },
   {
     key: "morphemics",
@@ -41,6 +56,7 @@ const islands = [
     iconColor: "text-emerald-800 dark:text-emerald-200",
     borderColor: "border-emerald-300 dark:border-emerald-700",
     dotColor: "bg-emerald-400",
+    progressColor: "bg-emerald-400",
   },
   {
     key: "morphology",
@@ -52,6 +68,7 @@ const islands = [
     iconColor: "text-rose-800 dark:text-rose-200",
     borderColor: "border-rose-300 dark:border-rose-700",
     dotColor: "bg-rose-400",
+    progressColor: "bg-rose-400",
   },
   {
     key: "syntax",
@@ -63,6 +80,7 @@ const islands = [
     iconColor: "text-indigo-800 dark:text-indigo-200",
     borderColor: "border-indigo-300 dark:border-indigo-700",
     dotColor: "bg-indigo-400",
+    progressColor: "bg-indigo-400",
   },
   {
     key: "meaning",
@@ -74,6 +92,7 @@ const islands = [
     iconColor: "text-amber-800 dark:text-amber-200",
     borderColor: "border-amber-300 dark:border-amber-700",
     dotColor: "bg-amber-400",
+    progressColor: "bg-amber-400",
   },
 ];
 
@@ -83,8 +102,76 @@ function taskCountLabel(n: number): string {
   return `${n} заданий`;
 }
 
-export function IslandMap({ onSelect, taskCounts, isLoading }: IslandMapProps) {
+function ProgressIndicator({ progress, island }: { progress: CategoryProgress | undefined, island: typeof islands[0] }) {
+  if (!progress) return null;
+
+  const { currentIndex, totalTasks, roundNumber, status, correctCount, wrongCount, totalTasksInCategory } = progress;
+  const isCompleted = status === "completed";
+  const isMastered = isCompleted && wrongCount === 0 && roundNumber > 1;
+  const completedInRound = isCompleted ? totalTasks : currentIndex;
+  const pct = totalTasks > 0 ? Math.round((completedInRound / totalTasks) * 100) : 0;
+
+  return (
+    <div className="mt-2 space-y-1.5">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1" data-testid={`text-round-${island.key}`}>
+          {isMastered ? (
+            <>
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+              Освоено!
+            </>
+          ) : isCompleted ? (
+            <>
+              <RotateCcw className="w-3 h-3" />
+              Круг {roundNumber} пройден
+            </>
+          ) : (
+            <>Круг {roundNumber}</>
+          )}
+        </span>
+        <span className="text-[11px] text-muted-foreground" data-testid={`text-progress-${island.key}`}>
+          {isCompleted ? (
+            `${correctCount} верно / ${wrongCount} ошибок`
+          ) : (
+            `${completedInRound} из ${totalTasks}`
+          )}
+        </span>
+      </div>
+      <div className="w-full h-1.5 rounded-full bg-muted/70 overflow-hidden">
+        <div
+          className={cn("h-full rounded-full transition-all", island.progressColor)}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      {roundNumber > 1 && !isMastered && (
+        <p className="text-[10px] text-muted-foreground">
+          Отрабатываем ошибки ({totalTasks} из {totalTasksInCategory})
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: IslandMapProps) {
   const totalTasks = taskCounts ? Object.values(taskCounts).reduce((a, b) => a + b, 0) : 0;
+
+  const { data: categoryProgress } = useQuery<CategoryProgress[]>({
+    queryKey: ["/api/categories/progress", sessionId],
+    queryFn: async () => {
+      const res = await fetch(`/api/categories/progress?sessionId=${sessionId}`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!sessionId,
+    refetchOnWindowFocus: true,
+  });
+
+  const progressByCategory = new Map<string, CategoryProgress>();
+  if (categoryProgress) {
+    for (const p of categoryProgress) {
+      progressByCategory.set(p.category, p);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -139,6 +226,8 @@ export function IslandMap({ onSelect, taskCounts, isLoading }: IslandMapProps) {
         {islands.map((island, i) => {
           const Icon = island.icon;
           const isLeft = i % 2 === 0;
+          const progress = progressByCategory.get(island.key);
+
           return (
             <motion.div
               key={island.key}
@@ -188,6 +277,7 @@ export function IslandMap({ onSelect, taskCounts, isLoading }: IslandMapProps) {
                     <p className="text-xs text-muted-foreground leading-snug">
                       {island.description}
                     </p>
+                    <ProgressIndicator progress={progress} island={island} />
                   </div>
                 </div>
               </button>

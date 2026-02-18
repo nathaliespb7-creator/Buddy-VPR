@@ -2,30 +2,62 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mascot } from "./Mascot";
-import { RotateCcw, Trophy, CheckCircle2, XCircle, Target } from "lucide-react";
+import { ArrowRight, Trophy, CheckCircle2, XCircle, Target, MapPin, Star } from "lucide-react";
+import type { Task } from "@/lib/taskData";
 
 interface CompletionScreenProps {
   totalCorrect: number;
+  totalWrong: number;
   totalTasks: number;
-  onRestart: () => void;
+  roundNumber: number;
+  wrongTaskIds: number[];
+  allTasks: Task[];
+  totalTasksInCategory: number;
+  mastered: boolean;
+  category: string;
+  onBackToMap: () => void;
+  onNextRound: () => void;
 }
 
 export function CompletionScreen({
   totalCorrect,
+  totalWrong,
   totalTasks,
-  onRestart,
+  roundNumber,
+  wrongTaskIds,
+  allTasks,
+  totalTasksInCategory,
+  mastered,
+  category,
+  onBackToMap,
+  onNextRound,
 }: CompletionScreenProps) {
-  const totalWrong = totalTasks - totalCorrect;
   const percent = totalTasks > 0 ? Math.round((totalCorrect / totalTasks) * 100) : 0;
 
-  let titleText = "Все задания пройдены!";
-  let descText = "Вот это мощь! Отличная работа!";
-  if (percent < 50) {
-    titleText = "Отличный старт!";
-    descText = "Мы уже продвинулись! Попробуем ещё раз?";
-  } else if (percent < 80) {
-    titleText = "Сильный результат!";
-    descText = "Ещё чуть-чуть — и будет идеально!";
+  const wrongWords = allTasks
+    .filter(t => wrongTaskIds.includes(t.id))
+    .map(t => t.word);
+
+  let titleText: string;
+  let descText: string;
+  let mascotMood: "celebrating" | "encouraging" | "happy" = "celebrating";
+
+  if (mastered) {
+    titleText = "Категория освоена!";
+    descText = "Все слова отвечены верно! Ты настоящий герой!";
+    mascotMood = "celebrating";
+  } else if (percent >= 80) {
+    titleText = `Круг ${roundNumber} пройден!`;
+    descText = "Отличный результат! Осталось совсем чуть-чуть!";
+    mascotMood = "happy";
+  } else if (percent >= 50) {
+    titleText = `Круг ${roundNumber} пройден!`;
+    descText = "Хорошо идём! Давай закрепим результат!";
+    mascotMood = "happy";
+  } else {
+    titleText = `Круг ${roundNumber} пройден!`;
+    descText = "Мы узнали, что нужно подтянуть. Вперёд!";
+    mascotMood = "encouraging";
   }
 
   const progressWidth = `${percent}%`;
@@ -49,11 +81,15 @@ export function CompletionScreen({
             animate={{ rotate: [0, -5, 5, -5, 0] }}
             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
           >
-            <Mascot mood="celebrating" size="lg" />
+            <Mascot mood={mascotMood} size="lg" />
           </motion.div>
 
           <div className="flex items-center gap-2 mt-4 mb-1">
-            <Trophy className="w-6 h-6 text-amber-500" />
+            {mastered ? (
+              <Star className="w-6 h-6 fill-amber-400 text-amber-400" />
+            ) : (
+              <Trophy className="w-6 h-6 text-amber-500" />
+            )}
             <h2 className="text-2xl sm:text-3xl font-bold" data-testid="text-completion-title">
               {titleText}
             </h2>
@@ -97,17 +133,57 @@ export function CompletionScreen({
                 <span className="text-[11px] text-orange-600 dark:text-orange-400 leading-tight">ошибок</span>
               </div>
             </div>
+
+            {roundNumber > 1 && (
+              <p className="text-xs text-muted-foreground mt-2 mb-2" data-testid="text-round-info">
+                Отработка ошибок: {totalTasks} из {totalTasksInCategory} слов
+              </p>
+            )}
           </div>
 
-          <Button
-            onClick={onRestart}
-            className="gap-2 text-base"
-            size="lg"
-            data-testid="button-restart"
-          >
-            <RotateCcw className="w-5 h-5" />
-            К карте знаний
-          </Button>
+          {wrongWords.length > 0 && !mastered && (
+            <div className="w-full max-w-sm mb-6 text-left" data-testid="wrong-words-section">
+              <p className="text-sm font-semibold mb-2 text-orange-700 dark:text-orange-300">
+                Слова для повторения ({wrongWords.length}):
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {wrongWords.map((word, i) => (
+                  <span
+                    key={i}
+                    className="inline-block text-xs px-2 py-1 rounded-md bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-700"
+                    data-testid={`wrong-word-${i}`}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3 w-full max-w-sm">
+            {wrongWords.length > 0 && !mastered && (
+              <Button
+                onClick={onNextRound}
+                className="gap-2 text-base w-full"
+                size="lg"
+                data-testid="button-next-round"
+              >
+                <ArrowRight className="w-5 h-5" />
+                Круг {roundNumber + 1}: повторить ошибки ({wrongWords.length})
+              </Button>
+            )}
+
+            <Button
+              variant={wrongWords.length > 0 && !mastered ? "outline" : "default"}
+              onClick={onBackToMap}
+              className="gap-2 text-base w-full"
+              size="lg"
+              data-testid="button-back-to-map"
+            >
+              <MapPin className="w-5 h-5" />
+              К карте знаний
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </motion.div>

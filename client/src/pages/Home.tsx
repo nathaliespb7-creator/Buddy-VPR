@@ -8,7 +8,6 @@ import { PowerCard } from "@/components/PowerCard";
 import { IslandMap } from "@/components/IslandMap";
 import { CompletionScreen } from "@/components/CompletionScreen";
 import { EmpathyToast } from "@/components/EmpathyToast";
-import { LevelUpOverlay } from "@/components/LevelUpOverlay";
 import { SplashScreen } from "@/components/SplashScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -21,6 +20,20 @@ interface UserProfile {
   avatar: AvatarChoice;
   stars: StarType[];
   level: number;
+}
+
+interface RoundData {
+  mastered: boolean;
+  roundId?: number;
+  roundNumber: number;
+  status?: string;
+  currentIndex?: number;
+  totalTasks: number;
+  correctCount: number;
+  wrongCount: number;
+  completedTaskIds?: number[];
+  remainingTaskIds?: number[];
+  allTaskIds?: number[];
 }
 
 function getStoredSessionId(): string {
@@ -68,7 +81,6 @@ function fireConfetti() {
 }
 
 function getAvatarPrefix(avatar?: AvatarChoice): string {
-  if (avatar === "cat") return "";
   if (avatar === "robot") return "Бип-боп! ";
   return "";
 }
@@ -91,7 +103,17 @@ export default function Home() {
   const [toastVisible, setToastVisible] = useState(false);
   const [sessionId] = useState(getStoredSessionId);
   const [profile, setProfile] = useState<UserProfile | null>(storedProfile);
-  const [showLevelUp, setShowLevelUp] = useState(false);
+
+  const [activeCategory, setActiveCategory] = useState<string>("");
+  const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
+  const [activeRoundNumber, setActiveRoundNumber] = useState(1);
+  const [roundTotalTasks, setRoundTotalTasks] = useState(0);
+  const [roundCorrectCount, setRoundCorrectCount] = useState(0);
+  const [roundWrongCount, setRoundWrongCount] = useState(0);
+  const [roundWrongTaskIds, setRoundWrongTaskIds] = useState<number[]>([]);
+  const [roundMastered, setRoundMastered] = useState(false);
+  const [totalTasksInCategory, setTotalTasksInCategory] = useState(0);
+  const [isLoadingRound, setIsLoadingRound] = useState(false);
 
   const userStars = profile?.stars || [];
 
@@ -112,14 +134,13 @@ export default function Home() {
     return counts;
   }, [allTasks]);
 
-  const saveProgressMutation = useMutation({
-    mutationFn: async (data: { sessionId: string; taskId: number; correct: boolean; hintsUsed: number }) => {
-      return apiRequest("POST", "/api/progress", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/progress", sessionId] });
-    },
-  });
+  const taskById = useMemo(() => {
+    const map = new Map<number, Task>();
+    for (const t of allTasks) {
+      map.set(t.id, t);
+    }
+    return map;
+  }, [allTasks]);
 
   const showToast = useCallback((message: string, type: "success" | "encouragement" | "hint") => {
     setToastMessage(message);
@@ -152,8 +173,7 @@ export default function Home() {
       }
     }
     if (diagnosticTasks.length === 0) {
-      const fallback = allTasks.slice(0, 3);
-      diagnosticTasks.push(...fallback);
+      diagnosticTasks.push(...allTasks.slice(0, 3));
     }
 
     setActiveTasks(diagnosticTasks);
@@ -167,32 +187,110 @@ export default function Home() {
   }, [allTasks]);
 
   const handleSelectIsland = useCallback(
-    (category: string) => {
-      const filtered = category === "all" ? allTasks : allTasks.filter((t) => t.category === category);
-      const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-      setActiveTasks(shuffled);
-      setCurrentTaskIndex(0);
-      setCompletedTasks(0);
-      setCorrectTasks(0);
-      setCategoryScores({});
-      setPhase("training");
-      setMascotMood("idle");
+    async (category: string) => {
+      if (category === "all") {
+        const shuffled = [...allTasks].sort(() => Math.random() - 0.5);
+        setActiveTasks(shuffled);
+        setCurrentTaskIndex(0);
+        setCompletedTasks(0);
+        setCorrectTasks(0);
+        setCategoryScores({});
+        setActiveCategory("all");
+        setActiveRoundId(null);
+        setActiveRoundNumber(1);
+        setRoundTotalTasks(shuffled.length);
+        setTotalTasksInCategory(shuffled.length);
+        setPhase("training");
+        setMascotMood("idle");
+        return;
+      }
+
+      setIsLoadingRound(true);
+      setActiveCategory(category);
+
+      try {
+        const res = await fetch(`/api/round/${category}?sessionId=${sessionId}`);
+        const roundData: RoundData = await res.json();
+
+        if (roundData.mastered) {
+          setRoundMastered(true);
+          setActiveRoundNumber(roundData.roundNumber);
+          setRoundCorrectCount(roundData.correctCount);
+          setRoundWrongCount(0);
+          setRoundTotalTasks(roundData.totalTasks);
+          setTotalTasksInCategory(taskCounts[category] || roundData.totalTasks);
+          setRoundWrongTaskIds([]);
+          setPhase("complete");
+          setMascotMood("celebrating");
+          fireConfetti();
+          setIsLoadingRound(false);
+          return;
+        }
+
+        setActiveRoundId(roundData.roundId!);
+        setActiveRoundNumber(roundData.roundNumber);
+        setRoundTotalTasks(roundData.totalTasks);
+        setRoundCorrectCount(roundData.correctCount);
+        setRoundWrongCount(roundData.wrongCount);
+        setTotalTasksInCategory(taskCounts[category] || roundData.totalTasks);
+
+        const remainingIds = roundData.remainingTaskIds || [];
+        const remainingTasks = remainingIds
+          .map(id => taskById.get(id))
+          .filter((t): t is Task => !!t);
+
+        if (remainingTasks.length === 0) {
+          setIsLoadingRound(false);
+          return;
+        }
+
+        setActiveTasks(remainingTasks);
+        setCurrentTaskIndex(0);
+        setCompletedTasks(roundData.currentIndex || 0);
+        setCorrectTasks(roundData.correctCount);
+        setPhase("training");
+        setMascotMood("idle");
+      } catch (err) {
+        console.error("Failed to load round:", err);
+        const filtered = allTasks.filter((t) => t.category === category);
+        setActiveTasks(filtered);
+        setCurrentTaskIndex(0);
+        setCompletedTasks(0);
+        setCorrectTasks(0);
+        setActiveRoundId(null);
+        setPhase("training");
+      }
+
+      setIsLoadingRound(false);
     },
-    [allTasks]
+    [allTasks, sessionId, taskById, taskCounts]
   );
+
+  const submitAnswerMutation = useMutation({
+    mutationFn: async (data: { category: string; sessionId: string; taskId: number; correctFirstAttempt: boolean; attempts: number }) => {
+      return apiRequest("POST", `/api/round/${data.category}/answer`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories/progress", sessionId] });
+    },
+  });
 
   const handleTaskComplete = useCallback(
     (correct: boolean, hintsUsed: number, starType: StarType) => {
       const currentTask = activeTasks[currentTaskIndex];
-
-      saveProgressMutation.mutate({
-        sessionId,
-        taskId: currentTask.id,
-        correct,
-        hintsUsed,
-      });
-
       const prefix = getAvatarPrefix(profile?.avatar);
+
+      const correctFirstAttempt = correct && starType === "gold";
+
+      if (activeRoundId && activeCategory && activeCategory !== "all") {
+        submitAnswerMutation.mutate({
+          category: activeCategory,
+          sessionId,
+          taskId: currentTask.id,
+          correctFirstAttempt: correct ? correctFirstAttempt : false,
+          attempts: correct ? (correctFirstAttempt ? 1 : 2) : 2,
+        });
+      }
 
       if (correct) {
         setCorrectTasks((prev) => prev + 1);
@@ -230,8 +328,15 @@ export default function Home() {
             setPhase("powerCard");
             setMascotMood("celebrating");
           } else {
-            setPhase("complete");
-            setMascotMood("celebrating");
+            if (activeCategory && activeCategory !== "all") {
+              fetchRoundSummary(activeCategory).then(() => {
+                setPhase("complete");
+                setMascotMood("celebrating");
+              });
+            } else {
+              setPhase("complete");
+              setMascotMood("celebrating");
+            }
           }
         }, 400);
       } else {
@@ -241,28 +346,42 @@ export default function Home() {
         }, 200);
       }
     },
-    [activeTasks, currentTaskIndex, phase, sessionId, saveProgressMutation, showToast, addStar]
+    [activeTasks, currentTaskIndex, phase, sessionId, activeRoundId, activeCategory, submitAnswerMutation, showToast, addStar, profile]
   );
 
-  const handleLevelUpNext = useCallback(() => {
-    setShowLevelUp(false);
-  }, []);
+  const fetchRoundSummary = async (category: string) => {
+    try {
+      const res = await fetch(`/api/round/${category}/summary?sessionId=${sessionId}`);
+      const summary = await res.json();
+      if (summary.wrongWords) {
+        setRoundWrongTaskIds(summary.wrongWords.map((w: { id: number }) => w.id));
+      }
+      if (summary.mastered) {
+        setRoundMastered(true);
+      }
+      setRoundCorrectCount(summary.correctCount || 0);
+      setRoundWrongCount(summary.wrongCount || 0);
+    } catch {}
+  };
 
-  const handleRestart = useCallback(() => {
-    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    localStorage.setItem("buddy_session_id", newSessionId);
-    localStorage.removeItem("buddy_profile");
-    window.location.reload();
-  }, []);
+  const handleStartNextRound = useCallback(async () => {
+    if (!activeCategory || activeCategory === "all") return;
+    setRoundMastered(false);
+    setRoundWrongTaskIds([]);
+    setRoundCorrectCount(0);
+    setRoundWrongCount(0);
+    await handleSelectIsland(activeCategory);
+  }, [activeCategory, handleSelectIsland]);
 
   const handleBackToMap = useCallback(() => {
     setPhase("islandMap");
     setMascotMood("happy");
-  }, []);
+    setActiveRoundId(null);
+    queryClient.invalidateQueries({ queryKey: ["/api/categories/progress", sessionId] });
+  }, [sessionId]);
 
   const currentTask = activeTasks[currentTaskIndex];
   const totalTasks = activeTasks.length;
-
 
   return (
     <div className="min-h-screen bg-background flex flex-col" data-testid="home-page">
@@ -286,7 +405,7 @@ export default function Home() {
         {(phase === "training" || phase === "diagnostic") && (
           <ProgressBar
             completed={completedTasks}
-            total={totalTasks}
+            total={roundTotalTasks || totalTasks}
             categoryScores={categoryScores}
           />
         )}
@@ -315,14 +434,28 @@ export default function Home() {
               />
             )}
             {phase === "islandMap" && (
-              <IslandMap key="islands" onSelect={handleSelectIsland} taskCounts={taskCounts} isLoading={tasksLoading} />
+              <IslandMap
+                key="islands"
+                onSelect={handleSelectIsland}
+                taskCounts={taskCounts}
+                isLoading={tasksLoading || isLoadingRound}
+                sessionId={sessionId}
+              />
             )}
             {phase === "complete" && (
               <CompletionScreen
                 key="complete"
-                totalCorrect={correctTasks}
-                totalTasks={totalTasks}
-                onRestart={handleBackToMap}
+                totalCorrect={roundCorrectCount}
+                totalWrong={roundWrongCount}
+                totalTasks={roundTotalTasks}
+                roundNumber={activeRoundNumber}
+                wrongTaskIds={roundWrongTaskIds}
+                allTasks={allTasks}
+                totalTasksInCategory={totalTasksInCategory}
+                mastered={roundMastered}
+                category={activeCategory}
+                onBackToMap={handleBackToMap}
+                onNextRound={handleStartNextRound}
               />
             )}
           </AnimatePresence>
@@ -335,7 +468,6 @@ export default function Home() {
           onClose={() => setToastVisible(false)}
         />
       </div>
-
     </div>
   );
 }
