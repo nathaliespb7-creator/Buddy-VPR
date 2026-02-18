@@ -72,7 +72,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
       >
         <Users className="w-4 h-4" />
         <p className="text-sm">
-          Уже более 5 000 учеников готовятся
+          Уже более 5 000 учеников готовятся со мной
         </p>
       </motion.div>
     </motion.div>
