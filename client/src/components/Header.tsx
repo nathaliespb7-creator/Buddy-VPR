@@ -26,7 +26,7 @@ function ProgressRing({ progress }: { progress: number }) {
         ? "text-emerald-500"
         : progress >= 30
           ? "text-sky-500"
-          : "text-primary";
+          : "text-sky-400";
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>

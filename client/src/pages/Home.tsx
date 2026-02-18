@@ -135,14 +135,8 @@ export default function Home() {
   }, [allTasks]);
 
   const { data: categoryProgressData } = useQuery<{ category: string; correctCount: number; totalTasksInCategory: number; status: string; wrongCount: number; roundNumber: number }[]>({
-    queryKey: ["/api/categories/progress", sessionId],
-    queryFn: async () => {
-      const res = await fetch(`/api/categories/progress?sessionId=${sessionId}`);
-      if (!res.ok) return [];
-      return res.json();
-    },
+    queryKey: [`/api/categories/progress?sessionId=${sessionId}`],
     enabled: !!sessionId,
-    refetchOnWindowFocus: true,
   });
 
   const overallProgress = useMemo(() => {
