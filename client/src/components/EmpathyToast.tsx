@@ -11,7 +11,7 @@ interface EmpathyToastProps {
 export function EmpathyToast({ message, type, visible, onClose }: EmpathyToastProps) {
   useEffect(() => {
     if (visible) {
-      const timer = setTimeout(onClose, 2000);
+      const timer = setTimeout(onClose, 1500);
       return () => clearTimeout(timer);
     }
   }, [visible, onClose]);

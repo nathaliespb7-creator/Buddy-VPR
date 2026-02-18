@@ -129,7 +129,7 @@ export default function Home() {
         setTimeout(() => {
           fireConfetti();
           setShowLevelUp(true);
-        }, 600);
+        }, 300);
       }
       return updated;
     });
@@ -231,12 +231,12 @@ export default function Home() {
             setPhase("complete");
             setMascotMood("celebrating");
           }
-        }, 1200);
+        }, 400);
       } else {
         setTimeout(() => {
           setCurrentTaskIndex(nextIndex);
           setMascotMood("idle");
-        }, 800);
+        }, 200);
       }
     },
     [activeTasks, currentTaskIndex, phase, sessionId, saveProgressMutation, showToast, addStar]

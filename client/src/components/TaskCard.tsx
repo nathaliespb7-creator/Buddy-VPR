@@ -178,10 +178,10 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -100 }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      exit={{ opacity: 0, x: -60 }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className="w-full max-w-2xl mx-auto px-4 sm:px-6"
     >
       <Card className="overflow-visible" data-testid="task-card">
