@@ -421,7 +421,7 @@ export default function Home() {
           <Header mascotMood={mascotMood} stars={userStars} onExit={() => setPhase("islandMap")} overallProgress={overallProgress} />
         )}
 
-        {(phase === "training" || phase === "diagnostic") && (
+        {phase === "diagnostic" && (
           <ProgressBar
             completed={completedTasks}
             total={roundTotalTasks || totalTasks}
