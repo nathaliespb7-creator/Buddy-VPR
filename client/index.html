@@ -13,11 +13,13 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <!-- Шрифт подгружается асинхронно, чтобы не блокировать отрисовку (важно для медленных сетей и РФ) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap"></noscript>
     <title>Бадди ВПР — Умный помощник для подготовки</title>
   </head>
   <body>
-    <div id="root" style="min-height:100vh;background:hsl(160 50% 97%);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;padding:1rem;">
+    <div id="root" style="min-height:100vh;background:hsl(160 50% 97%);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:system-ui,-apple-system,Segoe UI,'Nunito',sans-serif;padding:1rem;">
       <p style="color:hsl(200 15% 42%);margin:0;">Загрузка…</p>
     </div>
     <script>
