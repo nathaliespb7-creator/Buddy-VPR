@@ -86,8 +86,8 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
                       <Icon className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm font-semibold">{cat.label}</span>
                     </div>
-                    <span className="text-sm font-bold" data-testid={`text-power-percent-${cat.key}`}>
-                      {percent}%
+                    <span className="text-sm font-bold tabular-nums" data-testid={`text-power-percent-${cat.key}`}>
+                      {score.correct} из {score.total} · {percent}%
                     </span>
                   </div>
                   <div className="h-2.5 rounded-full bg-muted/50 overflow-hidden">

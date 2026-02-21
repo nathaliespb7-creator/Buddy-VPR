@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 
 interface CategoryProgress {
@@ -158,7 +159,7 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
   const { data: categoryProgress } = useQuery<CategoryProgress[]>({
     queryKey: ["/api/categories/progress", sessionId],
     queryFn: async () => {
-      const res = await fetch(`/api/categories/progress?sessionId=${sessionId}`);
+      const res = await fetch(API_BASE + `/api/categories/progress?sessionId=${sessionId}`);
       if (!res.ok) return [];
       return res.json();
     },

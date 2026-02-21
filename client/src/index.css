@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* До загрузки React — фон и минимальная высота, чтобы не было белого экрана */
+html, body { min-height: 100%; }
+body { background-color: hsl(var(--background)); }
+#root { min-height: 100%; }
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);
@@ -10,10 +15,11 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
   --background: 160 50% 97%;
-  --foreground: 200 15% 20%;
+  /* Основной текст: тёмно-серый #1A202C (не чёрный), дизайн-система Бадди ВПР */
+  --foreground: 221 26% 14%;
   --border: 170 30% 88%;
   --card: 0 0% 100%;
-  --card-foreground: 200 15% 20%;
+  --card-foreground: 221 26% 14%;
   --card-border: 170 35% 86%;
   --sidebar: 160 45% 94%;
   --sidebar-foreground: 200 12% 22%;

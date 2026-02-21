@@ -1,0 +1,19 @@
+---
+description: Стек и конвенции кода Бадди ВПР
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# Стек
+
+- **Frontend:** React 18, Vite 7, TypeScript, Tailwind, Framer Motion, Wouter, TanStack Query, Radix UI, Zod.
+- **Backend:** Node.js, Express 5, Drizzle ORM, PostgreSQL.
+- **PWA:** Service Worker, manifest.json; офлайн — IndexedDB (план), прогресс — localStorage.
+
+# Конвенции
+
+- Пути: `@/` → `client/src`, `@shared/` → `shared`.
+- API: маршруты в `server/routes.ts`, валидация (zod) на ввод.
+- Схема БД: `shared/schema.ts`; миграции — `npm run db:push`.
+- Комментарии в коде — на русском где нужно пояснение.
+- Обработка ошибок и fallback при отсутствии сети (например, локальные tasksData).

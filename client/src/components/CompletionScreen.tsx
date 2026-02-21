@@ -44,7 +44,7 @@ export function CompletionScreen({
 
   if (mastered) {
     titleText = "Категория освоена!";
-    descText = "Все слова отвечены верно! Ты настоящий герой!";
+    descText = "Все задания выполнены верно! Ты настоящий герой!";
     mascotMood = "celebrating";
   } else if (percent >= 80) {
     titleText = `Круг ${roundNumber} пройден!`;

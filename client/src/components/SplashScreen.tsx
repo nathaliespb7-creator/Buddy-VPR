@@ -43,7 +43,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         className="text-muted-foreground text-base sm:text-lg mb-6 text-center"
         data-testid="text-splash-subtitle"
       >
-        Умный помощник для подготовки к ВПР
+        Умный помощник для подготовки
       </motion.p>
 
       <motion.div

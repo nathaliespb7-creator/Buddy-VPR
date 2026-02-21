@@ -3,18 +3,21 @@ import { AnimatePresence } from "framer-motion";
 import { Header, type StarType } from "@/components/Header";
 import { ProgressBar } from "@/components/ProgressBar";
 import { TaskCard } from "@/components/TaskCard";
-import { AvatarPicker, type AvatarChoice } from "@/components/AvatarPicker";
+import { type AvatarChoice } from "@/components/AvatarPicker";
 import { PowerCard } from "@/components/PowerCard";
 import { IslandMap } from "@/components/IslandMap";
 import { CompletionScreen } from "@/components/CompletionScreen";
 import { EmpathyToast } from "@/components/EmpathyToast";
 import { SplashScreen } from "@/components/SplashScreen";
+import { ModeChoiceScreen } from "@/components/ModeChoiceScreen";
+import { MixedModeChoiceScreen } from "@/components/MixedModeChoiceScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
+import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
 import confetti from "canvas-confetti";
 
-type GamePhase = "avatarSelect" | "diagnostic" | "powerCard" | "islandMap" | "training" | "complete";
+type GamePhase = "modeChoice" | "mixedModeChoice" | "diagnostic" | "powerCard" | "islandMap" | "training" | "complete";
 
 interface UserProfile {
   avatar: AvatarChoice;
@@ -87,10 +90,11 @@ function getAvatarPrefix(avatar?: AvatarChoice): string {
 
 export default function Home() {
   const storedProfile = getStoredProfile();
-  const initialPhase: GamePhase = storedProfile ? "islandMap" : "avatarSelect";
+  const initialPhase: GamePhase = "modeChoice";
 
   const [showSplash, setShowSplash] = useState(true);
   const [phase, setPhase] = useState<GamePhase>(initialPhase);
+  const [diagnosticStarted, setDiagnosticStarted] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [completedTasks, setCompletedTasks] = useState(0);
   const [correctTasks, setCorrectTasks] = useState(0);
@@ -125,6 +129,71 @@ export default function Home() {
     if (serverTasks && serverTasks.length > 0) return serverTasks;
     return tasksData;
   }, [serverTasks]);
+
+  // Старт диагностики: каждый остров (категория) — по 3 задания
+  const startMixedTraining = useCallback(
+    (category: string) => {
+      const tasks =
+        category === "all"
+          ? [...allTasks].sort(() => Math.random() - 0.5)
+          : [...allTasks.filter((t) => t.category === category)].sort(() => Math.random() - 0.5);
+      if (tasks.length === 0) return;
+      setActiveCategory(category);
+      setActiveTasks(tasks);
+      setCurrentTaskIndex(0);
+      setCompletedTasks(0);
+      setCorrectTasks(0);
+      setCategoryScores({});
+      setActiveRoundId(null);
+      setRoundTotalTasks(tasks.length);
+      setTotalTasksInCategory(tasks.length);
+      setRoundMastered(false);
+      setRoundWrongTaskIds([]);
+      setPhase("training");
+      setMascotMood("idle");
+    },
+    [allTasks]
+  );
+
+  const startDiagnostic = useCallback(() => {
+    if (allTasks.length === 0) return;
+    const categories = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax"];
+    const diagnosticTasks: Task[] = [];
+    const shuffledCats = [...categories].sort(() => Math.random() - 0.5);
+    const TASKS_PER_ISLAND = 3;
+    for (const cat of shuffledCats) {
+      const catTasks = [...allTasks.filter((t) => t.category === cat)];
+      if (catTasks.length === 0) continue;
+      // перемешиваем и берём до 3 заданий без повторов
+      for (let i = 0; i < TASKS_PER_ISLAND; i++) {
+        if (catTasks.length === 0) break;
+        const idx = Math.floor(Math.random() * catTasks.length);
+        diagnosticTasks.push(catTasks[idx]);
+        catTasks.splice(idx, 1);
+      }
+    }
+    if (diagnosticTasks.length === 0) {
+      diagnosticTasks.push(...allTasks.slice(0, 3));
+    }
+    setPhase("diagnostic");
+    setProfile((prev) => {
+      if (!prev) {
+        const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1 };
+        saveProfile(defaultProfile);
+        return defaultProfile;
+      }
+      return prev;
+    });
+    setActiveTasks(diagnosticTasks);
+    setCurrentTaskIndex(0);
+    setCompletedTasks(0);
+    setCorrectTasks(0);
+    setCategoryScores({});
+    setDiagnosticScores({});
+    setRoundTotalTasks(diagnosticTasks.length);
+    setMascotMood("thinking");
+    setDiagnosticStarted(true);
+  }, [allTasks]);
 
   const taskCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -170,40 +239,12 @@ export default function Home() {
   const addStar = useCallback((starType: StarType) => {
     if (starType === "empty") return;
     setProfile((prev) => {
-      if (!prev) return prev;
-      const updated = { ...prev, stars: [...prev.stars, starType] };
+      const next = prev ?? { avatar: "buddy" as AvatarChoice, stars: [], level: 1 };
+      const updated = { ...next, stars: [...next.stars, starType] };
       saveProfile(updated);
       return updated;
     });
   }, []);
-
-  const handleAvatarSelect = useCallback((avatar: AvatarChoice) => {
-    const newProfile: UserProfile = { avatar, stars: [], level: 1 };
-    setProfile(newProfile);
-    saveProfile(newProfile);
-
-    const categories = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax"];
-    const diagnosticTasks: Task[] = [];
-    const shuffledCats = [...categories].sort(() => Math.random() - 0.5).slice(0, 3);
-    for (const cat of shuffledCats) {
-      const catTasks = allTasks.filter((t) => t.category === cat);
-      if (catTasks.length > 0) {
-        diagnosticTasks.push(catTasks[Math.floor(Math.random() * catTasks.length)]);
-      }
-    }
-    if (diagnosticTasks.length === 0) {
-      diagnosticTasks.push(...allTasks.slice(0, 3));
-    }
-
-    setActiveTasks(diagnosticTasks);
-    setCurrentTaskIndex(0);
-    setCompletedTasks(0);
-    setCorrectTasks(0);
-    setCategoryScores({});
-    setDiagnosticScores({});
-    setPhase("diagnostic");
-    setMascotMood("thinking");
-  }, [allTasks]);
 
   const handleSelectIsland = useCallback(
     async (category: string) => {
@@ -228,7 +269,7 @@ export default function Home() {
       setActiveCategory(category);
 
       try {
-        const res = await fetch(`/api/round/${category}?sessionId=${sessionId}`);
+        const res = await fetch(API_BASE + `/api/round/${category}?sessionId=${sessionId}`);
         const roundData: RoundData = await res.json();
 
         if (roundData.mastered) {
@@ -328,11 +369,12 @@ export default function Home() {
         showToast(prefix + "Не переживай! Мы разберёмся вместе!", "encouragement");
       }
 
+      // В диагностике считаем только «верно с первой попытки», чтобы ребёнок видел слабые места
       if (phase === "diagnostic") {
         setDiagnosticScores((prev) => ({
           ...prev,
           [currentTask.category]: {
-            correct: (prev[currentTask.category]?.correct || 0) + (correct ? 1 : 0),
+            correct: (prev[currentTask.category]?.correct || 0) + (correct && starType === "gold" ? 1 : 0),
             total: (prev[currentTask.category]?.total || 0) + 1,
           },
         }));
@@ -347,12 +389,19 @@ export default function Home() {
             setPhase("powerCard");
             setMascotMood("celebrating");
           } else {
-            if (activeCategory && activeCategory !== "all") {
+            if (activeCategory && activeCategory !== "all" && activeRoundId != null) {
               fetchRoundSummary(activeCategory).then(() => {
                 setPhase("complete");
                 setMascotMood("celebrating");
               });
             } else {
+              // Смешанный режим или один навык без раунда API — считаем по текущим заданиям
+              const total = activeTasks.length;
+              const correctCount = correctTasks + (correct ? 1 : 0);
+              setRoundTotalTasks(total);
+              setRoundCorrectCount(correctCount);
+              setRoundWrongCount(total - correctCount);
+              setRoundWrongTaskIds([]);
               setPhase("complete");
               setMascotMood("celebrating");
             }
@@ -370,7 +419,7 @@ export default function Home() {
 
   const fetchRoundSummary = async (category: string) => {
     try {
-      const res = await fetch(`/api/round/${category}/summary?sessionId=${sessionId}`);
+      const res = await fetch(API_BASE + `/api/round/${category}/summary?sessionId=${sessionId}`);
       const summary = await res.json();
       if (summary.wrongWords) {
         setRoundWrongTaskIds(summary.wrongWords.map((w: { id: number }) => w.id));
@@ -406,7 +455,17 @@ export default function Home() {
     <div className="min-h-screen bg-background flex flex-col" data-testid="home-page">
       <AnimatePresence>
         {showSplash && (
-          <SplashScreen onFinish={() => setShowSplash(false)} />
+          <SplashScreen
+            onFinish={() => {
+              setShowSplash(false);
+              setPhase("modeChoice");
+              if (!storedProfile) {
+                const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1 };
+                setProfile(defaultProfile);
+                saveProfile(defaultProfile);
+              }
+            }}
+          />
         )}
       </AnimatePresence>
 
@@ -417,7 +476,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        {phase !== "avatarSelect" && (
+        {!showSplash && (
           <Header mascotMood={mascotMood} stars={userStars} onExit={() => setPhase("islandMap")} overallProgress={overallProgress} />
         )}
 
@@ -429,17 +488,44 @@ export default function Home() {
           />
         )}
 
-        <main className="flex-1 flex items-start justify-center pt-4 pb-8 overflow-y-auto">
+        <main
+          className={cn(
+            "flex-1 flex flex-col items-center min-h-0",
+            (phase === "diagnostic" || phase === "training")
+              ? "pt-1 sm:pt-2 pb-1 sm:pb-2 overflow-hidden"
+              : "pt-3 sm:pt-4 pb-4 sm:pb-8 overflow-y-auto"
+          )}
+        >
           <AnimatePresence mode="wait">
-            {phase === "avatarSelect" && (
-              <AvatarPicker key="avatar" onSelect={handleAvatarSelect} />
+            {phase === "diagnostic" && activeTasks.length === 0 && (
+              <p key="diagnostic-loading" className="text-muted-foreground text-center py-8" data-testid="diagnostic-loading">
+                Подготовка заданий…
+              </p>
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
-              <TaskCard
-                key={`task-${currentTask.id}-${currentTaskIndex}`}
-                task={currentTask}
-                onComplete={handleTaskComplete}
-                isDiscovery={phase === "diagnostic"}
+              <div key={`wrap-${currentTask.id}`} className="flex-1 min-h-0 w-full flex flex-col justify-center overflow-hidden">
+                <TaskCard
+                  key={`task-${currentTask.id}-${currentTaskIndex}`}
+                  task={currentTask}
+                  onComplete={handleTaskComplete}
+                  isDiscovery={phase === "diagnostic"}
+                />
+              </div>
+            )}
+            {phase === "modeChoice" && (
+              <ModeChoiceScreen
+                key="mode-choice"
+                onIslands={() => setPhase("islandMap")}
+                onMixed={() => setPhase("mixedModeChoice")}
+                onDiagnostic={startDiagnostic}
+              />
+            )}
+            {phase === "mixedModeChoice" && (
+              <MixedModeChoiceScreen
+                key="mixed-choice"
+                onAll={() => startMixedTraining("all")}
+                onOneSkill={(cat) => startMixedTraining(cat)}
+                onBack={() => setPhase("modeChoice")}
               />
             )}
             {phase === "powerCard" && (

@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <meta name="description" content="ВПР Бадди — твой напарник для подготовки к ВПР. Учись играя!" />
+    <meta name="description" content="Бадди ВПР — тренажёр для подготовки к всероссийским проверочным работам (ВПР) для 4-8 классов. Офлайн-режим, геймификация, персональный прогресс." />
     <meta name="theme-color" content="#E6FFFA" />
-    <meta property="og:title" content="ВПР Бадди — Подготовка к ВПР" />
-    <meta property="og:description" content="Твой напарник для подготовки к ВПР. Учись играя с дружелюбным помощником!" />
+    <meta property="og:title" content="Бадди ВПР — Умный помощник для подготовки" />
+    <meta property="og:description" content="Готовься к ВПР с умом: офлайн-режим, острова заданий, персонаж Бадди и прогресс в звёздах." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/favicon.png" />
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -14,10 +14,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <title>ВПР Бадди</title>
+    <title>Бадди ВПР — Умный помощник для подготовки</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root" style="min-height:100vh;background:hsl(160 50% 97%);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;padding:1rem;">
+      <p style="color:hsl(200 15% 42%);margin:0;">Загрузка…</p>
+    </div>
+    <script>
+      setTimeout(function(){
+        var r=document.getElementById('root');
+        if(r&&r.textContent.indexOf('Загрузка')!==-1&&!r.querySelector('button')){
+          r.innerHTML='<p style="color:hsl(200 15% 42%);margin-bottom:1rem;">Загрузка занимает много времени.</p><p style="color:#64748b;font-size:0.875rem;margin-bottom:1rem;text-align:center;">Попробуйте обновить страницу (F5) или откройте в другом браузере.</p><button type="button" onclick="location.reload()" style="padding:0.5rem 1rem;background:#0d9488;color:white;border:none;border-radius:8px;cursor:pointer;">Обновить</button>';
+        }
+      },12000);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

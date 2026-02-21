@@ -11,8 +11,14 @@ const viteLogger = createLogger();
 export async function setupVite(server: Server, app: Express) {
   const serverOptions = {
     middlewareMode: true,
-    hmr: { server, path: "/vite-hmr" },
-    allowedHosts: true as const,
+    hmr: {
+      server,
+      path: "/vite-hmr",
+      host: "127.0.0.1",
+      clientPort: 5000,
+      protocol: "ws",
+    },
+    allowedHosts: ["localhost", "127.0.0.1", ".localhost"],
   };
 
   const vite = await createViteServer({
@@ -31,9 +37,10 @@ export async function setupVite(server: Server, app: Express) {
 
   app.use(vite.middlewares);
 
-  app.use("/{*path}", async (req, res, next) => {
+  // Отдаём index.html для любого GET (/, /any-path) — без привязки к path-to-regexp
+  app.use(async (req, res, next) => {
+    if (req.method !== "GET" && req.method !== "HEAD") return next();
     const url = req.originalUrl;
-
     try {
       const clientTemplate = path.resolve(
         import.meta.dirname,
@@ -41,8 +48,6 @@ export async function setupVite(server: Server, app: Express) {
         "client",
         "index.html",
       );
-
-      // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
