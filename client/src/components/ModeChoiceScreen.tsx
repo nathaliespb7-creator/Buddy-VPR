@@ -12,7 +12,7 @@ interface ModeChoiceScreenProps {
 /** Экран выбора режима: три блока разного цвета, без маскота по центру. Понятно для ребёнка. */
 export function ModeChoiceScreen({ onIslands, onMixed, onDiagnostic }: ModeChoiceScreenProps) {
   const cardClass =
-    "w-full h-auto min-h-[52px] flex flex-row items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 text-left whitespace-normal rounded-xl";
+    "w-full h-auto min-h-[48px] flex flex-row items-center gap-2.5 sm:gap-3 p-3 sm:p-3 text-left whitespace-normal rounded-xl touch-manipulation";
   const titleClass = "font-semibold block text-sm sm:text-base";
   const descClass = "text-xs text-muted-foreground break-words leading-snug line-clamp-2";
 
@@ -22,7 +22,7 @@ export function ModeChoiceScreen({ onIslands, onMixed, onDiagnostic }: ModeChoic
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="w-full max-w-md mx-auto px-3 sm:px-4 flex flex-col items-center flex-1 min-h-0 py-3 sm:py-4 pb-4"
+      className="w-full max-w-md mx-auto px-3 sm:px-4 max-w-[100vw] flex flex-col items-center flex-1 min-h-0 py-3 sm:py-4 pb-4 safe-bottom overflow-y-auto overflow-x-hidden"
       data-testid="mode-choice-screen"
     >
       <h2 className="text-lg sm:text-xl font-bold text-center mb-0.5" data-testid="mode-choice-title">

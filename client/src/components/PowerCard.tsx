@@ -40,7 +40,7 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      className="w-full max-w-lg mx-auto px-4 sm:px-6"
+      className="w-full max-w-lg mx-auto px-3 sm:px-6 max-w-[100vw] overflow-x-hidden safe-bottom pb-6"
       data-testid="power-card"
     >
       <Card className="overflow-visible">
@@ -112,7 +112,7 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
             <Button
               onClick={onContinue}
               size="lg"
-              className="gap-2 text-base"
+              className="gap-2 text-base min-h-[48px] touch-manipulation"
               data-testid="button-power-card-continue"
             >
               К карте знаний

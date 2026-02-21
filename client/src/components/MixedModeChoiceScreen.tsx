@@ -20,13 +20,13 @@ export function MixedModeChoiceScreen({ onAll, onOneSkill, onBack }: MixedModeCh
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="w-full max-w-md mx-auto px-4 flex flex-col items-center"
+      className="w-full max-w-md mx-auto px-3 sm:px-4 max-w-[100vw] flex flex-col items-center overflow-x-hidden safe-bottom pb-6"
       data-testid="mixed-mode-choice-screen"
     >
       <Button
         variant="ghost"
         size="sm"
-        className="self-start -ml-2 mb-2 gap-1 text-muted-foreground"
+        className="self-start -ml-2 mb-2 gap-1 text-muted-foreground min-h-[48px] touch-manipulation"
         onClick={onBack}
         data-testid="button-mixed-back"
       >
@@ -46,7 +46,7 @@ export function MixedModeChoiceScreen({ onAll, onOneSkill, onBack }: MixedModeCh
           <CardContent className="p-0">
             <Button
               variant="ghost"
-              className="w-full h-auto min-h-[52px] flex items-center gap-3 p-4 text-left whitespace-normal rounded-xl"
+              className="w-full h-auto min-h-[48px] flex items-center gap-3 p-3 sm:p-4 text-left whitespace-normal rounded-xl touch-manipulation"
               onClick={onAll}
               data-testid="button-mixed-all"
             >

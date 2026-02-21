@@ -73,7 +73,7 @@ export function CompletionScreen({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      className="w-full max-w-lg mx-auto px-4 sm:px-6"
+      className="w-full max-w-lg mx-auto px-3 sm:px-6 max-w-[100vw] overflow-x-hidden safe-bottom pb-6"
     >
       <Card className="overflow-visible" data-testid="completion-card">
         <CardContent className="pt-8 pb-6 flex flex-col items-center text-center">
@@ -90,7 +90,7 @@ export function CompletionScreen({
             ) : (
               <Trophy className="w-6 h-6 text-amber-500" />
             )}
-            <h2 className="text-2xl sm:text-3xl font-bold" data-testid="text-completion-title">
+            <h2 className="text-xl sm:text-3xl font-bold" data-testid="text-completion-title">
               {titleText}
             </h2>
           </div>
@@ -164,7 +164,7 @@ export function CompletionScreen({
             {wrongWords.length > 0 && !mastered && (
               <Button
                 onClick={onNextRound}
-                className="gap-2 text-base w-full"
+                className="gap-2 text-base w-full min-h-[48px] touch-manipulation"
                 size="lg"
                 data-testid="button-next-round"
               >
@@ -176,7 +176,7 @@ export function CompletionScreen({
             <Button
               variant={wrongWords.length > 0 && !mastered ? "outline" : "default"}
               onClick={onBackToMap}
-              className="gap-2 text-base w-full"
+              className="gap-2 text-base w-full min-h-[48px] touch-manipulation"
               size="lg"
               data-testid="button-back-to-map"
             >

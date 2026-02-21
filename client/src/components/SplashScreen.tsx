@@ -10,7 +10,8 @@ interface SplashScreenProps {
 export function SplashScreen({ onFinish }: SplashScreenProps) {
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-b from-emerald-50 via-white to-sky-50 dark:from-emerald-950 dark:via-background dark:to-sky-950 px-6"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-b from-emerald-50 via-white to-sky-50 dark:from-emerald-950 dark:via-background dark:to-sky-950 px-4 sm:px-6"
+      style={{ paddingTop: "max(1.5rem, env(safe-area-inset-top))", paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -55,7 +56,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         <Button
           onClick={onFinish}
           size="lg"
-          className="gap-2 text-lg px-8 bg-primary text-primary-foreground"
+          className="gap-2 text-lg px-8 min-h-[48px] touch-manipulation bg-primary text-primary-foreground"
           data-testid="button-start"
         >
           Начать

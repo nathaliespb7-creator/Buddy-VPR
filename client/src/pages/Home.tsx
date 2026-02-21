@@ -125,8 +125,9 @@ export default function Home() {
     queryKey: ["/api/tasks"],
   });
 
+  // Приоритет клиентского списка, если с API пришло меньше заданий (неполный seed на сервере)
   const allTasks = useMemo(() => {
-    if (serverTasks && serverTasks.length > 0) return serverTasks;
+    if (serverTasks && serverTasks.length >= tasksData.length) return serverTasks;
     return tasksData;
   }, [serverTasks]);
 
@@ -295,10 +296,15 @@ export default function Home() {
         setTotalTasksInCategory(taskCounts[category] || roundData.totalTasks);
 
         const remainingIds = roundData.remainingTaskIds || [];
-        const remainingTasks = remainingIds
+        let remainingTasks = remainingIds
           .map(id => taskById.get(id))
           .filter((t): t is Task => !!t);
 
+        // Если маппинг по id не нашёл задания (разные id на сервере и в клиенте) — берём по категории
+        if (remainingTasks.length === 0 && roundData.totalTasks) {
+          const byCategory = allTasks.filter((t) => t.category === category);
+          remainingTasks = byCategory.slice(0, roundData.totalTasks);
+        }
         if (remainingTasks.length === 0) {
           setIsLoadingRound(false);
           return;
@@ -452,7 +458,7 @@ export default function Home() {
   const totalTasks = activeTasks.length;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col" data-testid="home-page">
+    <div className="min-h-screen min-h-[100dvh] bg-background flex flex-col overflow-x-hidden w-full max-w-[100vw]" data-testid="home-page">
       <AnimatePresence>
         {showSplash && (
           <SplashScreen
@@ -475,27 +481,40 @@ export default function Home() {
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-secondary/40 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative z-10 flex flex-col min-h-screen min-h-[100dvh] w-full max-w-[100vw] overflow-x-hidden">
         {!showSplash && (
-          <Header mascotMood={mascotMood} stars={userStars} onExit={() => setPhase("islandMap")} overallProgress={overallProgress} />
+          <Header
+            mascotMood={mascotMood}
+            stars={userStars}
+            onExit={() => setPhase("islandMap")}
+            overallProgress={overallProgress}
+            variant={phase === "diagnostic" || phase === "training" ? "task" : "full"}
+            taskProgress={
+              (phase === "diagnostic" || phase === "training") && activeTasks.length > 0
+                ? { current: currentTaskIndex + 1, total: roundTotalTasks || activeTasks.length }
+                : undefined
+            }
+          />
         )}
 
         {phase === "diagnostic" && (
-          <ProgressBar
-            completed={completedTasks}
-            total={roundTotalTasks || totalTasks}
-            categoryScores={categoryScores}
-          />
+          <div className="hidden sm:block shrink-0">
+            <ProgressBar
+              completed={completedTasks}
+              total={roundTotalTasks || totalTasks}
+              categoryScores={categoryScores}
+            />
+          </div>
         )}
 
         <main
           className={cn(
-            "flex-1 flex flex-col items-center min-h-0",
+            "flex-1 flex flex-col items-center min-h-0 w-full max-w-[100vw] overflow-x-hidden",
             (phase === "diagnostic" || phase === "training")
-              ? "pt-1 sm:pt-2 pb-1 sm:pb-2 overflow-hidden"
-              : "pt-3 sm:pt-4 pb-4 sm:pb-8 overflow-y-auto"
+              ? "pt-0 sm:pt-2 pb-0 sm:pb-2 overflow-hidden"
+              : "pt-3 sm:pt-4 pb-4 sm:pb-8 overflow-y-auto overscroll-behavior-contain safe-bottom"
           )}
-        >
+                  >
           <AnimatePresence mode="wait">
             {phase === "diagnostic" && activeTasks.length === 0 && (
               <p key="diagnostic-loading" className="text-muted-foreground text-center py-8" data-testid="diagnostic-loading">
@@ -503,12 +522,14 @@ export default function Home() {
               </p>
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
-              <div key={`wrap-${currentTask.id}`} className="flex-1 min-h-0 w-full flex flex-col justify-center overflow-hidden">
+              <div key={`wrap-${currentTask.id}`} className="w-full flex-1 flex flex-col min-h-0 overflow-hidden">
                 <TaskCard
                   key={`task-${currentTask.id}-${currentTaskIndex}`}
                   task={currentTask}
                   onComplete={handleTaskComplete}
                   isDiscovery={phase === "diagnostic"}
+                  taskIndex={currentTaskIndex}
+                  totalTasks={roundTotalTasks || activeTasks.length}
                 />
               </div>
             )}

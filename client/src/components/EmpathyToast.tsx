@@ -46,7 +46,8 @@ export function EmpathyToast({ message, type, visible, onClose }: EmpathyToastPr
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 15 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed bottom-6 left-0 right-0 mx-auto z-[60] w-[80vw] max-w-sm pointer-events-none"
+          className="fixed left-0 right-0 mx-auto z-[60] w-[calc(100vw-2rem)] max-w-sm pointer-events-none"
+          style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
           data-testid="empathy-toast"
         >
           <div

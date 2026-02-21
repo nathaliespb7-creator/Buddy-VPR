@@ -192,19 +192,19 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-lg mx-auto px-4 sm:px-6"
+      className="w-full max-w-lg mx-auto px-3 sm:px-6 max-w-[100vw] overflow-x-hidden safe-bottom pb-6"
       data-testid="island-map"
     >
       <div className="flex items-center justify-center gap-2 mb-5">
         <MapPin className="w-6 h-6 text-primary shrink-0" />
-        <h2 className="text-2xl font-bold text-center" data-testid="text-island-title">
+        <h2 className="text-xl sm:text-2xl font-bold text-center" data-testid="text-island-title">
           Выбирай остров!
         </h2>
       </div>
 
       <button
         onClick={() => onSelect("all")}
-        className="w-full mb-5 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-4 py-3.5 transition-all hover-elevate active-elevate-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="w-full mb-5 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-4 py-3.5 min-h-[48px] transition-all hover-elevate active-elevate-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring touch-manipulation"
         data-testid="button-island-all"
       >
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 shrink-0">
@@ -249,8 +249,8 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
               <button
                 onClick={() => onSelect(island.key)}
                 className={cn(
-                  "w-full text-left rounded-2xl border-2 bg-gradient-to-br p-4",
-                  "transition-all hover-elevate active-elevate-2",
+                  "w-full text-left rounded-2xl border-2 bg-gradient-to-br p-3 sm:p-4 min-h-[48px]",
+                  "transition-all hover-elevate active-elevate-2 touch-manipulation",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   island.gradient,
                   island.borderColor

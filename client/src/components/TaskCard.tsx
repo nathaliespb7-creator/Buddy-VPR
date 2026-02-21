@@ -1,10 +1,9 @@
 import { useState, useCallback, useRef, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Sparkles, Star, Volume2, VolumeX } from "lucide-react";
 import { type Task, getBuddyHint } from "@/lib/taskData";
-import { Mascot } from "./Mascot";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
 
@@ -51,9 +50,11 @@ interface TaskCardProps {
   task: Task;
   onComplete: (correct: boolean, hintsUsed: number, starType: StarType) => void;
   isDiscovery?: boolean;
+  taskIndex?: number;
+  totalTasks?: number;
 }
 
-export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
+export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTasks = 1 }: TaskCardProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [hintLevel, setHintLevel] = useState(0);
   const [attempts, setAttempts] = useState(0);
@@ -176,6 +177,8 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
     : "fill-slate-300 text-slate-400";
   const starLabel = isGold ? "Золотая звезда!" : "Серебряная звезда!";
 
+  const questionText = task.question || `Где правильное ударение в слове «${task.word}»?`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -183,77 +186,55 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
       exit={{ opacity: 0, x: -60 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className={cn(
-        "w-full max-w-2xl mx-auto px-3 sm:px-4",
-        "flex flex-col min-h-0 flex-1 sm:flex-none"
+        "w-full max-w-2xl mx-auto max-w-[100vw] flex flex-col h-full min-h-0 overflow-hidden",
+        "px-4 sm:px-4"
       )}
+      data-testid="task-card"
     >
-      <Card className="overflow-hidden flex flex-col flex-1 min-h-0 sm:flex-none" data-testid="task-card">
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col">
-          <CardHeader className="pb-0.5 pt-1.5 sm:pt-2 px-3 sm:px-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5">
-                <span
-                  className={cn(
-                    "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-semibold",
-                    typeColors[task.type] || typeColors.accent
-                  )}
-                  data-testid="badge-task-type"
-                >
-                  {typeLabels[task.type] || task.type}
-                </span>
-                {isDiscovery && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
-                    Разведка
-                  </span>
-                )}
-              </div>
-            </div>
-            <CardTitle className="text-sm mt-0.5 leading-snug" data-testid="text-task-title">
-              {task.question || `Где правильное ударение в слове «${task.word}»?`}
-            </CardTitle>
-            {task.type === "meaning" && task.word && !task.question?.includes(task.word) && (
-              <p className="text-sm font-medium text-foreground mt-1 leading-snug" data-testid="text-proverb">
-                «{task.word}»
-              </p>
-            )}
-          </CardHeader>
-
-          <CardContent className="pb-1 pt-0 px-3 sm:px-4 flex flex-col flex-1 min-h-0">
-            <div className="flex flex-col items-center gap-0 mb-1 sm:mb-2">
-            <Mascot
-              mood={
-                showResult
-                  ? (isCorrect ? "celebrating" : "wrong")
-                  : hintLevel > 0
-                    ? "hint"
-                    : "idle"
-              }
-              size="sm"
-              isSpeaking={isSpeechPlaying}
-              bookOpen={hintLevel > 0}
-            />
+      {/* Мобильный: один экран — вопрос сверху, варианты по центру, кнопка внизу */}
+      <Card className="flex flex-col flex-1 min-h-0 overflow-hidden border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-card">
+        {/* Верх: номер + вопрос + послушай (компактно) */}
+        <div className="shrink-0 pt-2 sm:pt-3 pb-2">
+          <span className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide" data-testid="text-question-index">
+            Вопрос {taskIndex + 1} из {totalTasks}
+          </span>
+          <h2 className="text-base sm:text-lg font-bold text-foreground leading-tight mt-1 line-clamp-3 sm:line-clamp-none" data-testid="text-task-title">
+            {questionText}
+          </h2>
+          {task.type === "meaning" && task.word && !questionText.includes(task.word) && (
+            <p className="text-sm text-foreground/90 mt-1 line-clamp-1" data-testid="text-proverb">
+              «{task.word}»
+            </p>
+          )}
+          <div className="flex items-center gap-2 mt-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleListen}
-              className="gap-1 text-xs shrink-0 h-8 min-h-[32px]"
+              className="gap-1.5 text-xs min-h-[44px] px-2 touch-manipulation shrink-0"
               data-testid="button-listen"
             >
-              {isSpeechPlaying ? (
-                <VolumeX className="w-3.5 h-3.5" />
-              ) : (
-                <Volume2 className="w-3.5 h-3.5" />
-              )}
-              {isSpeechPlaying ? "Стоп" : "Послушай"}
+              {isSpeechPlaying ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              <span>{isSpeechPlaying ? "Стоп" : "Послушай"}</span>
             </Button>
-            </div>
+            <span className={cn("inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold", typeColors[task.type] || typeColors.accent)} data-testid="badge-task-type">
+              {typeLabels[task.type] || task.type}
+            </span>
+            {isDiscovery && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
+                Разведка
+              </span>
+            )}
+          </div>
+        </div>
 
-            <div className="space-y-1 sm:space-y-1.5 mb-1 sm:mb-2" data-testid="options-list">
+        {/* Варианты ответов — единственная область со скроллом при необходимости */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-behavior-contain px-0 py-1" data-testid="options-list">
+          <div className="flex flex-col gap-2 sm:gap-2.5">
             {task.options?.map((option, idx) => {
               const isSelected = selectedOption === option;
               const isAnswer = showResult && option === task.correct;
               const isWrong = showResult && isSelected && !isCorrect;
-
               return (
                 <motion.button
                   key={`${task.id}-${idx}`}
@@ -261,7 +242,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                   onClick={() => handleSelect(option)}
                   disabled={showResult}
                   className={cn(
-                    "w-full text-left rounded-lg border-2 px-2 sm:px-2.5 py-1.5 sm:py-2 text-sm font-medium transition-all",
+                    "w-full text-left rounded-xl border-2 px-3 py-2.5 min-h-[48px] text-base sm:text-sm font-medium transition-all touch-manipulation",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isAnswer
                       ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-600 text-emerald-800 dark:text-emerald-200"
@@ -276,7 +257,7 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                   <div className="flex items-center gap-3">
                     <span
                       className={cn(
-                        "flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full text-xs font-bold shrink-0",
+                        "flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold shrink-0",
                         isAnswer
                           ? "bg-emerald-200 dark:bg-emerald-700 text-emerald-800 dark:text-emerald-100"
                           : isWrong
@@ -288,164 +269,91 @@ export function TaskCard({ task, onComplete, isDiscovery }: TaskCardProps) {
                     >
                       {String.fromCharCode(65 + idx)}
                     </span>
-                    <span>{option}</span>
-                    {isAnswer && (
-                      <Sparkles className="w-5 h-5 ml-auto text-emerald-500 dark:text-emerald-400 shrink-0" />
-                    )}
+                    <span className="flex-1 min-w-0">{option}</span>
+                    {isAnswer && <Sparkles className="w-5 h-5 shrink-0 text-emerald-500 dark:text-emerald-400" />}
                   </div>
                 </motion.button>
               );
             })}
-            </div>
+          </div>
+        </div>
 
-            <AnimatePresence>
+        {/* Подсказка / результат — компактно */}
+        <div className="shrink-0 py-1">
+          <AnimatePresence>
             {hintLevel > 0 && !showResult && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mb-1 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1.5"
+                className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1.5 text-xs"
                 data-testid="hint-box"
               >
-                <div className="flex items-start gap-1">
-                  <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-200 mb-0">
-                      {hintLevel === 1
-                        ? "Бадди подсказывает"
-                        : hintLevel === 2
-                        ? "Секретная подсказка"
-                        : "Золотое правило"}
-                    </p>
-                    <p className="text-xs text-amber-700 dark:text-amber-300 leading-snug" data-testid="text-hint">
-                      {hintLevel === 1
-                        ? "Подумай ещё! Ты справишься!"
-                        : hintLevel === 2
-                        ? task.hint
-                        : (task.ruleId ? getBuddyHint(task.ruleId) : task.rule || task.hint)}
-                    </p>
-                  </div>
-                </div>
+                <p className="font-semibold text-amber-800 dark:text-amber-200">
+                  {hintLevel === 1 ? "Бадди подсказывает" : hintLevel === 2 ? "Секретная подсказка" : "Золотое правило"}
+                </p>
+                <p className="text-amber-700 dark:text-amber-300 leading-snug mt-0.5" data-testid="text-hint">
+                  {hintLevel === 1 ? "Подумай ещё! Ты справишься!" : hintLevel === 2 ? task.hint : (task.ruleId ? getBuddyHint(task.ruleId) : task.rule || task.hint)}
+                </p>
               </motion.div>
             )}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {showStarBurst && (
-              <div className="relative flex justify-center mb-1 h-8 sm:h-10" data-testid="star-burst">
-                {[...Array(5)].map((_, i) => {
-                  const angle = (i - 2) * 30;
-                  const rad = (angle * Math.PI) / 180;
-                  const x = Math.sin(rad) * 60;
-                  const y = -Math.cos(rad) * 50 - 10;
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-                      animate={{ opacity: [0, 1, 1, 0], scale: [0, 1.3, 1, 0.5], x, y }}
-                      transition={{ duration: 0.8, delay: i * 0.08, ease: "easeOut" }}
-                      className="absolute"
-                    >
-                      <Star className={cn("w-7 h-7 drop-shadow-sm", starColorClass)} />
-                    </motion.div>
-                  );
-                })}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: [0, 1.5, 1] }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="absolute"
-                >
-                  <Star className={cn("w-10 h-10 drop-shadow-md", starColorClass)} />
-                </motion.div>
-              </div>
-              )}
-            </AnimatePresence>
-
-            {showResult && (
+          </AnimatePresence>
+          {showStarBurst && (
+            <div className="relative flex justify-center h-6 my-0.5" data-testid="star-burst">
+              <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="flex items-center justify-center">
+                <Star className={cn("w-8 h-8 drop-shadow-sm", starColorClass)} />
+              </motion.div>
+            </div>
+          )}
+          {showResult && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "mb-1 rounded-lg border px-2 py-1.5",
-                isCorrect
-                  ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700"
-                  : "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700"
+                "rounded-lg border px-2 py-1.5 text-xs",
+                isCorrect ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700" : "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700"
               )}
               data-testid="result-box"
             >
-              <div className="flex items-start gap-1.5">
-                {isCorrect && (
-                  <Star className={cn("w-4 h-4 shrink-0 mt-0.5", starColorClass)} />
-                )}
-                <div className="min-w-0">
-                  <p
-                    className={cn(
-                      "text-xs font-semibold mb-0",
-                      isCorrect
-                        ? "text-emerald-800 dark:text-emerald-200"
-                        : "text-orange-800 dark:text-orange-200"
-                    )}
-                    data-testid="text-result-label"
-                  >
-                    {isCorrect ? starLabel : "Запомним вместе!"}
-                  </p>
-                  <p
-                    className={cn(
-                      "text-xs leading-snug",
-                      isCorrect
-                        ? "text-emerald-700 dark:text-emerald-300"
-                        : "text-orange-700 dark:text-orange-300"
-                    )}
-                    data-testid="text-result-explanation"
-                  >
-                    {highlightKeyWord(task.audio, task.correct)}
-                  </p>
-                </div>
-              </div>
+              <p className={cn("font-semibold", isCorrect ? "text-emerald-800 dark:text-emerald-200" : "text-orange-800 dark:text-orange-200")} data-testid="text-result-label">
+                {isCorrect ? starLabel : "Запомним вместе!"}
+              </p>
+              <p className={cn("leading-snug mt-0.5", isCorrect ? "text-emerald-700 dark:text-emerald-300" : "text-orange-700 dark:text-orange-300")} data-testid="text-result-explanation">
+                {highlightKeyWord(task.audio, task.correct)}
+              </p>
             </motion.div>
-            )}
-          </CardContent>
+          )}
         </div>
 
-        {/* Кнопки внизу — компактно, один экран без скролла */}
-        <div className="shrink-0 flex flex-col gap-1 sm:gap-1.5 p-1.5 sm:p-2 pt-1.5 bg-background border-t sm:border-t-0">
+        {/* Кнопки внизу — прижаты к низу, safe area */}
+        <div
+          className="shrink-0 flex flex-col sm:flex-row gap-2 p-3 pt-2 bg-background border-t border-border/60 sm:border-t-0"
+          style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        >
           {!showResult ? (
             <>
               <Button
                 variant="outline"
                 onClick={handleShowHint}
                 disabled={hintLevel >= 3}
-                size="default"
-                className="w-full gap-1 text-xs sm:text-sm border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 h-9 min-h-[44px]"
+                className="flex-1 sm:flex-initial gap-1 text-sm border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 min-h-[48px] touch-manipulation"
                 data-testid="button-hint"
               >
-                <Lightbulb className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Подсказка
-                {hintLevel > 0 && (
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">({hintLevel}/3)</span>
-                )}
+                <Lightbulb className="w-4 h-4" />
+                Подсказка {hintLevel > 0 && <span className="text-muted-foreground">({hintLevel}/3)</span>}
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={!selectedOption}
-                size="default"
-                className="w-full gap-1 text-xs sm:text-sm h-9 min-h-[44px]"
+                className="flex-1 min-h-[48px] touch-manipulation"
                 data-testid="button-submit"
               >
-                Проверить
-                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Проверить <ArrowRight className="w-4 h-4" />
               </Button>
             </>
           ) : (
-            <Button
-              onClick={handleNext}
-              size="default"
-              className="w-full gap-1 text-xs sm:text-sm h-9 min-h-[44px]"
-              data-testid="button-next"
-            >
-              Дальше
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden />
+            <Button onClick={handleNext} className="w-full min-h-[48px] touch-manipulation" data-testid="button-next">
+              Дальше <ArrowRight className="w-4 h-4" aria-hidden />
             </Button>
           )}
         </div>
