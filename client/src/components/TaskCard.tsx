@@ -327,7 +327,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
 
         {/* Кнопки внизу — прижаты к низу, safe area */}
         <div
-          className="shrink-0 flex flex-col sm:flex-row gap-2 p-3 pt-2 md:pt-4 md:pb-6 bg-background border-t border-border/60 sm:border-t-0"
+          className="shrink-0 flex items-center gap-3 p-3 pt-2 md:pt-4 md:pb-6 bg-background border-t border-border/60 sm:border-t-0"
           style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
         >
           {!showResult ? (
@@ -336,7 +336,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
                 variant="outline"
                 onClick={handleShowHint}
                 disabled={hintLevel >= 3}
-                className="flex-1 sm:flex-initial gap-1 text-sm border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 min-h-[48px] touch-manipulation"
+                className="shrink-0 h-12 gap-1 text-sm border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 touch-manipulation"
                 data-testid="button-hint"
               >
                 <Lightbulb className="w-4 h-4" />
@@ -345,14 +345,14 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               <Button
                 onClick={handleSubmit}
                 disabled={!selectedOption}
-                className="flex-1 min-h-[48px] touch-manipulation"
+                className="flex-1 h-12 touch-manipulation"
                 data-testid="button-submit"
               >
                 Проверить <ArrowRight className="w-4 h-4" />
               </Button>
             </>
           ) : (
-            <Button onClick={handleNext} className="w-full min-h-[48px] touch-manipulation" data-testid="button-next">
+            <Button onClick={handleNext} className="w-full h-12 touch-manipulation" data-testid="button-next">
               Дальше <ArrowRight className="w-4 h-4" aria-hidden />
             </Button>
           )}
