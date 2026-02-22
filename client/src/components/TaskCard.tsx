@@ -192,9 +192,9 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
       data-testid="task-card"
     >
       {/* Мобильный: один экран — вопрос сверху, варианты по центру, кнопка внизу */}
-      <Card className="flex flex-col flex-1 md:flex-initial min-h-0 overflow-hidden md:overflow-visible border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-card">
+      <Card className="flex flex-col flex-1 md:flex-initial min-h-0 overflow-hidden md:overflow-visible border-0 sm:border sm:rounded-2xl shadow-none sm:shadow-sm bg-transparent sm:bg-card sm:px-5 md:px-8">
         {/* Верх: номер + вопрос + послушай (компактно) */}
-        <div className="shrink-0 pt-2 sm:pt-3 md:pt-5 pb-2 md:pb-3">
+        <div className="shrink-0 pt-2 sm:pt-5 md:pt-6 pb-2 md:pb-3">
           <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wide" data-testid="text-question-index">
             Вопрос {taskIndex + 1} из {totalTasks}
           </span>
@@ -327,7 +327,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
 
         {/* Кнопки внизу — прижаты к низу, safe area */}
         <div
-          className="shrink-0 flex items-stretch gap-3 px-3 py-3 md:px-4 md:pt-4 md:pb-6"
+          className="shrink-0 flex items-stretch gap-3 py-3 sm:py-4 md:pb-6"
           style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
         >
           {!showResult ? (
