@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lightbulb, ArrowRight, Sparkles, Star, Volume2, VolumeX } from "lucide-react";
+import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
 import { type Task, getBuddyHint } from "@/lib/taskData";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
@@ -63,50 +63,6 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
   const [showStarBurst, setShowStarBurst] = useState(false);
   const [earnedStarType, setEarnedStarType] = useState<StarType>("empty");
   const [usedHintButton, setUsedHintButton] = useState(false);
-  const [isSpeechPlaying, setIsSpeechPlaying] = useState(false);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  const findRuVoice = useCallback(() => {
-    const voices = window.speechSynthesis.getVoices();
-    return voices.find(v => v.lang.startsWith("ru") && v.name.toLowerCase().includes("female"))
-      || voices.find(v => v.lang.startsWith("ru"))
-      || null;
-  }, []);
-
-  const speak = useCallback((text: string) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ru-RU";
-    utterance.rate = 0.9;
-    utterance.pitch = 1.1;
-    const voice = findRuVoice();
-    if (voice) utterance.voice = voice;
-    utterance.onstart = () => setIsSpeechPlaying(true);
-    utterance.onend = () => setIsSpeechPlaying(false);
-    utterance.onerror = () => setIsSpeechPlaying(false);
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
-  }, [findRuVoice]);
-
-  const stopSpeech = useCallback(() => {
-    window.speechSynthesis.cancel();
-    setIsSpeechPlaying(false);
-  }, []);
-
-  const handleListen = useCallback(() => {
-    if (isSpeechPlaying) {
-      stopSpeech();
-    } else {
-      let textToSpeak = task.audio;
-      if (hintLevel === 3 && task.ruleId) {
-        textToSpeak = getBuddyHint(task.ruleId);
-      } else if (hintLevel === 2) {
-        textToSpeak = task.hint;
-      }
-      speak(textToSpeak);
-    }
-  }, [isSpeechPlaying, task, hintLevel, speak, stopSpeech]);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -207,16 +163,6 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
             </p>
           )}
           <div className="flex items-center gap-2 mt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleListen}
-              className="gap-1.5 text-xs min-h-[44px] px-2 touch-manipulation shrink-0"
-              data-testid="button-listen"
-            >
-              {isSpeechPlaying ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              <span>{isSpeechPlaying ? "Стоп" : "Послушай"}</span>
-            </Button>
             <span className={cn("inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold", typeColors[task.type] || typeColors.accent)} data-testid="badge-task-type">
               {typeLabels[task.type] || task.type}
             </span>
