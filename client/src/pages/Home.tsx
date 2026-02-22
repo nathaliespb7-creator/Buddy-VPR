@@ -121,11 +121,23 @@ export default function Home() {
 
   const userStars = profile?.stars || [];
 
-  const { data: serverTasks, isLoading: tasksLoading } = useQuery<Task[]>({
+  const { data: serverTasks } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
+    queryFn: async () => {
+      try {
+        const res = await fetch(API_BASE + "/api/tasks", { credentials: "include" });
+        if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
+    },
+    staleTime: Infinity,
+    retry: false,
   });
 
-  // Приоритет клиентского списка, если с API пришло меньше заданий (неполный seed на сервере)
+  // Приоритет клиентского списка: при пустом/неполном ответе API (например Vercel отдаёт HTML) используем полный список
   const allTasks = useMemo(() => {
     if (serverTasks && serverTasks.length >= tasksData.length) return serverTasks;
     return tasksData;

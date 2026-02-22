@@ -29,4 +29,29 @@ npm run dev
 
 ---
 
+## Команды деплоя (Vercel)
+
+Деплой идёт автоматически после **push** в GitHub. Выполняй в терминале из папки проекта:
+
+```bash
+cd /Users/nathalie/Buddy-VPR
+git add .
+git status
+git commit -m "описание изменений"
+git push
+```
+
+Если при `git push` ошибка **401** — см. **docs/GIT-GITHUB.md** (токен в `.github-token-buddy`):
+
+```bash
+cd /Users/nathalie/Buddy-VPR
+git remote set-url origin "https://nathaliespb7-creator:$(cat .github-token-buddy)@github.com/nathaliespb7-creator/Buddy-VPR.git"
+git push -u origin main
+git remote set-url origin https://github.com/nathaliespb7-creator/Buddy-VPR.git
+```
+
+После push зайди в **Vercel** → проект **Buddy-VPR** → вкладка **Deployments**. Дождись статуса **Ready**. Сайт: **https://buddyvpr.vercel.app**
+
+---
+
 Подробнее: **docs/CONTEXT.md**, деплой и домен: **docs/DEPLOY-VERCEL.md**.

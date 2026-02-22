@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mascot } from "./Mascot";
-import { ArrowRight, Zap, BookOpen, Star, Shield } from "lucide-react";
+import { ArrowRight, Zap, BookOpen, Star, Shield, Puzzle, Users, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PowerCardProps {
@@ -11,27 +11,12 @@ interface PowerCardProps {
 }
 
 const categories = [
-  {
-    key: "accent",
-    label: "Ударения",
-    icon: Zap,
-    barColor: "bg-violet-400 dark:bg-violet-500",
-    bgColor: "bg-violet-100/50 dark:bg-violet-900/20",
-  },
-  {
-    key: "phonetics",
-    label: "Звуки и буквы",
-    icon: BookOpen,
-    barColor: "bg-sky-400 dark:bg-sky-500",
-    bgColor: "bg-sky-100/50 dark:bg-sky-900/20",
-  },
-  {
-    key: "meaning",
-    label: "Смысл",
-    icon: Star,
-    barColor: "bg-amber-400 dark:bg-amber-500",
-    bgColor: "bg-amber-100/50 dark:bg-amber-900/20",
-  },
+  { key: "accent", label: "Ударения", icon: Zap, barColor: "bg-violet-400 dark:bg-violet-500", bgColor: "bg-violet-100/50 dark:bg-violet-900/20" },
+  { key: "phonetics", label: "Звуки и буквы", icon: BookOpen, barColor: "bg-sky-400 dark:bg-sky-500", bgColor: "bg-sky-100/50 dark:bg-sky-900/20" },
+  { key: "meaning", label: "Смысл", icon: Star, barColor: "bg-amber-400 dark:bg-amber-500", bgColor: "bg-amber-100/50 dark:bg-amber-900/20" },
+  { key: "morphemics", label: "Состав слова", icon: Puzzle, barColor: "bg-emerald-400 dark:bg-emerald-500", bgColor: "bg-emerald-100/50 dark:bg-emerald-900/20" },
+  { key: "morphology", label: "Части речи", icon: Users, barColor: "bg-rose-400 dark:bg-rose-500", bgColor: "bg-rose-100/50 dark:bg-rose-900/20" },
+  { key: "syntax", label: "Предложение", icon: FileText, barColor: "bg-indigo-400 dark:bg-indigo-500", bgColor: "bg-indigo-100/50 dark:bg-indigo-900/20" },
 ];
 
 export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
@@ -68,8 +53,8 @@ export function PowerCard({ categoryScores, onContinue }: PowerCardProps) {
 
           <div className="space-y-3 mb-6" data-testid="power-scores">
             {categories.map((cat, i) => {
-              const score = categoryScores[cat.key] || { correct: 0, total: 1 };
-              const percent = Math.round((score.correct / score.total) * 100);
+              const score = categoryScores[cat.key] || { correct: 0, total: 0 };
+              const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
               const Icon = cat.icon;
 
               return (
