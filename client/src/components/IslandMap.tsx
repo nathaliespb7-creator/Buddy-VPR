@@ -159,9 +159,14 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
   const { data: categoryProgress } = useQuery<CategoryProgress[]>({
     queryKey: ["/api/categories/progress", sessionId],
     queryFn: async () => {
-      const res = await fetch(API_BASE + `/api/categories/progress?sessionId=${sessionId}`);
-      if (!res.ok) return [];
-      return res.json();
+      try {
+        const res = await fetch(API_BASE + `/api/categories/progress?sessionId=${sessionId}`);
+        if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
     },
     enabled: !!sessionId,
     refetchOnWindowFocus: true,

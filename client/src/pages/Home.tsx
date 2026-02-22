@@ -121,7 +121,7 @@ export default function Home() {
 
   const userStars = profile?.stars || [];
 
-  const { data: serverTasks } = useQuery<Task[]>({
+  const { data: serverTasks, isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
     queryFn: async () => {
       try {
