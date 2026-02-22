@@ -83,8 +83,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["'Manrope'", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "'Helvetica Neue'", "Arial", "sans-serif"],
-        heading: ["'Manrope'", "sans-serif"],
+        sans: ["'Nunito'", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "Roboto", "'Helvetica Neue'", "Arial", "sans-serif"],
+        heading: ["'Nunito'", "sans-serif"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
       },
