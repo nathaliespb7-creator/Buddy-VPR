@@ -470,7 +470,7 @@ export default function Home() {
   const totalTasks = activeTasks.length;
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-background flex flex-col overflow-x-hidden w-full max-w-[100vw]" data-testid="home-page">
+    <div className="min-h-[100dvh] bg-background flex flex-col overflow-x-hidden w-full max-w-[100vw]" data-testid="home-page">
       <AnimatePresence>
         {showSplash && (
           <SplashScreen
@@ -493,7 +493,7 @@ export default function Home() {
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-secondary/40 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-screen min-h-[100dvh] w-full max-w-[100vw] overflow-x-hidden">
+      <div className="relative z-10 flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto w-full max-w-[100vw] overflow-x-hidden">
         {!showSplash && (
           <Header
             mascotMood={mascotMood}
@@ -523,10 +523,10 @@ export default function Home() {
           className={cn(
             "flex-1 flex flex-col items-center min-h-0 w-full max-w-[100vw] overflow-x-hidden",
             (phase === "diagnostic" || phase === "training")
-              ? "pt-0 sm:pt-2 pb-0 sm:pb-2 overflow-hidden"
+              ? "pt-0 sm:pt-2 pb-0 sm:pb-2 overflow-hidden md:overflow-y-auto md:pb-8"
               : "pt-3 sm:pt-4 pb-4 sm:pb-8 overflow-y-auto overscroll-behavior-contain safe-bottom"
           )}
-                  >
+        >
           <AnimatePresence mode="wait">
             {phase === "diagnostic" && activeTasks.length === 0 && (
               <p key="diagnostic-loading" className="text-muted-foreground text-center py-8" data-testid="diagnostic-loading">
@@ -534,7 +534,7 @@ export default function Home() {
               </p>
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
-              <div key={`wrap-${currentTask.id}`} className="w-full flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div key={`wrap-${currentTask.id}`} className="w-full flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden md:overflow-visible">
                 <TaskCard
                   key={`task-${currentTask.id}-${currentTaskIndex}`}
                   task={currentTask}

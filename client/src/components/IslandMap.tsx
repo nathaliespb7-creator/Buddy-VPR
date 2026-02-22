@@ -197,12 +197,12 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-lg mx-auto px-3 sm:px-6 max-w-[100vw] overflow-x-hidden safe-bottom pb-6"
+      className="w-full max-w-[100vw] md:max-w-lg mx-auto px-3 sm:px-6 overflow-x-hidden safe-bottom pb-6"
       data-testid="island-map"
     >
       <div className="flex items-center justify-center gap-2 mb-5">
         <MapPin className="w-6 h-6 text-primary shrink-0" />
-        <h2 className="text-xl sm:text-2xl font-bold text-center" data-testid="text-island-title">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center" data-testid="text-island-title">
           Выбирай остров!
         </h2>
       </div>
@@ -273,14 +273,14 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1 flex-wrap">
-                      <p className="font-bold text-sm mb-0.5">{island.label}</p>
+                      <p className="font-bold text-sm md:text-base mb-0.5">{island.label}</p>
                       {taskCounts && taskCounts[island.key] > 0 && (
                         <span className="text-[11px] font-medium text-muted-foreground shrink-0" data-testid={`text-count-${island.key}`}>
                           {taskCountLabel(taskCounts[island.key])}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground leading-snug">
+                    <p className="text-xs md:text-sm text-muted-foreground leading-snug">
                       {island.description}
                     </p>
                     <ProgressIndicator progress={progress} island={island} />

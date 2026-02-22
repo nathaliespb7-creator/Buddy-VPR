@@ -186,19 +186,19 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
       exit={{ opacity: 0, x: -60 }}
       transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className={cn(
-        "w-full max-w-2xl mx-auto max-w-[100vw] flex flex-col h-full min-h-0 overflow-hidden",
-        "px-4 sm:px-4"
+        "w-full max-w-[100vw] md:max-w-2xl mx-auto flex flex-col h-full md:h-auto min-h-0 overflow-hidden md:overflow-visible",
+        "px-4 sm:px-6"
       )}
       data-testid="task-card"
     >
       {/* Мобильный: один экран — вопрос сверху, варианты по центру, кнопка внизу */}
-      <Card className="flex flex-col flex-1 min-h-0 overflow-hidden border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-card">
+      <Card className="flex flex-col flex-1 md:flex-initial min-h-0 overflow-hidden md:overflow-visible border-0 sm:border shadow-none sm:shadow-sm bg-transparent sm:bg-card">
         {/* Верх: номер + вопрос + послушай (компактно) */}
-        <div className="shrink-0 pt-2 sm:pt-3 pb-2">
-          <span className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide" data-testid="text-question-index">
+        <div className="shrink-0 pt-2 sm:pt-3 md:pt-5 pb-2 md:pb-3">
+          <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wide" data-testid="text-question-index">
             Вопрос {taskIndex + 1} из {totalTasks}
           </span>
-          <h2 className="text-base sm:text-lg font-bold text-foreground leading-tight mt-1 line-clamp-3 sm:line-clamp-none" data-testid="text-task-title">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1 line-clamp-3 sm:line-clamp-none" data-testid="text-task-title">
             {questionText}
           </h2>
           {task.type === "meaning" && task.word && !questionText.includes(task.word) && (
@@ -229,8 +229,8 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
         </div>
 
         {/* Варианты ответов — единственная область со скроллом при необходимости */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-behavior-contain px-0 py-1" data-testid="options-list">
-          <div className="flex flex-col gap-2 sm:gap-2.5">
+        <div className="flex-1 md:flex-initial min-h-0 overflow-y-auto md:overflow-visible overflow-x-hidden overscroll-behavior-contain px-0 py-1 md:py-3" data-testid="options-list">
+          <div className="flex flex-col gap-2 sm:gap-2.5 md:gap-3">
             {task.options?.map((option, idx) => {
               const isSelected = selectedOption === option;
               const isAnswer = showResult && option === task.correct;
@@ -242,7 +242,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
                   onClick={() => handleSelect(option)}
                   disabled={showResult}
                   className={cn(
-                    "w-full text-left rounded-xl border-2 px-3 py-2.5 min-h-[48px] text-base sm:text-sm font-medium transition-all touch-manipulation",
+                    "w-full text-left rounded-xl border-2 px-3 py-2.5 md:px-4 md:py-3 min-h-[48px] text-base md:text-lg font-medium transition-all touch-manipulation",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     isAnswer
                       ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-600 text-emerald-800 dark:text-emerald-200"
@@ -286,7 +286,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1.5 text-xs"
+                className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-2 py-1.5 md:px-4 md:py-3 text-xs md:text-sm"
                 data-testid="hint-box"
               >
                 <p className="font-semibold text-amber-800 dark:text-amber-200">
@@ -310,7 +310,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
-                "rounded-lg border px-2 py-1.5 text-xs",
+                "rounded-lg border px-2 py-1.5 md:px-4 md:py-3 text-xs md:text-sm",
                 isCorrect ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700" : "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700"
               )}
               data-testid="result-box"
@@ -327,7 +327,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
 
         {/* Кнопки внизу — прижаты к низу, safe area */}
         <div
-          className="shrink-0 flex flex-col sm:flex-row gap-2 p-3 pt-2 bg-background border-t border-border/60 sm:border-t-0"
+          className="shrink-0 flex flex-col sm:flex-row gap-2 p-3 pt-2 md:pt-4 md:pb-6 bg-background border-t border-border/60 sm:border-t-0"
           style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
         >
           {!showResult ? (
