@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
@@ -82,6 +82,18 @@ const islands = [
     borderColor: "border-indigo-300 dark:border-indigo-700",
     dotColor: "bg-indigo-400",
     progressColor: "bg-indigo-400",
+  },
+  {
+    key: "reading",
+    label: "Остров Текстов",
+    description: "Прочитай текст и найди главную мысль!",
+    icon: BookOpenCheck,
+    gradient: "from-teal-200 to-teal-100 dark:from-teal-900/40 dark:to-teal-800/30",
+    iconBg: "bg-teal-300 dark:bg-teal-700",
+    iconColor: "text-teal-800 dark:text-teal-200",
+    borderColor: "border-teal-300 dark:border-teal-700",
+    dotColor: "bg-teal-400",
+    progressColor: "bg-teal-400",
   },
   {
     key: "meaning",

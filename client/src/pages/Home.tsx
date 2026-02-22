@@ -170,7 +170,7 @@ export default function Home() {
 
   const startDiagnostic = useCallback(() => {
     if (allTasks.length === 0) return;
-    const categories = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax"];
+    const categories = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax", "reading"];
     const diagnosticTasks: Task[] = [];
     const shuffledCats = [...categories].sort(() => Math.random() - 0.5);
     const TASKS_PER_ISLAND = 3;
