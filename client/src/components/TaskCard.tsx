@@ -69,6 +69,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
 
   const isTextInput = task.inputType === "text" && !!task.acceptableAnswers;
   const hasLongText = isTextInput || task.category === "plan" || task.category === "reading";
+  const [showFullText, setShowFullText] = useState(false);
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -182,25 +183,51 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
           <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wide" data-testid="text-question-index">
             Вопрос {taskIndex + 1} из {totalTasks}
           </span>
-          <h2 className={cn(
-            "text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1",
-            hasLongText ? "" : "line-clamp-3 sm:line-clamp-none"
-          )} data-testid="text-task-title">
-            {hasLongText && questionText.includes("\n\n") ? (
+          {hasLongText ? (() => {
+            const hasQuote = questionText.includes("«");
+            const title = hasQuote ? questionText.split("«")[0].trim() : questionText.split("\n\n")[0];
+            const body = hasQuote ? "«" + questionText.split("«").slice(1).join("«") : questionText.split("\n\n").slice(1).join("\n\n");
+            return (
               <>
-                <span>{questionText.split("\n\n")[0]}</span>
-                <p className="mt-3 text-sm sm:text-base font-normal text-foreground/90 leading-relaxed whitespace-pre-line">
-                  {questionText.split("\n\n").slice(1).join("\n\n")}
-                </p>
+                <h2 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1" data-testid="text-task-title">
+                  {title}
+                </h2>
+                {body && (
+                  <div className="mt-2 relative">
+                    <p className={cn(
+                      "text-sm sm:text-base font-normal text-foreground/90 leading-relaxed whitespace-pre-line",
+                      !showFullText && "line-clamp-3 sm:line-clamp-none"
+                    )}>
+                      {body}
+                    </p>
+                    {!showFullText && (
+                      <button
+                        type="button"
+                        onClick={() => setShowFullText(true)}
+                        className="sm:hidden mt-1 text-sm font-semibold text-primary touch-manipulation"
+                        data-testid="button-show-full-text"
+                      >
+                        Показать весь текст ▼
+                      </button>
+                    )}
+                    {showFullText && (
+                      <button
+                        type="button"
+                        onClick={() => setShowFullText(false)}
+                        className="sm:hidden mt-1 text-sm font-semibold text-muted-foreground touch-manipulation"
+                      >
+                        Свернуть ▲
+                      </button>
+                    )}
+                  </div>
+                )}
               </>
-            ) : hasLongText ? (
-              <span className="block font-bold">{questionText.split("«")[0]}
-                <span className="block mt-2 text-sm sm:text-base font-normal text-foreground/90 leading-relaxed">
-                  «{questionText.split("«").slice(1).join("«")}
-                </span>
-              </span>
-            ) : questionText}
-          </h2>
+            );
+          })() : (
+            <h2 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1 line-clamp-3 sm:line-clamp-none" data-testid="text-task-title">
+              {questionText}
+            </h2>
+          )}
           {task.type === "meaning" && task.word && !questionText.includes(task.word) && (
             <p className="text-sm text-foreground/90 mt-1 line-clamp-1" data-testid="text-proverb">
               «{task.word}»
