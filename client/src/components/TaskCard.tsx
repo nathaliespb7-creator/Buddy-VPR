@@ -68,6 +68,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
   const [usedHintButton, setUsedHintButton] = useState(false);
 
   const isTextInput = task.inputType === "text" && !!task.acceptableAnswers;
+  const hasLongText = isTextInput || task.category === "plan" || task.category === "reading";
 
   const handleSelect = (option: string) => {
     if (showResult) return;
@@ -183,15 +184,21 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
           </span>
           <h2 className={cn(
             "text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1",
-            isTextInput ? "" : "line-clamp-3 sm:line-clamp-none"
+            hasLongText ? "" : "line-clamp-3 sm:line-clamp-none"
           )} data-testid="text-task-title">
-            {isTextInput && questionText.includes("\n\n") ? (
+            {hasLongText && questionText.includes("\n\n") ? (
               <>
                 <span>{questionText.split("\n\n")[0]}</span>
                 <p className="mt-3 text-sm sm:text-base font-normal text-foreground/90 leading-relaxed whitespace-pre-line">
                   {questionText.split("\n\n").slice(1).join("\n\n")}
                 </p>
               </>
+            ) : hasLongText ? (
+              <span className="block font-bold">{questionText.split("«")[0]}
+                <span className="block mt-2 text-sm sm:text-base font-normal text-foreground/90 leading-relaxed">
+                  «{questionText.split("«").slice(1).join("«")}
+                </span>
+              </span>
             ) : questionText}
           </h2>
           {task.type === "meaning" && task.word && !questionText.includes(task.word) && (
