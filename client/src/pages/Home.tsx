@@ -330,7 +330,7 @@ export default function Home() {
         setMascotMood("idle");
       } catch (err) {
         console.error("Failed to load round:", err);
-        const filtered = allTasks.filter((t) => t.category === category);
+        const filtered = [...allTasks.filter((t) => t.category === category)].sort(() => Math.random() - 0.5);
         setActiveTasks(filtered);
         setCurrentTaskIndex(0);
         setCompletedTasks(0);
