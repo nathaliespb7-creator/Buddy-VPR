@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
@@ -82,6 +82,18 @@ const islands = [
     borderColor: "border-indigo-300 dark:border-indigo-700",
     dotColor: "bg-indigo-400",
     progressColor: "bg-indigo-400",
+  },
+  {
+    key: "vocabulary",
+    label: "Остров Слов",
+    description: "Узнай значение слова и подбери синоним!",
+    icon: Search,
+    gradient: "from-fuchsia-200 to-fuchsia-100 dark:from-fuchsia-900/40 dark:to-fuchsia-800/30",
+    iconBg: "bg-fuchsia-300 dark:bg-fuchsia-700",
+    iconColor: "text-fuchsia-800 dark:text-fuchsia-200",
+    borderColor: "border-fuchsia-300 dark:border-fuchsia-700",
+    dotColor: "bg-fuchsia-400",
+    progressColor: "bg-fuchsia-400",
   },
   {
     key: "plan",

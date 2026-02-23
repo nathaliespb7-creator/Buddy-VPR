@@ -143,6 +143,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
     syntax: "Предложение",
     reading: "Основная мысль",
     plan: "План текста",
+    vocabulary: "Значение слова",
   };
 
   const typeColors: Record<string, string> = {
@@ -154,6 +155,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
     syntax: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300",
     reading: "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
     plan: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300",
+    vocabulary: "bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300",
   };
 
   const isGold = earnedStarType === "gold";
