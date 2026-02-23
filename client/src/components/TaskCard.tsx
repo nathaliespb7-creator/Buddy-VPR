@@ -140,6 +140,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
     morphology: "Части речи",
     syntax: "Предложение",
     reading: "Основная мысль",
+    plan: "План текста",
   };
 
   const typeColors: Record<string, string> = {
@@ -150,6 +151,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
     morphology: "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300",
     syntax: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300",
     reading: "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
+    plan: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300",
   };
 
   const isGold = earnedStarType === "gold";

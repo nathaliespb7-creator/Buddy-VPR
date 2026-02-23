@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
@@ -82,6 +82,18 @@ const islands = [
     borderColor: "border-indigo-300 dark:border-indigo-700",
     dotColor: "bg-indigo-400",
     progressColor: "bg-indigo-400",
+  },
+  {
+    key: "plan",
+    label: "Остров Планов",
+    description: "Составь план текста из 3 пунктов!",
+    icon: ListOrdered,
+    gradient: "from-cyan-200 to-cyan-100 dark:from-cyan-900/40 dark:to-cyan-800/30",
+    iconBg: "bg-cyan-300 dark:bg-cyan-700",
+    iconColor: "text-cyan-800 dark:text-cyan-200",
+    borderColor: "border-cyan-300 dark:border-cyan-700",
+    dotColor: "bg-cyan-400",
+    progressColor: "bg-cyan-400",
   },
   {
     key: "reading",
