@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
 import { type Task, getBuddyHint } from "@/lib/taskData";
+import { validateAnswer, type ValidationResult } from "@/lib/vprValidator";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
 
@@ -56,6 +57,8 @@ interface TaskCardProps {
 
 export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTasks = 1 }: TaskCardProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [textAnswer, setTextAnswer] = useState("");
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [hintLevel, setHintLevel] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -64,12 +67,32 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
   const [earnedStarType, setEarnedStarType] = useState<StarType>("empty");
   const [usedHintButton, setUsedHintButton] = useState(false);
 
+  const isTextInput = task.inputType === "text" && !!task.acceptableAnswers;
+
   const handleSelect = (option: string) => {
     if (showResult) return;
     setSelectedOption(option);
   };
 
   const handleSubmit = () => {
+    if (isTextInput) {
+      if (!textAnswer.trim()) return;
+      const result = validateAnswer(textAnswer, {
+        modelAnswer: task.correct,
+        acceptableAnswers: task.acceptableAnswers || [],
+        unacceptablePatterns: task.unacceptablePatterns || [],
+        keywords: task.keywords || [],
+      });
+      setValidationResult(result);
+      const correct = result.score >= 1;
+      setIsCorrect(correct);
+      const starType: StarType = result.score === 2 ? "gold" : result.score === 1 ? "silver" : "empty";
+      setEarnedStarType(starType);
+      setShowResult(true);
+      if (correct) setShowStarBurst(true);
+      return;
+    }
+
     if (!selectedOption) return;
 
     const correct = selectedOption === task.correct;
@@ -176,8 +199,30 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
           </div>
         </div>
 
-        {/* Варианты ответов — единственная область со скроллом при необходимости */}
+        {/* Варианты ответов или текстовое поле */}
         <div className="flex-1 md:flex-initial min-h-0 overflow-y-auto md:overflow-visible overflow-x-hidden overscroll-behavior-contain px-0 py-1 md:py-3" data-testid="options-list">
+          {isTextInput ? (
+            <div className="flex flex-col gap-3">
+              <textarea
+                value={textAnswer}
+                onChange={(e) => setTextAnswer(e.target.value)}
+                disabled={showResult}
+                placeholder="Напиши основную мысль текста..."
+                className={cn(
+                  "w-full rounded-xl border-2 px-4 py-3 text-base md:text-lg font-medium min-h-[120px] resize-none transition-all",
+                  "focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary",
+                  "placeholder:text-muted-foreground/50",
+                  showResult && isCorrect && "border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20",
+                  showResult && !isCorrect && "border-orange-300 bg-orange-50 dark:bg-orange-900/20",
+                  !showResult && "border-border bg-background"
+                )}
+                data-testid="textarea-answer"
+              />
+              {!showResult && textAnswer.length > 0 && (
+                <p className="text-xs text-muted-foreground text-right">{textAnswer.length} символов</p>
+              )}
+            </div>
+          ) : (
           <div className="flex flex-col gap-2 sm:gap-2.5 md:gap-3">
             {task.options?.map((option, idx) => {
               const isSelected = selectedOption === option;
@@ -224,6 +269,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               );
             })}
           </div>
+          )}
         </div>
 
         {/* Подсказка / результат — компактно */}
@@ -264,11 +310,20 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               data-testid="result-box"
             >
               <p className={cn("font-semibold", isCorrect ? "text-emerald-800 dark:text-emerald-200" : "text-orange-800 dark:text-orange-200")} data-testid="text-result-label">
-                {isCorrect ? starLabel : "Запомним вместе!"}
+                {isTextInput && validationResult
+                  ? `${validationResult.score === 2 ? "Отлично! 2 балла" : validationResult.score === 1 ? "Неплохо! 1 балл" : "0 баллов"}`
+                  : isCorrect ? starLabel : "Запомним вместе!"}
               </p>
               <p className={cn("leading-snug mt-0.5", isCorrect ? "text-emerald-700 dark:text-emerald-300" : "text-orange-700 dark:text-orange-300")} data-testid="text-result-explanation">
-                {highlightKeyWord(task.audio, task.correct)}
+                {isTextInput && validationResult
+                  ? validationResult.feedback
+                  : highlightKeyWord(task.audio, task.correct)}
               </p>
+              {isTextInput && showResult && (
+                <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-current/10">
+                  Эталонный ответ: {task.correct}
+                </p>
+              )}
             </motion.div>
           )}
         </div>
@@ -292,7 +347,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={!selectedOption}
+                disabled={isTextInput ? !textAnswer.trim() : !selectedOption}
                 className="flex-1 h-12 rounded-xl text-base touch-manipulation"
                 data-testid="button-submit"
               >
