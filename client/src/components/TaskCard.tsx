@@ -179,8 +179,18 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
           <span className="text-[10px] sm:text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wide" data-testid="text-question-index">
             Вопрос {taskIndex + 1} из {totalTasks}
           </span>
-          <h2 className="text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1 line-clamp-3 sm:line-clamp-none" data-testid="text-task-title">
-            {questionText}
+          <h2 className={cn(
+            "text-base sm:text-lg md:text-xl font-bold text-foreground leading-tight mt-1",
+            isTextInput ? "" : "line-clamp-3 sm:line-clamp-none"
+          )} data-testid="text-task-title">
+            {isTextInput && questionText.includes("\n\n") ? (
+              <>
+                <span>{questionText.split("\n\n")[0]}</span>
+                <p className="mt-3 text-sm sm:text-base font-normal text-foreground/90 leading-relaxed whitespace-pre-line">
+                  {questionText.split("\n\n").slice(1).join("\n\n")}
+                </p>
+              </>
+            ) : questionText}
           </h2>
           {task.type === "meaning" && task.word && !questionText.includes(task.word) && (
             <p className="text-sm text-foreground/90 mt-1 line-clamp-1" data-testid="text-proverb">
