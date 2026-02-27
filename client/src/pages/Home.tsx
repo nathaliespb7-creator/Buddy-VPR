@@ -12,6 +12,9 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { ModeChoiceScreen } from "@/components/ModeChoiceScreen";
 import { MixedModeChoiceScreen } from "@/components/MixedModeChoiceScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
+import { AnimationSettings } from "@/components/AnimationSettings";
+import { AnimationOnboardingDialog } from "@/components/AnimationOnboardingDialog";
+import { useSettings, type AnimationLevel } from "@/context/SettingsContext";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
@@ -57,6 +60,27 @@ function getStoredProfile(): UserProfile | null {
 
 function saveProfile(profile: UserProfile) {
   localStorage.setItem("buddy_profile", JSON.stringify(profile));
+}
+
+function playRewardSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(880, ctx.currentTime);
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + 0.45);
+  } catch {
+    // Безопасное отключение звука при ошибке/запрете аудио
+  }
 }
 
 function fireConfetti() {
@@ -107,6 +131,7 @@ export default function Home() {
   const [toastVisible, setToastVisible] = useState(false);
   const [sessionId] = useState(getStoredSessionId);
   const [profile, setProfile] = useState<UserProfile | null>(storedProfile);
+  const [correctStreak, setCorrectStreak] = useState(0);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
@@ -120,6 +145,13 @@ export default function Home() {
   const [isLoadingRound, setIsLoadingRound] = useState(false);
 
   const userStars = profile?.stars || [];
+
+  const {
+    animationLevel,
+    hasChosenAnimationLevel,
+    setAnimationLevel,
+    setHasChosenAnimationLevel,
+  } = useSettings();
 
   const { data: serverTasks, isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
@@ -248,6 +280,25 @@ export default function Home() {
     setToastType(type);
     setToastVisible(true);
   }, []);
+
+  const triggerStreakReward = useCallback(
+    (prefix: string) => {
+      if (animationLevel === "minimal") return;
+
+      const baseMessage = "Отлично! 5 побед подряд ⭐";
+
+      if (animationLevel === "quiet") {
+        showToast(baseMessage, "success");
+        return;
+      }
+
+      setMascotMood("celebrating");
+      fireConfetti();
+       playRewardSound();
+      showToast(prefix + baseMessage, "success");
+    },
+    [animationLevel, showToast]
+  );
 
   const addStar = useCallback((starType: StarType) => {
     if (starType === "empty") return;
@@ -386,6 +437,15 @@ export default function Home() {
         });
       }
 
+      setCorrectStreak(prev => {
+        const next = correct ? prev + 1 : 0;
+        if (correct && next >= 5) {
+          triggerStreakReward(prefix);
+          return 0;
+        }
+        return next;
+      });
+
       if (correct) {
         setCorrectTasks((prev) => prev + 1);
         setCategoryScores((prev) => ({
@@ -448,7 +508,7 @@ export default function Home() {
         }, 200);
       }
     },
-    [activeTasks, currentTaskIndex, phase, sessionId, activeRoundId, activeCategory, submitAnswerMutation, showToast, addStar, profile]
+    [activeTasks, currentTaskIndex, phase, sessionId, activeRoundId, activeCategory, submitAnswerMutation, showToast, addStar, profile, triggerStreakReward]
   );
 
   const fetchRoundSummary = async (category: string) => {
@@ -511,6 +571,16 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto w-full max-w-[100vw] overflow-x-hidden">
         {!showSplash && (
+          <AnimationOnboardingDialog
+            visible={!hasChosenAnimationLevel}
+            onChoose={(level: AnimationLevel) => {
+              setAnimationLevel(level);
+              setHasChosenAnimationLevel(true);
+            }}
+          />
+        )}
+
+        {!showSplash && (
           <Header
             mascotMood={mascotMood}
             stars={userStars}
@@ -554,6 +624,9 @@ export default function Home() {
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
               <div key={`wrap-${currentTask.id}`} className="w-full flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden md:overflow-visible">
+                <div className="flex justify-end px-4 sm:px-6 pt-2 pb-1 sm:pt-3 sm:pb-2">
+                  <AnimationSettings />
+                </div>
                 <TaskCard
                   key={`task-${currentTask.id}-${currentTaskIndex}`}
                   task={currentTask}
