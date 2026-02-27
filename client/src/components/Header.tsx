@@ -125,7 +125,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
     const correctCount = goldCount + silverCount;
     return (
       <>
-        {/* Мобильный: полоса прогресса (мятная) + счётчик под ней, кнопка «Назад» */}
+        {/* Мобильный: полоса прогресса (мятная) + счётчик под ней, кнопка «Назад» + иконка Бадди справа */}
         <header
           className="w-full border-b border-border/60 bg-background/95 shrink-0 sm:hidden"
           style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
@@ -135,7 +135,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             <TaskProgressBar current={current} total={total} />
           </div>
           <div className="flex items-center justify-between px-2 py-2 min-h-[44px]">
-            {onExit && (
+            {onExit ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -147,8 +147,16 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
                 <span className="text-sm font-medium">Назад</span>
               </Button>
+            ) : (
+              <div />
             )}
-            {!onExit && <div />}
+            <motion.div
+              animate={{ y: [0, -2, 0] }}
+              transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+              className="shrink-0 flex items-center justify-center"
+            >
+              <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
+            </motion.div>
           </div>
         </header>
         {/* Десктоп: логотип + полоса прогресса по центру + звёзды с подсказкой + Выход */}
@@ -278,7 +286,18 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
       data-testid="header"
     >
       <div className="flex items-center justify-between px-4 py-2 min-h-[44px]">
-        <h1 className="text-base font-bold text-foreground truncate" data-testid="text-app-title">Бадди ВПР</h1>
+        <div className="flex items-center gap-2 min-w-0">
+          <motion.div
+            animate={{ y: [0, -2, 0] }}
+            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            className="shrink-0 flex items-center justify-center"
+          >
+            <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
+          </motion.div>
+          <h1 className="text-base font-bold text-foreground truncate" data-testid="text-app-title">
+            Бадди ВПР
+          </h1>
+        </div>
         {onExit ? (
           <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label="Выход" data-testid="button-exit">
             <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
