@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
@@ -82,6 +82,42 @@ const islands = [
     borderColor: "border-indigo-300 dark:border-indigo-700",
     dotColor: "bg-indigo-400",
     progressColor: "bg-indigo-400",
+  },
+  {
+    key: "vocabulary",
+    label: "Остров Слов",
+    description: "Узнай значение слова и подбери синоним!",
+    icon: Search,
+    gradient: "from-fuchsia-200 to-fuchsia-100 dark:from-fuchsia-900/40 dark:to-fuchsia-800/30",
+    iconBg: "bg-fuchsia-300 dark:bg-fuchsia-700",
+    iconColor: "text-fuchsia-800 dark:text-fuchsia-200",
+    borderColor: "border-fuchsia-300 dark:border-fuchsia-700",
+    dotColor: "bg-fuchsia-400",
+    progressColor: "bg-fuchsia-400",
+  },
+  {
+    key: "plan",
+    label: "Остров Планов",
+    description: "Составь план текста из 3 пунктов!",
+    icon: ListOrdered,
+    gradient: "from-cyan-200 to-cyan-100 dark:from-cyan-900/40 dark:to-cyan-800/30",
+    iconBg: "bg-cyan-300 dark:bg-cyan-700",
+    iconColor: "text-cyan-800 dark:text-cyan-200",
+    borderColor: "border-cyan-300 dark:border-cyan-700",
+    dotColor: "bg-cyan-400",
+    progressColor: "bg-cyan-400",
+  },
+  {
+    key: "reading",
+    label: "Остров Текстов",
+    description: "Прочитай текст и найди главную мысль!",
+    icon: BookOpenCheck,
+    gradient: "from-teal-200 to-teal-100 dark:from-teal-900/40 dark:to-teal-800/30",
+    iconBg: "bg-teal-300 dark:bg-teal-700",
+    iconColor: "text-teal-800 dark:text-teal-200",
+    borderColor: "border-teal-300 dark:border-teal-700",
+    dotColor: "bg-teal-400",
+    progressColor: "bg-teal-400",
   },
   {
     key: "meaning",
@@ -197,12 +233,12 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-lg mx-auto px-3 sm:px-6 max-w-[100vw] overflow-x-hidden safe-bottom pb-6"
+      className="w-full max-w-[100vw] md:max-w-lg mx-auto px-3 sm:px-6 overflow-x-hidden safe-bottom pb-6"
       data-testid="island-map"
     >
       <div className="flex items-center justify-center gap-2 mb-5">
         <MapPin className="w-6 h-6 text-primary shrink-0" />
-        <h2 className="text-xl sm:text-2xl font-bold text-center" data-testid="text-island-title">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center" data-testid="text-island-title">
           Выбирай остров!
         </h2>
       </div>
@@ -273,14 +309,14 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1 flex-wrap">
-                      <p className="font-bold text-sm mb-0.5">{island.label}</p>
+                      <p className="font-bold text-sm md:text-base mb-0.5">{island.label}</p>
                       {taskCounts && taskCounts[island.key] > 0 && (
                         <span className="text-[11px] font-medium text-muted-foreground shrink-0" data-testid={`text-count-${island.key}`}>
                           {taskCountLabel(taskCounts[island.key])}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground leading-snug">
+                    <p className="text-xs md:text-sm text-muted-foreground leading-snug">
                       {island.description}
                     </p>
                     <ProgressIndicator progress={progress} island={island} />

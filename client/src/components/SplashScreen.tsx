@@ -31,7 +31,7 @@ export function SplashScreen({ onFinish }: SplashScreenProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
-        className="text-4xl sm:text-5xl font-bold tracking-tight mb-2 text-center"
+        className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 text-center font-sans"
         data-testid="text-splash-title"
       >
         Бадди ВПР
