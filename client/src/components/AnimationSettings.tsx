@@ -12,19 +12,29 @@ const OPTIONS = [
 ] as const;
 
 export function AnimationSettings({ className }: AnimationSettingsProps) {
-  const { animationLevel, setAnimationLevel } = useSettings();
+  const { animationLevel, setAnimationLevel, setShowAnimationControls } = useSettings();
 
   return (
     <div
       className={cn(
-        "inline-flex flex-col items-end gap-1 rounded-xl bg-background/90 backdrop-blur px-2.5 py-2 border border-border/60 shadow-sm",
+        "inline-flex flex-col gap-1 rounded-xl bg-background/90 backdrop-blur px-2.5 py-2 border border-border/60 shadow-sm",
         "max-w-full",
         className
       )}
     >
-      <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">
-        Режим анимации
-      </span>
+      <div className="flex items-center justify-between w-full gap-2">
+        <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">
+          Режим анимации
+        </span>
+        <button
+          type="button"
+          onClick={() => setShowAnimationControls(false)}
+          className="inline-flex items-center justify-center rounded-md text-xs text-muted-foreground/80 hover:text-foreground hover:bg-muted px-1 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+          aria-label="Скрыть настройку анимации"
+        >
+          ×
+        </button>
+      </div>
       <div className="flex items-center gap-1">
         {OPTIONS.map(option => {
           const isActive = animationLevel === option.value;

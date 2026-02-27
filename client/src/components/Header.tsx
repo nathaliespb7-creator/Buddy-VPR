@@ -3,6 +3,8 @@ import { Mascot } from "./Mascot";
 import { Star, DoorOpen, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AnimationSettings } from "@/components/AnimationSettings";
+import { useSettings } from "@/context/SettingsContext";
 
 export type StarType = "gold" | "silver" | "empty";
 
@@ -119,6 +121,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
   const goldCount = stars.filter(s => s === "gold").length;
   const silverCount = stars.filter(s => s === "silver").length;
   const isTaskVariant = variant === "task" && taskProgress;
+  const { showAnimationControls } = useSettings();
 
   if (isTaskVariant) {
     const { current, total } = taskProgress;
@@ -134,7 +137,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           <div className="px-4 pt-1.5 pb-1">
             <TaskProgressBar current={current} total={total} />
           </div>
-          <div className="flex items-center justify-between px-2 py-2 min-h-[44px]">
+          <div className="flex items-center justify-between px-2 pt-2 pb-1 min-h-[44px]">
             {onExit ? (
               <Button
                 variant="ghost"
@@ -158,6 +161,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
             </motion.div>
           </div>
+          {showAnimationControls && (
+            <div className="px-4 pb-2 flex justify-end">
+              <AnimationSettings />
+            </div>
+          )}
         </header>
         {/* Десктоп: логотип + полоса прогресса по центру + звёзды с подсказкой + Выход */}
         <header className="w-full py-2.5 sm:py-3 px-3 sm:px-6 border-b border-border/60 bg-background/95 font-sans antialiased shrink-0 hidden sm:block" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }} data-testid="header-desktop">
@@ -212,6 +220,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               )}
             </div>
           </div>
+          {showAnimationControls && (
+            <div className="max-w-2xl mx-auto flex justify-end mt-1">
+              <AnimationSettings />
+            </div>
+          )}
         </header>
       </>
     );
@@ -285,7 +298,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
       style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
       data-testid="header"
     >
-      <div className="flex items-center justify-between px-4 py-2 min-h-[44px]">
+      <div className="flex items-center justify-between px-4 pt-2 pb-1 min-h-[44px]">
         <div className="flex items-center gap-2 min-w-0">
           <motion.div
             animate={{ y: [0, -2, 0] }}
@@ -320,6 +333,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </Tooltip>
         )}
       </div>
+      {showAnimationControls && (
+        <div className="px-4 pb-2 flex justify-end">
+          <AnimationSettings />
+        </div>
+      )}
     </header>
   );
 

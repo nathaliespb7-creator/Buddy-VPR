@@ -5,16 +5,19 @@ export type AnimationLevel = "full" | "quiet" | "minimal";
 interface SettingsState {
   animationLevel: AnimationLevel;
   hasChosenAnimationLevel: boolean;
+  showAnimationControls: boolean;
 }
 
 interface SettingsContextValue extends SettingsState {
   setAnimationLevel: (level: AnimationLevel) => void;
   setHasChosenAnimationLevel: (chosen: boolean) => void;
+  setShowAnimationControls: (visible: boolean) => void;
 }
 
 const DEFAULT_SETTINGS: SettingsState = {
   animationLevel: "full",
   hasChosenAnimationLevel: false,
+  showAnimationControls: true,
 };
 
 const STORAGE_KEY = "buddy_settings_v1";
@@ -30,7 +33,9 @@ function loadSettings(): SettingsState {
         ? parsed.animationLevel
         : "full";
     const hasChosenAnimationLevel = Boolean(parsed.hasChosenAnimationLevel);
-    return { animationLevel, hasChosenAnimationLevel };
+    const showAnimationControls =
+      typeof parsed.showAnimationControls === "boolean" ? parsed.showAnimationControls : true;
+    return { animationLevel, hasChosenAnimationLevel, showAnimationControls };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -57,13 +62,19 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, hasChosenAnimationLevel }));
   };
 
+  const setShowAnimationControls = (showAnimationControls: boolean) => {
+    setState(prev => ({ ...prev, showAnimationControls }));
+  };
+
   return (
     <SettingsContext.Provider
       value={{
         animationLevel: state.animationLevel,
         hasChosenAnimationLevel: state.hasChosenAnimationLevel,
+        showAnimationControls: state.showAnimationControls,
         setAnimationLevel,
         setHasChosenAnimationLevel,
+        setShowAnimationControls,
       }}
     >
       {children}

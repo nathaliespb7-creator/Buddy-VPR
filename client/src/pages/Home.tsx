@@ -12,7 +12,6 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { ModeChoiceScreen } from "@/components/ModeChoiceScreen";
 import { MixedModeChoiceScreen } from "@/components/MixedModeChoiceScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
-import { AnimationSettings } from "@/components/AnimationSettings";
 import { AnimationOnboardingDialog } from "@/components/AnimationOnboardingDialog";
 import { useSettings, type AnimationLevel } from "@/context/SettingsContext";
 import { cn } from "@/lib/utils";
@@ -624,9 +623,6 @@ export default function Home() {
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
               <div key={`wrap-${currentTask.id}`} className="w-full flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden md:overflow-visible">
-                <div className="flex justify-end px-4 sm:px-6 pt-2 pb-1 sm:pt-3 sm:pb-2">
-                  <AnimationSettings />
-                </div>
                 <TaskCard
                   key={`task-${currentTask.id}-${currentTaskIndex}`}
                   task={currentTask}
