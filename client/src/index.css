@@ -4,7 +4,15 @@
 
 /* До загрузки React и мобильные: высота экрана (iPhone 14 и др.) */
 html { min-height: 100%; min-height: 100dvh; -webkit-text-size-adjust: 100%; }
-body { min-height: 100%; min-height: 100dvh; min-height: -webkit-fill-available; background-color: hsl(var(--background)); }
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  /* Явно светлая тема для Telegram Mini App — не наследовать от системной/Telegram */
+  background-color: #F0F9F8; /* мятный фон */
+  color: #1A202C; /* тёмный текст */
+  color-scheme: light;
+}
 #root { min-height: 100%; min-height: 100dvh; min-height: -webkit-fill-available; }
 
 /* Мобильный: safe area для вырезов и домашнего индикатора (iPhone и др.) */
@@ -198,6 +206,13 @@ html, body { overflow-x: hidden; }
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+}
+
+/* Telegram Mini App: принудительно светлая тема (переопределяет любые системные/Telegram) */
+body {
+  background-color: #F0F9F8; /* мятный фон */
+  color: #1A202C; /* тёмный текст */
+  color-scheme: light;
 }
 
 @keyframes breathe {

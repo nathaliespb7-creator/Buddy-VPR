@@ -1,8 +1,10 @@
+import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { goldenRules, taskContent } from "@shared/schema";
 import { accentTasks } from "./accentDictionary";
 import { phoneticsTasks } from "./phoneticsDictionary";
 import { morphemicsTasks } from "./morphemicsDictionary";
+import { getSyntaxSentencesSeed } from "./syntaxSentencesSeed";
 
 const rulesData = [
   {
@@ -382,13 +384,29 @@ const tasksDataSeed = [
   { type: "syntax", word: "Дети играют поют и танцуют", question: "Сколько запятых нужно поставить? «Дети играют поют и танцуют»", correct: "1", options: ["0", "1", "2"], audio: "Играют, поют и танцуют — три однородных сказуемых. Одна запятая: между «играют» и «поют»!", hint: "Перечисление: играют, поют и танцуют. Перед «и» запятая не ставится!", rule: "Если слова перечисляются как в списке покупок, ставь запятую: яблоки, груши, сливы.", ruleId: 21, difficulty: 2, category: "syntax" },
   { type: "syntax", word: "Солнце ярко светит", question: "Найди подлежащее и сказуемое: «Солнце ярко светит»", correct: "Солнце — светит", options: ["Солнце — светит", "Солнце — ярко", "ярко — светит"], audio: "Что? — Солнце (подлежащее). Что делает? — Светит (сказуемое). Вместе — основа предложения!", hint: "Подлежащее: Кто? Что? Сказуемое: Что делает? Найди оба слова!", rule: "Подлежащее — это «Кто?», Сказуемое — «Что делает?». Это сердце предложения.", ruleId: 20, difficulty: 1, category: "syntax" },
   { type: "syntax", word: "На столе лежат книги тетради и ручки", question: "Расставь запятые: «На столе лежат книги тетради и ручки»", correct: "книги, тетради и ручки", options: ["книги, тетради и ручки", "книги тетради, и ручки", "книги, тетради, и ручки"], audio: "Книги, тетради и ручки — однородные подлежащие! Запятая между первыми двумя, а перед «и» — нет!", hint: "Как в списке покупок: перечисляем через запятую, перед «и» не ставим!", rule: "Если слова перечисляются как в списке покупок, ставь запятую: яблоки, груши, сливы.", ruleId: 21, difficulty: 2, category: "syntax" },
+  ...getSyntaxSentencesSeed(),
 ];
+
+/** Маркер заданий острова предложений (island_sentences_v1) — по нему проверяем, добавлены ли уже. */
+const SYNTAX_SENTENCES_MARKER_WORD = "В лесу поют птицы и журчат ручьи.";
 
 export async function seedDatabase() {
   const existingTasks = await db.select().from(taskContent).limit(1);
   const existingRules = await db.select().from(goldenRules).limit(1);
-  if (existingTasks.length > 0 && existingRules.length > 0) {
-    console.log("Database already seeded, skipping...");
+  const alreadySeeded = existingTasks.length > 0 && existingRules.length > 0;
+
+  if (alreadySeeded) {
+    console.log("Database already seeded, checking syntax sentences patch...");
+    const syntaxTasks = await db.select().from(taskContent).where(eq(taskContent.category, "syntax"));
+    const hasNewSentences = syntaxTasks.some((t) => t.word === SYNTAX_SENTENCES_MARKER_WORD);
+    if (!hasNewSentences) {
+      const patchTasks = getSyntaxSentencesSeed();
+      console.log(`Adding ${patchTasks.length} syntax sentences (island_sentences_v1) to existing DB...`);
+      for (const task of patchTasks) {
+        await db.insert(taskContent).values(task);
+      }
+      console.log("Syntax sentences patch applied.");
+    }
     return;
   }
 

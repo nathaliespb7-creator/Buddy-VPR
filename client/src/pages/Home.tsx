@@ -283,7 +283,16 @@ export default function Home() {
 
       try {
         const res = await fetch(API_BASE + `/api/round/${category}?sessionId=${sessionId}`);
-        const roundData: RoundData = await res.json();
+        const isJson = res.headers.get("content-type")?.includes("application/json");
+        if (!res.ok || !isJson) {
+          throw new Error("Not JSON");
+        }
+        let roundData: RoundData;
+        try {
+          roundData = await res.json();
+        } catch {
+          throw new Error("Parse error");
+        }
 
         if (roundData.mastered) {
           setRoundMastered(true);
@@ -331,12 +340,17 @@ export default function Home() {
       } catch (err) {
         console.error("Failed to load round:", err);
         const filtered = allTasks.filter((t) => t.category === category);
-        setActiveTasks(filtered);
-        setCurrentTaskIndex(0);
-        setCompletedTasks(0);
-        setCorrectTasks(0);
-        setActiveRoundId(null);
-        setPhase("training");
+        if (filtered.length > 0) {
+          setActiveTasks(filtered);
+          setCurrentTaskIndex(0);
+          setCompletedTasks(0);
+          setCorrectTasks(0);
+          setActiveRoundId(null);
+          setRoundTotalTasks(filtered.length);
+          setTotalTasksInCategory(filtered.length);
+          setPhase("training");
+          setMascotMood("idle");
+        }
       }
 
       setIsLoadingRound(false);
@@ -502,8 +516,11 @@ export default function Home() {
             overallProgress={overallProgress}
             variant={phase === "diagnostic" || phase === "training" ? "task" : "full"}
             taskProgress={
-              (phase === "diagnostic" || phase === "training") && activeTasks.length > 0
-                ? { current: currentTaskIndex + 1, total: roundTotalTasks || activeTasks.length }
+              phase === "diagnostic" || phase === "training"
+                ? {
+                    current: Math.min(currentTaskIndex + 1, roundTotalTasks || activeTasks.length || 1),
+                    total: roundTotalTasks || activeTasks.length || 1,
+                  }
                 : undefined
             }
           />

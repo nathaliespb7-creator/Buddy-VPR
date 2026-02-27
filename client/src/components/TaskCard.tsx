@@ -299,7 +299,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
             )}
           </AnimatePresence>
           {showStarBurst && (
-            <div className="relative flex justify-center h-6 my-0.5" data-testid="star-burst">
+            <div className="relative flex justify-center min-h-[2.5rem] mt-0.5 mb-3" data-testid="star-burst">
               <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="flex items-center justify-center">
                 <Star className={cn("w-8 h-8 drop-shadow-sm", starColorClass)} />
               </motion.div>
@@ -311,6 +311,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "rounded-lg border px-2 py-1.5 text-xs",
+                showStarBurst && "mt-3",
                 isCorrect ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700" : "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-700"
               )}
               data-testid="result-box"

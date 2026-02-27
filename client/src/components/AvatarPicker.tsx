@@ -3,7 +3,8 @@ import { Mascot } from "./Mascot";
 import { Cat, Bot, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type AvatarChoice = "cat" | "robot" | "astronaut";
+/** Значение по умолчанию до выбора аватара — "buddy"; после выбора — один из вариантов ниже. */
+export type AvatarChoice = "buddy" | "cat" | "robot" | "astronaut";
 
 interface AvatarPickerProps {
   onSelect: (avatar: AvatarChoice) => void;

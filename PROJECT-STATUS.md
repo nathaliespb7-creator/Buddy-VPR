@@ -12,7 +12,7 @@ git commit -m "описание изменений"
 git push
 ```
 
-**Если 401 при push** (см. docs/GIT-GITHUB.md):
+Если при `git push` ошибка **401** (см. docs/GIT-GITHUB.md):
 
 ```bash
 cd /Users/nathalie/Buddy-VPR
@@ -21,4 +21,4 @@ git push -u origin main
 git remote set-url origin https://github.com/nathaliespb7-creator/Buddy-VPR.git
 ```
 
-**Проверка:** Vercel → проект Buddy-VPR → Deployments → статус **Ready**. Сайт: https://buddyvpr.vercel.app
+Проверка: **Vercel** → проект **Buddy-VPR** → вкладка **Deployments** → статус **Ready**. Сайт: https://buddyvpr.vercel.app
