@@ -13,7 +13,10 @@ import { ModeChoiceScreen } from "@/components/ModeChoiceScreen";
 import { MixedModeChoiceScreen } from "@/components/MixedModeChoiceScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
 import { AnimationOnboardingDialog } from "@/components/AnimationOnboardingDialog";
+import { ProfileSummary } from "@/components/ProfileSummary";
+import { LevelUpModal } from "@/components/LevelUpModal";
 import { useSettings, type AnimationLevel } from "@/context/SettingsContext";
+import { calculateLevel } from "@/lib/levelSystem";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
@@ -25,6 +28,7 @@ interface UserProfile {
   avatar: AvatarChoice;
   stars: StarType[];
   level: number;
+  totalStars: number;
 }
 
 interface RoundData {
@@ -52,7 +56,20 @@ function getStoredSessionId(): string {
 function getStoredProfile(): UserProfile | null {
   try {
     const stored = localStorage.getItem("buddy_profile");
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<UserProfile>;
+      if (!parsed) return null;
+      const stars = Array.isArray(parsed.stars) ? parsed.stars : [];
+      const totalStars =
+        typeof parsed.totalStars === "number" ? parsed.totalStars : stars.length;
+      const levelInfo = calculateLevel(totalStars);
+      return {
+        avatar: (parsed.avatar as AvatarChoice) ?? ("buddy" as AvatarChoice),
+        stars,
+        totalStars,
+        level: levelInfo.level,
+      };
+    }
   } catch {}
   return null;
 }
@@ -131,6 +148,7 @@ export default function Home() {
   const [sessionId] = useState(getStoredSessionId);
   const [profile, setProfile] = useState<UserProfile | null>(storedProfile);
   const [correctStreak, setCorrectStreak] = useState(0);
+  const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; emoji: string } | null>(null);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
@@ -144,6 +162,8 @@ export default function Home() {
   const [isLoadingRound, setIsLoadingRound] = useState(false);
 
   const userStars = profile?.stars || [];
+  const totalStars = profile?.totalStars ?? userStars.length;
+  const currentLevelInfo = useMemo(() => calculateLevel(totalStars), [totalStars]);
 
   const {
     animationLevel,
@@ -222,7 +242,7 @@ export default function Home() {
     setPhase("diagnostic");
     setProfile((prev) => {
       if (!prev) {
-        const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1 };
+        const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1, totalStars: 0 };
         saveProfile(defaultProfile);
         return defaultProfile;
       }
@@ -302,8 +322,22 @@ export default function Home() {
   const addStar = useCallback((starType: StarType) => {
     if (starType === "empty") return;
     setProfile((prev) => {
-      const next = prev ?? { avatar: "buddy" as AvatarChoice, stars: [], level: 1 };
-      const updated = { ...next, stars: [...next.stars, starType] };
+      const next =
+        prev ?? { avatar: "buddy" as AvatarChoice, stars: [], level: 1, totalStars: 0 };
+      const newTotalStars = (next.totalStars ?? next.stars.length) + 1;
+      const levelInfo = calculateLevel(newTotalStars);
+      const wasLevel = next.level ?? 1;
+      const updated: UserProfile = {
+        ...next,
+        stars: [...next.stars, starType],
+        totalStars: newTotalStars,
+        level: levelInfo.level,
+      };
+      if (levelInfo.level > wasLevel) {
+        setLevelUpData({ level: levelInfo.level, title: levelInfo.title, emoji: levelInfo.emoji });
+        fireConfetti();
+        setMascotMood("celebrating");
+      }
       saveProfile(updated);
       return updated;
     });
@@ -553,7 +587,7 @@ export default function Home() {
               setShowSplash(false);
               setPhase("modeChoice");
               if (!storedProfile) {
-                const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1 };
+                const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1, totalStars: 0 };
                 setProfile(defaultProfile);
                 saveProfile(defaultProfile);
               }
@@ -579,6 +613,16 @@ export default function Home() {
           />
         )}
 
+        {!showSplash && levelUpData && (
+          <LevelUpModal
+            visible
+            level={levelUpData?.level ?? 1}
+            title={levelUpData?.title ?? ""}
+            emoji={levelUpData?.emoji ?? "🌱"}
+            onClose={() => setLevelUpData(null)}
+          />
+        )}
+
         {!showSplash && (
           <Header
             mascotMood={mascotMood}
@@ -594,6 +638,7 @@ export default function Home() {
                   }
                 : undefined
             }
+            levelInfo={currentLevelInfo}
           />
         )}
 
@@ -660,13 +705,20 @@ export default function Home() {
               />
             )}
             {phase === "islandMap" && (
-              <IslandMap
-                key="islands"
-                onSelect={handleSelectIsland}
-                taskCounts={taskCounts}
-                isLoading={tasksLoading || isLoadingRound}
-                sessionId={sessionId}
-              />
+              <>
+                <ProfileSummary
+                  avatar={profile?.avatar ?? ("buddy" as AvatarChoice)}
+                  totalStars={totalStars}
+                  levelInfo={currentLevelInfo}
+                />
+                <IslandMap
+                  key="islands"
+                  onSelect={handleSelectIsland}
+                  taskCounts={taskCounts}
+                  isLoading={tasksLoading || isLoadingRound}
+                  sessionId={sessionId}
+                />
+              </>
             )}
             {phase === "complete" && (
               <CompletionScreen

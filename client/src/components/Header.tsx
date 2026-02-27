@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
 import { useSettings } from "@/context/SettingsContext";
+import type { LevelInfo } from "@/lib/levelSystem";
 
 export type StarType = "gold" | "silver" | "empty";
 
@@ -16,6 +17,7 @@ interface HeaderProps {
   /** На мобильном: только «Назад» + тонкий прогресс-бар (экран задания) */
   variant?: "full" | "task";
   taskProgress?: { current: number; total: number };
+  levelInfo?: LevelInfo;
 }
 
 function ProgressRing({ progress }: { progress: number }) {
@@ -117,7 +119,7 @@ function TaskProgressBar({ current, total }: { current: number; total: number })
   );
 }
 
-export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress }: HeaderProps) {
+export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, levelInfo }: HeaderProps) {
   const goldCount = stars.filter(s => s === "gold").length;
   const silverCount = stars.filter(s => s === "silver").length;
   const isTaskVariant = variant === "task" && taskProgress;
@@ -242,7 +244,17 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </motion.div>
           <div className="min-w-0 overflow-hidden">
             <h1 className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight truncate" data-testid="text-app-title">Бадди ВПР</h1>
-            <p className="text-sm sm:text-base text-muted-foreground font-normal leading-snug mt-0.5" data-testid="text-subtitle">Умный помощник для подготовки</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-sm sm:text-base text-muted-foreground font-normal leading-snug" data-testid="text-subtitle">
+                Умный помощник для подготовки
+              </p>
+              {levelInfo && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 px-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
+                  <span aria-hidden>{levelInfo.emoji}</span>
+                  <span>Lv {levelInfo.level}</span>
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-4 shrink-0" data-testid="header-stats">
@@ -307,9 +319,17 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           >
             <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
           </motion.div>
-          <h1 className="text-base font-bold text-foreground truncate" data-testid="text-app-title">
-            Бадди ВПР
-          </h1>
+          <div className="min-w-0">
+            <h1 className="text-base font-bold text-foreground truncate" data-testid="text-app-title">
+              Бадди ВПР
+            </h1>
+            {levelInfo && (
+              <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100">
+                <span aria-hidden>{levelInfo.emoji}</span>
+                <span>Lv {levelInfo.level}</span>
+              </span>
+            )}
+          </div>
         </div>
         {showAnimationControls && (
           <div className="flex-1 flex justify-center px-1">
