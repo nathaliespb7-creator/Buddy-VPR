@@ -137,7 +137,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           <div className="px-4 pt-1.5 pb-1">
             <TaskProgressBar current={current} total={total} />
           </div>
-          <div className="flex items-center justify-between px-2 pt-2 pb-1 min-h-[44px]">
+          <div className="flex items-center justify-between gap-2 px-2 pt-2 pb-2 min-h-[44px]">
             {onExit ? (
               <Button
                 variant="ghost"
@@ -151,7 +151,12 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 <span className="text-sm font-medium">Назад</span>
               </Button>
             ) : (
-              <div />
+              <div className="w-[3rem]" />
+            )}
+            {showAnimationControls && (
+              <div className="flex-1 flex justify-center px-1">
+                <AnimationSettings />
+              </div>
             )}
             <motion.div
               animate={{ y: [0, -2, 0] }}
@@ -161,11 +166,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
             </motion.div>
           </div>
-          {showAnimationControls && (
-            <div className="px-4 pb-2 flex justify-end">
-              <AnimationSettings />
-            </div>
-          )}
         </header>
         {/* Десктоп: логотип + полоса прогресса по центру + звёзды с подсказкой + Выход */}
         <header className="w-full py-2.5 sm:py-3 px-3 sm:px-6 border-b border-border/60 bg-background/95 font-sans antialiased shrink-0 hidden sm:block" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }} data-testid="header-desktop">
@@ -298,7 +298,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
       style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
       data-testid="header"
     >
-      <div className="flex items-center justify-between px-4 pt-2 pb-1 min-h-[44px]">
+      <div className="flex items-center justify-between gap-2 px-4 pt-2 pb-2 min-h-[44px]">
         <div className="flex items-center gap-2 min-w-0">
           <motion.div
             animate={{ y: [0, -2, 0] }}
@@ -311,6 +311,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             Бадди ВПР
           </h1>
         </div>
+        {showAnimationControls && (
+          <div className="flex-1 flex justify-center px-1">
+            <AnimationSettings />
+          </div>
+        )}
         {onExit ? (
           <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label="Выход" data-testid="button-exit">
             <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
@@ -333,11 +338,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </Tooltip>
         )}
       </div>
-      {showAnimationControls && (
-        <div className="px-4 pb-2 flex justify-end">
-          <AnimationSettings />
-        </div>
-      )}
     </header>
   );
 
