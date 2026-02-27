@@ -34,8 +34,17 @@ interface SeedTaskRow {
   category: string;
 }
 
+function joinSubjects(parts: string[]): string {
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0] ?? "";
+  if (parts.length === 2) return parts.join(" и ");
+  return parts.slice(0, -1).join(", ") + " и " + parts[parts.length - 1];
+}
+
 function formatSubjectPredicate(subject: string[], predicate: string[]): string {
-  return subject.join(", ") + " — " + predicate.join(", ");
+  const subjectText = joinSubjects(subject);
+  const predicateText = predicate.join(", ");
+  return `Подлежащее: «${subjectText}», сказуемое: «${predicateText}»`;
 }
 
 /** Генерирует неправильные варианты для выбора (запятые). */
@@ -50,13 +59,17 @@ function wrongSubjectPredicateOptions(
   subject: string[],
   predicate: string[]
 ): string[] {
+  const subjectText = joinSubjects(subject);
+  const predicateText = predicate.join(", ");
   const correct = formatSubjectPredicate(subject, predicate);
-  const swapped = formatSubjectPredicate(predicate, subject);
-  const mixed =
-    subject.length > 1 && predicate.length > 1
-      ? predicate[0] + ", " + subject[0] + " — " + predicate[1] + ", " + subject[1]
-      : swapped;
-  return [swapped, mixed].filter((s) => s !== correct).slice(0, 2);
+
+  // Вариант 1: перепутали местами подлежащее и сказуемое
+  const swapped = `Подлежащее: «${predicateText}», сказуемое: «${subjectText}»`;
+
+  // Вариант 2: всё записали как подлежащее
+  const onlySubject = `Подлежащее: «${subjectText}», сказуемое: «${subjectText}»`;
+
+  return [swapped, onlySubject].filter((s) => s !== correct).slice(0, 2);
 }
 
 function convertTask(t: SentenceTaskRaw): SeedTaskRow {
