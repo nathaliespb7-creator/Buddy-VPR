@@ -33,9 +33,7 @@ function loadSettings(): SettingsState {
         ? parsed.animationLevel
         : "full";
     const hasChosenAnimationLevel = Boolean(parsed.hasChosenAnimationLevel);
-    const showAnimationControls =
-      typeof parsed.showAnimationControls === "boolean" ? parsed.showAnimationControls : true;
-    return { animationLevel, hasChosenAnimationLevel, showAnimationControls };
+    return { animationLevel, hasChosenAnimationLevel, showAnimationControls: true };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -48,7 +46,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const payload = {
+        animationLevel: state.animationLevel,
+        hasChosenAnimationLevel: state.hasChosenAnimationLevel,
+      };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch {
       // Игнорируем ошибки localStorage (например, приватный режим)
     }

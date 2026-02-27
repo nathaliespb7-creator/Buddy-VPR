@@ -17,8 +17,8 @@ export function AnimationSettings({ className }: AnimationSettingsProps) {
   return (
     <div
       className={cn(
-        "inline-flex flex-col gap-1 rounded-xl bg-background/90 backdrop-blur px-2.5 py-2 border border-border/60 shadow-sm",
-        "max-w-full",
+        "inline-flex flex-col gap-1 px-1 py-0",
+        "max-w-full bg-transparent",
         className
       )}
     >
