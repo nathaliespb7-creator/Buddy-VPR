@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import type { AvatarChoice } from "@/components/AvatarPicker";
+import { LevelIcon } from "@/components/LevelIcons";
 import type { LevelInfo } from "@/lib/levelSystem";
 import { cn } from "@/lib/utils";
 
@@ -40,8 +41,8 @@ export function ProfileSummary({ avatar, totalStars, levelInfo }: ProfileSummary
           "bg-emerald-50/70 dark:bg-emerald-900/20 px-3 sm:px-4 py-3 flex items-center gap-3 sm:gap-4"
         )}
       >
-        <div className="shrink-0 flex items-center justify-center rounded-2xl bg-white/80 dark:bg-emerald-900/40 w-12 h-12 sm:w-14 sm:h-14 text-2xl">
-          <span aria-hidden>{levelInfo.emoji}</span>
+        <div className="shrink-0 flex items-center justify-center rounded-2xl bg-white/80 dark:bg-emerald-900/40 w-12 h-12 sm:w-14 sm:h-14 text-2xl text-emerald-700 dark:text-emerald-200">
+          <LevelIcon level={levelInfo.level} size="lg" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline justify-between gap-2 flex-wrap">

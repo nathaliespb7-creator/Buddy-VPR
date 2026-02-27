@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { LevelIcon } from "@/components/LevelIcons";
 
 interface LevelUpModalProps {
   visible: boolean;
@@ -8,7 +9,7 @@ interface LevelUpModalProps {
   onClose: () => void;
 }
 
-export function LevelUpModal({ visible, level, title, emoji, onClose }: LevelUpModalProps) {
+export function LevelUpModal({ visible, level, title, onClose }: LevelUpModalProps) {
   return (
     <AnimatePresence>
       {visible && (
@@ -34,9 +35,9 @@ export function LevelUpModal({ visible, level, title, emoji, onClose }: LevelUpM
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 18 }}
-              className="mx-auto mb-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/80 dark:bg-emerald-900/60 flex items-center justify-center text-4xl"
+              className="mx-auto mb-3 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/80 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-700 dark:text-emerald-200"
             >
-              <span aria-hidden>{emoji}</span>
+              <LevelIcon level={level} size="lg" />
             </motion.div>
             <p className="text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-200 uppercase mb-1">
               Новый уровень!

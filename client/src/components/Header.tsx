@@ -4,6 +4,7 @@ import { Star, DoorOpen, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
+import { LevelIcon } from "@/components/LevelIcons";
 import { useSettings } from "@/context/SettingsContext";
 import type { LevelInfo } from "@/lib/levelSystem";
 
@@ -249,8 +250,8 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 Умный помощник для подготовки
               </p>
               {levelInfo && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 px-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
-                  <span aria-hidden>{levelInfo.emoji}</span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
+                  <LevelIcon level={levelInfo.level} size="sm" className="w-5 h-5 sm:w-5 sm:h-5" />
                   <span>Lv {levelInfo.level}</span>
                 </span>
               )}
@@ -324,8 +325,8 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               Бадди ВПР
             </h1>
             {levelInfo && (
-              <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100">
-                <span aria-hidden>{levelInfo.emoji}</span>
+              <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100">
+                <LevelIcon level={levelInfo.level} size="sm" className="w-4 h-4" />
                 <span>Lv {levelInfo.level}</span>
               </span>
             )}
