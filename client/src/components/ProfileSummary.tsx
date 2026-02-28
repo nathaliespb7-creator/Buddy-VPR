@@ -10,6 +10,8 @@ interface ProfileSummaryProps {
   rankInfo: RankInfo | null;
   /** Для подписи «N из M звёзд» (только при rankInfo !== null). */
   moduleCapacity: number | null;
+  /** Показать «Начать сначала» и по клику вызвать (открыть диалог подтверждения). */
+  onRequestReset?: () => void;
 }
 
 function progressLabel(
@@ -35,11 +37,11 @@ function progressLabel(
   return `Осталось ${Math.round(percentLeft)}% до следующего ранга`;
 }
 
-export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity }: ProfileSummaryProps) {
+export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, onRequestReset }: ProfileSummaryProps) {
   const showRankBlock = rankInfo?.rank != null && rankInfo.progressPercent != null;
 
   return (
-    <section className="w-full px-4 sm:px-6 pt-3 pb-1">
+    <section className="w-full px-4 sm:px-6 pt-3 pb-1 space-y-2">
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -92,6 +94,16 @@ export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity }:
           </div>
         )}
       </motion.div>
+      {totalStars > 0 && onRequestReset && (
+        <button
+          type="button"
+          onClick={onRequestReset}
+          className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors w-full max-w-2xl mx-auto block text-center py-1"
+          aria-label="Начать сначала (сброс звёзд)"
+        >
+          Начать сначала
+        </button>
+      )}
     </section>
   );
 }

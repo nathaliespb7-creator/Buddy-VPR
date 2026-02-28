@@ -21,6 +21,8 @@ interface HeaderProps {
   taskProgress?: { current: number; total: number };
   /** Premium: ранг для бейджа. Free: null — бейдж не показываем. */
   rankInfo?: RankInfo | null;
+  /** Подпись кнопки выхода (по умолчанию «Выход»). */
+  exitLabel?: string;
 }
 
 function ProgressRing({ progress }: { progress: number }) {
@@ -122,7 +124,7 @@ function TaskProgressBar({ current, total }: { current: number; total: number })
   );
 }
 
-export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, rankInfo }: HeaderProps) {
+export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, rankInfo, exitLabel = "Выход" }: HeaderProps) {
   const goldCount = stars.gold;
   const silverCount = stars.silver;
   const isTaskVariant = variant === "task" && taskProgress;
@@ -295,9 +297,9 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             </TooltipContent>
           </Tooltip>
           {onExit && (
-            <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label="Выход из приложения" data-testid="button-exit">
+            <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label={exitLabel} data-testid="button-exit">
               <DoorOpen className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] shrink-0" aria-hidden />
-              <span>Выход</span>
+              <span>{exitLabel}</span>
             </Button>
           )}
         </div>
@@ -338,9 +340,9 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </div>
         )}
         {onExit ? (
-          <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label="Выход" data-testid="button-exit">
+          <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label={exitLabel} data-testid="button-exit">
             <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
-            <span className="text-sm font-medium">Выход</span>
+            <span className="text-sm font-medium">{exitLabel}</span>
           </Button>
         ) : (
           <Tooltip>

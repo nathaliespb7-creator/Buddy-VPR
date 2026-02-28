@@ -22,6 +22,16 @@ import { useSettings, type AnimationLevel } from "@/context/SettingsContext";
 import { calculateLevel } from "@/lib/levelSystem";
 import { getRankInfo } from "@/lib/rankSystem";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
 import confetti from "canvas-confetti";
@@ -144,6 +154,7 @@ export default function Home() {
   const [profile, setProfile] = useState<UserProfile | null>(storedProfile);
   const [correctStreak, setCorrectStreak] = useState(0);
   const [levelUpData, setLevelUpData] = useState<{ level: number; title: string; emoji: string } | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
@@ -193,6 +204,19 @@ export default function Home() {
     () => getRankInfo(totalStars, moduleCapacity),
     [totalStars, moduleCapacity]
   );
+
+  const goToFirstScreen = useCallback(() => setPhase("modeChoice"), []);
+  const goToMap = useCallback(() => setPhase("islandMap"), []);
+  const requestResetProgress = useCallback(() => setShowResetConfirm(true), []);
+  const resetProgress = useCallback(() => {
+    const next = profile
+      ? { ...profile, stars: EMPTY_STARS, starByTaskId: {} }
+      : { avatar: "buddy" as AvatarChoice, tier: "free" as const, nickname: null, stars: EMPTY_STARS };
+    setProfile(next);
+    saveProfile(next);
+    setShowResetConfirm(false);
+    setPhase("modeChoice");
+  }, [profile]);
 
   // Старт диагностики: каждый остров (категория) — по 3 задания
   const startMixedTraining = useCallback(
@@ -635,6 +659,23 @@ export default function Home() {
           />
         )}
 
+        <AlertDialog open={showResetConfirm} onOpenChange={setShowResetConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Начать сначала?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Все звёзды и прогресс будут сброшены. Это нельзя отменить. Аватар сохранится.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Отмена</AlertDialogCancel>
+              <AlertDialogAction onClick={resetProgress} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Сбросить всё
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {!showSplash && levelUpData && (
           <LevelUpModal
             visible
@@ -649,7 +690,11 @@ export default function Home() {
           <Header
             mascotMood={mascotMood}
             stars={starCounts}
-            onExit={() => setPhase("islandMap")}
+            onExit={
+              phase === "diagnostic" || phase === "training"
+                ? goToMap
+                : goToFirstScreen
+            }
             overallProgress={overallProgress}
             variant={phase === "diagnostic" || phase === "training" ? "task" : "full"}
             taskProgress={
@@ -661,6 +706,11 @@ export default function Home() {
                 : undefined
             }
             rankInfo={rankInfo}
+            exitLabel={
+              phase === "diagnostic" || phase === "training"
+                ? "Назад"
+                : "На главную"
+            }
           />
         )}
 
@@ -733,6 +783,7 @@ export default function Home() {
                   totalStars={totalStars}
                   rankInfo={rankInfo}
                   moduleCapacity={moduleCapacity}
+                  onRequestReset={requestResetProgress}
                 />
                 <IslandMap
                   key="islands"
