@@ -4,21 +4,23 @@ import { Star, DoorOpen, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
-import { LevelIcon } from "@/components/LevelIcons";
 import { useSettings } from "@/context/SettingsContext";
-import type { LevelInfo } from "@/lib/levelSystem";
+import type { RankInfo } from "@/lib/rankSystem";
+import type { StarCounts } from "@/types/motivation";
 
 export type StarType = "gold" | "silver" | "empty";
 
 interface HeaderProps {
   mascotMood: "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong" | "hint";
-  stars: StarType[];
+  /** Счётчики звёзд (новый формат). Раньше был массив StarType[]. */
+  stars: StarCounts;
   onExit?: () => void;
   overallProgress?: number;
   /** На мобильном: только «Назад» + тонкий прогресс-бар (экран задания) */
   variant?: "full" | "task";
   taskProgress?: { current: number; total: number };
-  levelInfo?: LevelInfo;
+  /** Premium: ранг для бейджа. Free: null — бейдж не показываем. */
+  rankInfo?: RankInfo | null;
 }
 
 function ProgressRing({ progress }: { progress: number }) {
@@ -120,9 +122,9 @@ function TaskProgressBar({ current, total }: { current: number; total: number })
   );
 }
 
-export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, levelInfo }: HeaderProps) {
-  const goldCount = stars.filter(s => s === "gold").length;
-  const silverCount = stars.filter(s => s === "silver").length;
+export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, rankInfo }: HeaderProps) {
+  const goldCount = stars.gold;
+  const silverCount = stars.silver;
   const isTaskVariant = variant === "task" && taskProgress;
   const { showAnimationControls } = useSettings();
 
@@ -249,10 +251,9 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               <p className="text-sm sm:text-base text-muted-foreground font-normal leading-snug" data-testid="text-subtitle">
                 Умный помощник для подготовки
               </p>
-              {levelInfo && (
+              {rankInfo?.rank && (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
-                  <LevelIcon level={levelInfo.level} size="sm" className="w-5 h-5 sm:w-5 sm:h-5" />
-                  <span>Lv {levelInfo.level}</span>
+                  {rankInfo.rank}
                 </span>
               )}
             </div>
@@ -324,10 +325,9 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             <h1 className="text-base font-bold text-foreground truncate" data-testid="text-app-title">
               Бадди ВПР
             </h1>
-            {levelInfo && (
+            {rankInfo?.rank && (
               <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100">
-                <LevelIcon level={levelInfo.level} size="sm" className="w-4 h-4" />
-                <span>Lv {levelInfo.level}</span>
+                {rankInfo.rank}
               </span>
             )}
           </div>

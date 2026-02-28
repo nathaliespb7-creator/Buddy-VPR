@@ -2,6 +2,9 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Header, type StarType } from "@/components/Header";
 import { ProgressBar } from "@/components/ProgressBar";
+import type { UserProfile as MotivationUserProfile, StarCounts } from "@/types/motivation";
+import { migrateProfile } from "@/lib/profileMigration";
+import { calculateNewStars } from "@/lib/starCalculation";
 import { TaskCard } from "@/components/TaskCard";
 import { type AvatarChoice } from "@/components/AvatarPicker";
 import { PowerCard } from "@/components/PowerCard";
@@ -17,6 +20,7 @@ import { ProfileSummary } from "@/components/ProfileSummary";
 import { LevelUpModal } from "@/components/LevelUpModal";
 import { useSettings, type AnimationLevel } from "@/context/SettingsContext";
 import { calculateLevel } from "@/lib/levelSystem";
+import { getRankInfo } from "@/lib/rankSystem";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
@@ -24,12 +28,8 @@ import confetti from "canvas-confetti";
 
 type GamePhase = "modeChoice" | "mixedModeChoice" | "diagnostic" | "powerCard" | "islandMap" | "training" | "complete";
 
-interface UserProfile {
-  avatar: AvatarChoice;
-  stars: StarType[];
-  level: number;
-  totalStars: number;
-}
+/** Локальный алиас: профиль из спецификации мотивации (звёзды — StarCounts, starByTaskId). */
+type UserProfile = MotivationUserProfile;
 
 interface RoundData {
   mastered: boolean;
@@ -53,24 +53,19 @@ function getStoredSessionId(): string {
   return newId;
 }
 
+const EMPTY_STARS: StarCounts = { total: 0, gold: 0, silver: 0 };
+
 function getStoredProfile(): UserProfile | null {
   try {
     const stored = localStorage.getItem("buddy_profile");
     if (stored) {
-      const parsed = JSON.parse(stored) as Partial<UserProfile>;
-      if (!parsed) return null;
-      const stars = Array.isArray(parsed.stars) ? parsed.stars : [];
-      const totalStars =
-        typeof parsed.totalStars === "number" ? parsed.totalStars : stars.length;
-      const levelInfo = calculateLevel(totalStars);
-      return {
-        avatar: (parsed.avatar as AvatarChoice) ?? ("buddy" as AvatarChoice),
-        stars,
-        totalStars,
-        level: levelInfo.level,
-      };
+      const parsed = JSON.parse(stored);
+      const migrated = migrateProfile(parsed);
+      return migrated;
     }
-  } catch {}
+  } catch {
+    // ignore
+  }
   return null;
 }
 
@@ -161,9 +156,8 @@ export default function Home() {
   const [totalTasksInCategory, setTotalTasksInCategory] = useState(0);
   const [isLoadingRound, setIsLoadingRound] = useState(false);
 
-  const userStars = profile?.stars || [];
-  const totalStars = profile?.totalStars ?? userStars.length;
-  const currentLevelInfo = useMemo(() => calculateLevel(totalStars), [totalStars]);
+  const starCounts: StarCounts = profile?.stars ?? EMPTY_STARS;
+  const totalStars = starCounts.total;
 
   const {
     animationLevel,
@@ -193,6 +187,12 @@ export default function Home() {
     if (serverTasks && serverTasks.length >= tasksData.length) return serverTasks;
     return tasksData;
   }, [serverTasks]);
+
+  const moduleCapacity = profile?.tier === "premium" ? allTasks.length : null;
+  const rankInfo = useMemo(
+    () => getRankInfo(totalStars, moduleCapacity),
+    [totalStars, moduleCapacity]
+  );
 
   // Старт диагностики: каждый остров (категория) — по 3 задания
   const startMixedTraining = useCallback(
@@ -242,7 +242,12 @@ export default function Home() {
     setPhase("diagnostic");
     setProfile((prev) => {
       if (!prev) {
-        const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1, totalStars: 0 };
+        const defaultProfile: UserProfile = {
+          avatar: "buddy",
+          tier: "free",
+          nickname: null,
+          stars: EMPTY_STARS,
+        };
         saveProfile(defaultProfile);
         return defaultProfile;
       }
@@ -319,21 +324,30 @@ export default function Home() {
     [animationLevel, showToast]
   );
 
-  const addStar = useCallback((starType: StarType) => {
+  const addStar = useCallback((taskId: number, starType: StarType) => {
     if (starType === "empty") return;
     setProfile((prev) => {
-      const next =
-        prev ?? { avatar: "buddy" as AvatarChoice, stars: [], level: 1, totalStars: 0 };
-      const newTotalStars = (next.totalStars ?? next.stars.length) + 1;
-      const levelInfo = calculateLevel(newTotalStars);
-      const wasLevel = next.level ?? 1;
+      const next = prev ?? {
+        avatar: "buddy",
+        tier: "free",
+        nickname: null,
+        stars: EMPTY_STARS,
+      };
+      const result = calculateNewStars({
+        taskId: String(taskId),
+        starType,
+        currentStars: next.stars,
+        starByTaskId: next.starByTaskId,
+      });
       const updated: UserProfile = {
         ...next,
-        stars: [...next.stars, starType],
-        totalStars: newTotalStars,
-        level: levelInfo.level,
+        stars: result.stars,
+        starByTaskId: result.starByTaskId,
       };
-      if (levelInfo.level > wasLevel) {
+      const wasLevel = calculateLevel(next.stars.total).level;
+      const newLevel = calculateLevel(result.stars.total).level;
+      if (newLevel > wasLevel) {
+        const levelInfo = calculateLevel(result.stars.total);
         setLevelUpData({ level: levelInfo.level, title: levelInfo.title, emoji: levelInfo.emoji });
         fireConfetti();
         setMascotMood("celebrating");
@@ -486,7 +500,10 @@ export default function Home() {
           [currentTask.category]: (prev[currentTask.category] || 0) + 1,
         }));
         setMascotMood("celebrating");
-        addStar(starType);
+        // Диагностика не даёт звёзд (спецификация: «разведка», не «битва»)
+        if (phase !== "diagnostic") {
+          addStar(currentTask.id, starType);
+        }
         showToast(
           prefix + encouragements[Math.floor(Math.random() * encouragements.length)],
           "success"
@@ -587,7 +604,12 @@ export default function Home() {
               setShowSplash(false);
               setPhase("modeChoice");
               if (!storedProfile) {
-                const defaultProfile: UserProfile = { avatar: "buddy", stars: [], level: 1, totalStars: 0 };
+                const defaultProfile: UserProfile = {
+                  avatar: "buddy",
+                  tier: "free",
+                  nickname: null,
+                  stars: EMPTY_STARS,
+                };
                 setProfile(defaultProfile);
                 saveProfile(defaultProfile);
               }
@@ -626,7 +648,7 @@ export default function Home() {
         {!showSplash && (
           <Header
             mascotMood={mascotMood}
-            stars={userStars}
+            stars={starCounts}
             onExit={() => setPhase("islandMap")}
             overallProgress={overallProgress}
             variant={phase === "diagnostic" || phase === "training" ? "task" : "full"}
@@ -638,7 +660,7 @@ export default function Home() {
                   }
                 : undefined
             }
-            levelInfo={currentLevelInfo}
+            rankInfo={rankInfo}
           />
         )}
 
@@ -709,7 +731,8 @@ export default function Home() {
                 <ProfileSummary
                   avatar={profile?.avatar ?? ("buddy" as AvatarChoice)}
                   totalStars={totalStars}
-                  levelInfo={currentLevelInfo}
+                  rankInfo={rankInfo}
+                  moduleCapacity={moduleCapacity}
                 />
                 <IslandMap
                   key="islands"
