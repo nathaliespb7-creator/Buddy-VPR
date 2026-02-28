@@ -2,16 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-// PWA: регистрация Service Worker; при появлении новой версии — перезагрузка (для «добавить на экран»)
-if ("serviceWorker" in navigator) {
-  const hadController = !!navigator.serviceWorker.controller;
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (hadController) window.location.reload();
-    });
-  });
-}
+// PWA: Service Worker регистрируется плагином vite-plugin-pwa (см. vite.config.ts)
 
 function showLoadError(message: string) {
   const rootEl = document.getElementById("root");
