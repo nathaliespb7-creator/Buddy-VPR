@@ -1,6 +1,6 @@
 /**
- * Остров Мудрости: фразеологизмы + мини-сочинение (ВПР 2026, задание 12).
- * module_id: island_wisdom_v1, source: ФИОКО ВПР 2026.
+ * Остров Мудрости (category: "meaning"): фразеологизмы + мини-сочинение (ВПР 2026, задание 12).
+ * НЕ Остров Слов (vocabulary). module_id: island_wisdom_v1, source: ФИОКО ВПР 2026.
  */
 import type { Task } from "@/lib/taskData";
 
@@ -33,7 +33,7 @@ function phraseologyTask(
     rule: null,
     ruleId: 20,
     difficulty: difficultyNum,
-    category: "meaning",
+    category: "meaning", // Остров Мудрости (не vocabulary = Остров Слов)
     inputType: "text",
     acceptableAnswers: [meaning],
     unacceptablePatterns: unacceptableSituations,

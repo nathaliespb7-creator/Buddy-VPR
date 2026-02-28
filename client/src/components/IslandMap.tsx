@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered, Search } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered, Search, MessageSquareQuote } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
@@ -86,7 +86,7 @@ const islands = [
   {
     key: "vocabulary",
     label: "Остров Слов",
-    description: "Узнай значение слова и подбери синоним!",
+    description: "Подбери слово с таким же значением (синоним)!",
     icon: Search,
     gradient: "from-fuchsia-200 to-fuchsia-100 dark:from-fuchsia-900/40 dark:to-fuchsia-800/30",
     iconBg: "bg-fuchsia-300 dark:bg-fuchsia-700",
@@ -94,6 +94,18 @@ const islands = [
     borderColor: "border-fuchsia-300 dark:border-fuchsia-700",
     dotColor: "bg-fuchsia-400",
     progressColor: "bg-fuchsia-400",
+  },
+  {
+    key: "context",
+    label: "Остров контекста",
+    description: "Объясни, что значит слово в предложении!",
+    icon: MessageSquareQuote,
+    gradient: "from-orange-200 to-orange-100 dark:from-orange-900/40 dark:to-orange-800/30",
+    iconBg: "bg-orange-300 dark:bg-orange-700",
+    iconColor: "text-orange-800 dark:text-orange-200",
+    borderColor: "border-orange-300 dark:border-orange-700",
+    dotColor: "bg-orange-400",
+    progressColor: "bg-orange-400",
   },
   {
     key: "plan",

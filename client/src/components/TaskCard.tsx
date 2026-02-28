@@ -68,7 +68,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
   const [usedHintButton, setUsedHintButton] = useState(false);
 
   const isTextInput = task.inputType === "text" && !!task.acceptableAnswers;
-  const hasLongText = isTextInput || task.category === "plan" || task.category === "reading";
+  const hasLongText = isTextInput || task.category === "plan" || task.category === "reading" || task.category === "context";
   const [showFullText, setShowFullText] = useState(false);
 
   const handleSelect = (option: string) => {
@@ -79,12 +79,16 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
   const handleSubmit = () => {
     if (isTextInput) {
       if (!textAnswer.trim()) return;
-      const result = validateAnswer(textAnswer, {
-        modelAnswer: task.correct,
-        acceptableAnswers: task.acceptableAnswers || [],
-        unacceptablePatterns: task.unacceptablePatterns || [],
-        keywords: task.keywords || [],
-      });
+      const result = validateAnswer(
+        textAnswer,
+        {
+          modelAnswer: task.correct,
+          acceptableAnswers: task.acceptableAnswers || [],
+          unacceptablePatterns: task.unacceptablePatterns || [],
+          keywords: task.keywords || [],
+        },
+        task.category === "context" ? { variant: "context" } : undefined
+      );
       setValidationResult(result);
       const correct = result.score >= 1;
       setIsCorrect(correct);

@@ -1,6 +1,7 @@
 import type { SentenceTask } from "@/data/sentences";
 import sentences from "@/data/sentences";
 import { phraseologyWisdomTasks } from "@/data/phraseologyWisdom";
+import { contextIslandTasks } from "@/data/contextIsland";
 
 export type Methodology = "school_of_russia" | "zankov" | "elkonin";
 
@@ -1031,6 +1032,9 @@ export const tasksData: Task[] = [
   // === Остров Мудрости: фразеологизмы + мини-сочинение (ВПР 2026, задание 12, island_wisdom_v1) ===
   ...phraseologyWisdomTasks,
 
+  // === Остров контекста: значение слова по контексту (ВПР 2026, задание 6, island_context_v1) ===
+  ...contextIslandTasks,
+
   // === Серверные задания (accent, phonetics, morphemics) — импортированы из словарей ===
   { id: 1000, type: "accent", word: "газопровод", question: null, correct: "газопровОд", options: ["газопрОвод","газопровОд","гАзопровод"], audio: "Газ идёт по провОду! Ударение на О в конце!", hint: "Запомни: водопровОд, газопровОд — ударение всегда на последнем О!", rule: "Ударение — это секретная сила слова. Мы просто учимся её находить!", ruleId: 3, difficulty: 2, category: "accent" },
   { id: 1001, type: "accent", word: "нефтепровод", question: null, correct: "нефтепровОд", options: ["нефтепрОвод","нефтепровОд","нЕфтепровод"], audio: "Нефть течёт по провОду! Как газопровОд!", hint: "ПровОд — от слова «проводить». Ударение на последнем О!", rule: "Ударение — это секретная сила слова. Мы просто учимся её находить!", ruleId: 3, difficulty: 2, category: "accent" },
@@ -1388,6 +1392,7 @@ export const rules: Record<string, string> = {
   morphemics: "Слова состоят из частей: корень, приставка, суффикс и окончание — как конструктор!",
   morphology: "Каждое слово — это часть речи. Существительное, глагол, прилагательное — у каждого своя роль!",
   syntax: "Предложение — это команда слов. Подлежащее и сказуемое — её капитаны!",
+  context: "Объясни значение слова так, как оно употреблено в этом предложении.",
 };
 
 export const encouragements = [
@@ -1411,6 +1416,7 @@ export const categoryLabels: Record<string, string> = {
   reading: "Основная мысль",
   plan: "План текста",
   vocabulary: "Значение слова",
+  context: "Контекст (значение слова)",
 };
 
 export const categoryIcons: Record<string, string> = {
@@ -1423,4 +1429,5 @@ export const categoryIcons: Record<string, string> = {
   reading: "reading",
   plan: "plan",
   vocabulary: "vocabulary",
+  context: "context",
 };
