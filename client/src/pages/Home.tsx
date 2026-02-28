@@ -733,6 +733,14 @@ export default function Home() {
           )}
         >
           <AnimatePresence mode="wait">
+            {phase === "modeChoice" && (
+              <ModeChoiceScreen
+                key="mode-choice"
+                onIslands={() => setPhase("islandMap")}
+                onMixed={() => setPhase("mixedModeChoice")}
+                onDiagnostic={startDiagnostic}
+              />
+            )}
             {phase === "diagnostic" && activeTasks.length === 0 && (
               <p key="diagnostic-loading" className="text-muted-foreground text-center py-8" data-testid="diagnostic-loading">
                 Подготовка заданий…
@@ -749,14 +757,6 @@ export default function Home() {
                   totalTasks={roundTotalTasks || activeTasks.length}
                 />
               </div>
-            )}
-            {phase === "modeChoice" && (
-              <ModeChoiceScreen
-                key="mode-choice"
-                onIslands={() => setPhase("islandMap")}
-                onMixed={() => setPhase("mixedModeChoice")}
-                onDiagnostic={startDiagnostic}
-              />
             )}
             {phase === "mixedModeChoice" && (
               <MixedModeChoiceScreen

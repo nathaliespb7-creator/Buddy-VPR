@@ -160,11 +160,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             ) : (
               <div className="w-[3rem]" />
             )}
-            {showAnimationControls && (
-              <div className="flex-1 flex justify-center px-1">
-                <AnimationSettings />
-              </div>
-            )}
             <motion.div
               animate={{ y: [0, -2, 0] }}
               transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
@@ -173,6 +168,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
             </motion.div>
           </div>
+          {showAnimationControls && (
+            <div className="px-4 pb-2 pt-0 border-t border-border/40">
+              <AnimationSettings />
+            </div>
+          )}
         </header>
         {/* Десктоп: логотип + полоса прогресса по центру + звёзды с подсказкой + Выход */}
         <header className="w-full py-2.5 sm:py-3 px-3 sm:px-6 border-b border-border/60 bg-background/95 font-sans antialiased shrink-0 hidden sm:block" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }} data-testid="header-desktop">
@@ -220,9 +220,9 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 </TooltipContent>
               </Tooltip>
               {onExit && (
-                <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label="Выход из приложения" data-testid="button-exit">
+                <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label={exitLabel} data-testid="button-exit">
                   <DoorOpen className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] shrink-0" aria-hidden />
-                  <span>Выход</span>
+                  <span>{exitLabel}</span>
                 </Button>
               )}
             </div>
@@ -334,11 +334,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             )}
           </div>
         </div>
-        {showAnimationControls && (
-          <div className="flex-1 flex justify-center px-1">
-            <AnimationSettings />
-          </div>
-        )}
         {onExit ? (
           <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label={exitLabel} data-testid="button-exit">
             <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
@@ -361,6 +356,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </Tooltip>
         )}
       </div>
+      {showAnimationControls && (
+        <div className="px-4 pb-2 pt-0 border-t border-border/40">
+          <AnimationSettings />
+        </div>
+      )}
     </header>
   );
 
