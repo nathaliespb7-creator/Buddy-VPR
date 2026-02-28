@@ -4,7 +4,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Shuffle, Target } from "lucide-react";
 import { categoryLabels } from "@/lib/taskData";
 
-const CATEGORY_ORDER = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax"] as const;
+/** Порядок островов/навыков — совпадает с картой (IslandMap) */
+const CATEGORY_ORDER = [
+  "accent",
+  "phonetics",
+  "morphemics",
+  "morphology",
+  "syntax",
+  "vocabulary",
+  "context",
+  "plan",
+  "reading",
+  "meaning",
+] as const;
 
 interface MixedModeChoiceScreenProps {
   onAll: () => void;
