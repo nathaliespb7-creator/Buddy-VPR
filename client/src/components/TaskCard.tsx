@@ -148,6 +148,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
     reading: "Основная мысль",
     plan: "План текста",
     vocabulary: "Значение слова",
+    context: "Контекст",
   };
 
   const typeColors: Record<string, string> = {
@@ -160,6 +161,7 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
     reading: "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300",
     plan: "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300",
     vocabulary: "bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300",
+    context: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
   };
 
   const isGold = earnedStarType === "gold";
@@ -239,10 +241,25 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
               «{task.word}»
             </p>
           )}
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             <span className={cn("inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold", typeColors[task.type] || typeColors.accent)} data-testid="badge-task-type">
               {typeLabels[task.type] || task.type}
             </span>
+            {task.difficulty !== undefined && (
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium",
+                  task.difficulty === 1
+                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                    : "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300"
+                )}
+                data-testid="badge-difficulty"
+                title={task.difficulty === 1 ? "Базовый уровень" : "Повышенный уровень"}
+              >
+                <span aria-hidden>{task.difficulty === 1 ? "🟢" : "🟡"}</span>
+                {task.difficulty === 1 ? "Базовый" : "Повышенный"}
+              </span>
+            )}
             {isDiscovery && (
               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
                 Разведка

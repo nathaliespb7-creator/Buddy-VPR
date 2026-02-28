@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Header, type StarType } from "@/components/Header";
 import { ProgressBar } from "@/components/ProgressBar";
@@ -166,6 +166,12 @@ export default function Home() {
   const [roundMastered, setRoundMastered] = useState(false);
   const [totalTasksInCategory, setTotalTasksInCategory] = useState(0);
   const [isLoadingRound, setIsLoadingRound] = useState(false);
+  const [timerRemainingSeconds, setTimerRemainingSeconds] = useState<number | null>(null);
+  const [roundTimedOut, setRoundTimedOut] = useState(false);
+
+  /** Актуальные счётчики раунда для завершения по таймеру */
+  const roundStateRef = useRef({ correctTasks: 0, completedTasks: 0, activeTasksLength: 0 });
+  roundStateRef.current = { correctTasks, completedTasks, activeTasksLength: activeTasks.length };
 
   const starCounts: StarCounts = profile?.stars ?? EMPTY_STARS;
   const totalStars = starCounts.total;
@@ -205,6 +211,39 @@ export default function Home() {
     [totalStars, moduleCapacity]
   );
 
+  const isTrainingPhase = phase === "training" || phase === "diagnostic";
+  useEffect(() => {
+    if (isTrainingPhase) {
+      setTimerRemainingSeconds(45 * 60);
+      setRoundTimedOut(false);
+    } else {
+      setTimerRemainingSeconds(null);
+      // roundTimedOut не сбрасываем здесь — иначе при завершении по таймеру экран покажет обычный заголовок
+    }
+  }, [isTrainingPhase]);
+
+  useEffect(() => {
+    if (!isTrainingPhase || timerRemainingSeconds === null) return;
+    if (timerRemainingSeconds <= 0) {
+      const { correctTasks: c, completedTasks: d, activeTasksLength: total } = roundStateRef.current;
+      setRoundCorrectCount(c);
+      setRoundWrongCount(d - c);
+      setRoundTotalTasks(total);
+      setRoundWrongTaskIds([]);
+      setRoundTimedOut(true);
+      setPhase("complete");
+      setTimerRemainingSeconds(null);
+      return;
+    }
+    const id = setInterval(() => {
+      setTimerRemainingSeconds((prev) => {
+        if (prev == null || prev <= 1) return null;
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isTrainingPhase, timerRemainingSeconds]);
+
   const goToFirstScreen = useCallback(() => setPhase("modeChoice"), []);
   const goToMap = useCallback(() => setPhase("islandMap"), []);
   const requestResetProgress = useCallback(() => setShowResetConfirm(true), []);
@@ -217,6 +256,22 @@ export default function Home() {
     setShowResetConfirm(false);
     setPhase("modeChoice");
   }, [profile]);
+
+  const handleExportStats = useCallback(() => {
+    const p = getStoredProfile();
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      sessionId,
+      profile: p ?? undefined,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `buddy-vpr-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [sessionId]);
 
   // Старт диагностики: каждый остров (категория) — по 3 задания
   const startMixedTraining = useCallback(
@@ -711,6 +766,7 @@ export default function Home() {
                 ? "Назад"
                 : "На главную"
             }
+            timerRemainingSeconds={phase === "diagnostic" || phase === "training" ? timerRemainingSeconds : null}
           />
         )}
 
@@ -784,6 +840,7 @@ export default function Home() {
                   rankInfo={rankInfo}
                   moduleCapacity={moduleCapacity}
                   onRequestReset={requestResetProgress}
+                  onExportStats={handleExportStats}
                 />
                 <IslandMap
                   key="islands"
@@ -808,6 +865,7 @@ export default function Home() {
                 category={activeCategory}
                 onBackToMap={handleBackToMap}
                 onNextRound={handleStartNextRound}
+                timedOut={roundTimedOut}
               />
             )}
           </AnimatePresence>

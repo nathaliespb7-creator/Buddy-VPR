@@ -23,6 +23,8 @@ interface HeaderProps {
   rankInfo?: RankInfo | null;
   /** Подпись кнопки выхода (по умолчанию «Выход»). */
   exitLabel?: string;
+  /** Оставшееся время в секундах (режим задания). При null таймер не показывается. */
+  timerRemainingSeconds?: number | null;
 }
 
 function ProgressRing({ progress }: { progress: number }) {
@@ -124,7 +126,13 @@ function TaskProgressBar({ current, total }: { current: number; total: number })
   );
 }
 
-export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, rankInfo, exitLabel = "Выход" }: HeaderProps) {
+function formatTimer(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+export function Header({ mascotMood, stars, onExit, overallProgress, variant = "full", taskProgress, rankInfo, exitLabel = "Выход", timerRemainingSeconds = null }: HeaderProps) {
   const goldCount = stars.gold;
   const silverCount = stars.silver;
   const isTaskVariant = variant === "task" && taskProgress;
@@ -143,6 +151,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
         >
           <div className="px-4 pt-1.5 pb-1">
             <TaskProgressBar current={current} total={total} />
+            {timerRemainingSeconds != null && timerRemainingSeconds >= 0 && (
+              <p className="text-[11px] text-muted-foreground mt-1 text-center tabular-nums" data-testid="text-timer-mobile" aria-live="polite">
+                Осталось {formatTimer(timerRemainingSeconds)}
+              </p>
+            )}
           </div>
           <div className="flex items-center justify-between gap-2 px-2 pt-2 pb-2 min-h-[44px]">
             {onExit ? (
@@ -188,6 +201,11 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             </div>
             <div className="flex-1 mx-2 sm:mx-4 min-w-0 max-w-[280px]">
               <TaskProgressBar current={current} total={total} />
+              {timerRemainingSeconds != null && timerRemainingSeconds >= 0 && (
+                <p className="text-xs text-muted-foreground mt-0.5 tabular-nums" data-testid="text-timer-desktop" aria-live="polite">
+                  Осталось {formatTimer(timerRemainingSeconds)}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-3 sm:gap-4 shrink-0" data-testid="header-stats">
               <Tooltip>

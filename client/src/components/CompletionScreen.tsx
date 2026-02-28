@@ -17,6 +17,8 @@ interface CompletionScreenProps {
   category: string;
   onBackToMap: () => void;
   onNextRound: () => void;
+  /** true, если раунд завершён по таймеру */
+  timedOut?: boolean;
 }
 
 export function CompletionScreen({
@@ -31,8 +33,11 @@ export function CompletionScreen({
   category,
   onBackToMap,
   onNextRound,
+  timedOut = false,
 }: CompletionScreenProps) {
   const percent = totalTasks > 0 ? Math.round((totalCorrect / totalTasks) * 100) : 0;
+  /** Оценка по ВПР: 0–44% → 2, 45–59% → 3, 60–74% → 4, 75%+ → 5 */
+  const grade = percent < 45 ? 2 : percent < 60 ? 3 : percent < 75 ? 4 : 5;
 
   const wrongWords = allTasks
     .filter(t => wrongTaskIds.includes(t.id))
@@ -42,7 +47,11 @@ export function CompletionScreen({
   let descText: string;
   let mascotMood: "celebrating" | "encouraging" | "happy" = "celebrating";
 
-  if (mastered) {
+  if (timedOut) {
+    titleText = "Время вышло";
+    descText = "Раунд завершён по таймеру. Результаты ниже — можно повторить и улучшить!";
+    mascotMood = "encouraging";
+  } else if (mastered) {
     titleText = "Категория освоена!";
     descText = "Все задания выполнены верно! Ты настоящий герой!";
     mascotMood = "celebrating";
@@ -99,12 +108,17 @@ export function CompletionScreen({
           </p>
 
           <div className="w-full max-w-sm mb-6">
-            <div className="flex items-center justify-center mb-3">
+            <div className="flex items-center justify-center gap-4 mb-3 flex-wrap">
               <span className="text-4xl font-bold text-primary" data-testid="text-score-percent">
                 {percent}%
               </span>
+              <span className="text-2xl font-bold text-foreground" data-testid="text-grade">
+                Оценка: {grade}
+              </span>
             </div>
-
+            <p className="text-sm text-muted-foreground mb-2" data-testid="text-score-detail">
+              Баллов: {totalCorrect} из {totalTasks}
+            </p>
             <div className="w-full h-3 rounded-full bg-muted mb-5 overflow-hidden" data-testid="progress-bar-result">
               <motion.div
                 initial={{ width: 0 }}
