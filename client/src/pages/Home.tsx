@@ -687,7 +687,8 @@ export default function Home() {
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-secondary/40 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto w-full max-w-[100vw] overflow-x-hidden">
+      {/* Фиксированная высота экрана: скролл только внутри main (важно для iOS PWA — иначе все 10 островов не прокручиваются) */}
+      <div className="relative z-10 flex flex-col h-[100dvh] w-full max-w-[100vw] overflow-x-hidden overflow-y-hidden">
         {!showSplash && (
           <AnimationOnboardingDialog
             visible={!hasChosenAnimationLevel}

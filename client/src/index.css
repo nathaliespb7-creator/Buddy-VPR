@@ -29,7 +29,7 @@ html, body { overflow-x: hidden; }
 #root { overflow-x: hidden; max-width: 100vw; }
 /* Нижний отступ с учётом safe area (домашняя полоска на iPhone) */
 .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
-/* Плавный скролл на iOS (iPhone 14 и др.) */
+/* Плавный скролл на iOS (iPhone 14 и др.) и PWA standalone */
 @supports (-webkit-overflow-scrolling: touch) {
   .overflow-y-auto { -webkit-overflow-scrolling: touch; }
 }

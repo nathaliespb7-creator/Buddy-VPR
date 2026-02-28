@@ -245,7 +245,7 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-[100vw] md:max-w-lg mx-auto px-3 sm:px-6 overflow-x-hidden safe-bottom pb-6"
+      className="w-full max-w-[100vw] md:max-w-lg mx-auto px-3 sm:px-6 overflow-x-hidden safe-bottom pb-6 min-h-0"
       data-testid="island-map"
     >
       <div className="flex items-center justify-center gap-2 mb-5">
