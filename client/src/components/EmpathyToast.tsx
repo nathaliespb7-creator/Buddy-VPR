@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface EmpathyToastProps {
@@ -9,12 +9,14 @@ interface EmpathyToastProps {
 }
 
 export function EmpathyToast({ message, type, visible, onClose }: EmpathyToastProps) {
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
-    if (visible) {
-      const timer = setTimeout(onClose, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [visible, onClose]);
+    if (!visible) return;
+    const timer = setTimeout(() => onCloseRef.current(), 2500);
+    return () => clearTimeout(timer);
+  }, [visible]);
 
   const bgClass =
     type === "success"
@@ -46,20 +48,25 @@ export function EmpathyToast({ message, type, visible, onClose }: EmpathyToastPr
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 15 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed left-0 right-0 mx-auto z-[60] w-[calc(100vw-2rem)] max-w-sm pointer-events-none"
+          className="fixed left-0 right-0 mx-auto z-[60] w-[calc(100vw-2rem)] max-w-sm"
           style={{ bottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
           data-testid="empathy-toast"
+          role="status"
+          aria-live="polite"
         >
-          <div
-            className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 shadow-md ${bgClass}`}
+          <button
+            type="button"
+            onClick={() => onCloseRef.current()}
+            className={`w-full flex items-center gap-2.5 rounded-xl border px-3 py-2.5 shadow-md text-left transition-opacity hover:opacity-90 active:opacity-95 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 min-h-[44px] touch-manipulation ${bgClass}`}
+            aria-label="Закрыть"
           >
             <div className={`flex items-center justify-center w-7 h-7 rounded-full shrink-0 text-sm font-bold ${iconBg}`}>
               {icon}
             </div>
-            <p className={`text-sm font-medium leading-snug ${textClass}`} data-testid="text-toast-message">
+            <p className={`text-sm font-medium leading-snug flex-1 ${textClass}`} data-testid="text-toast-message">
               {message}
             </p>
-          </div>
+          </button>
         </motion.div>
       )}
     </AnimatePresence>
