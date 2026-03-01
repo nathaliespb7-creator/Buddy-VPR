@@ -6,6 +6,7 @@ import type { UserProfile as MotivationUserProfile, StarCounts } from "@/types/m
 import { migrateProfile } from "@/lib/profileMigration";
 import { calculateNewStars } from "@/lib/starCalculation";
 import { TaskCard } from "@/components/TaskCard";
+import { AdaptiveTaskCard } from "@/components/AdaptiveTaskCard";
 import { type AvatarChoice } from "@/components/AvatarPicker";
 import { PowerCard } from "@/components/PowerCard";
 import { IslandMap } from "@/components/IslandMap";
@@ -789,14 +790,25 @@ export default function Home() {
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
               <div key={`wrap-${currentTask.id}`} className="w-full flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden md:overflow-visible">
-                <TaskCard
-                  key={`task-${currentTask.id}-${currentTaskIndex}`}
-                  task={currentTask}
-                  onComplete={handleTaskComplete}
-                  isDiscovery={phase === "diagnostic"}
-                  taskIndex={currentTaskIndex}
-                  totalTasks={roundTotalTasks || activeTasks.length}
-                />
+                {currentTask.passage || currentTask.instruction ? (
+                  <AdaptiveTaskCard
+                    key={`task-${currentTask.id}-${currentTaskIndex}`}
+                    task={currentTask}
+                    onComplete={handleTaskComplete}
+                    isDiscovery={phase === "diagnostic"}
+                    taskIndex={currentTaskIndex}
+                    totalTasks={roundTotalTasks || activeTasks.length}
+                  />
+                ) : (
+                  <TaskCard
+                    key={`task-${currentTask.id}-${currentTaskIndex}`}
+                    task={currentTask}
+                    onComplete={handleTaskComplete}
+                    isDiscovery={phase === "diagnostic"}
+                    taskIndex={currentTaskIndex}
+                    totalTasks={roundTotalTasks || activeTasks.length}
+                  />
+                )}
               </div>
             )}
             {phase === "mixedModeChoice" && (
