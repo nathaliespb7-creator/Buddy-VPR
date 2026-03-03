@@ -266,23 +266,24 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           <motion.div animate={{ y: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }} className="shrink-0 flex items-center justify-center">
             <Mascot mood={mascotMood} size="sm" />
           </motion.div>
-          <div className="min-w-0 flex flex-col whitespace-normal max-w-[220px] sm:max-w-[260px]">
+          <div className="min-w-0 flex flex-col gap-0.5 max-w-[220px] sm:max-w-[260px]">
             <h1
-              className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight whitespace-normal sm:whitespace-nowrap"
+              className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight"
               data-testid="text-app-title"
             >
               Бадди ВПР
             </h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <p className="text-sm sm:text-base text-muted-foreground font-normal leading-snug" data-testid="text-subtitle">
-                Умный помощник для подготовки
-              </p>
-              {rankInfo?.rank && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
-                  {rankInfo.rank}
-                </span>
-              )}
-            </div>
+            <p
+              className="text-xs sm:text-sm md:text-base text-muted-foreground font-normal leading-snug"
+              data-testid="text-subtitle"
+            >
+              Умный помощник для подготовки
+            </p>
+            {rankInfo?.rank && (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
+                {rankInfo.rank}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-4 shrink-0" data-testid="header-stats">
@@ -350,15 +351,18 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           >
             <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
           </motion.div>
-          <div className="min-w-0 flex flex-col whitespace-normal max-w-[200px]">
+          <div className="min-w-0 flex flex-col gap-0.5 max-w-[200px]">
             <h1
               className="text-base font-bold text-foreground leading-tight"
               data-testid="text-app-title"
             >
               Бадди ВПР
             </h1>
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              Умный помощник для подготовки
+            </p>
             {rankInfo?.rank && (
-              <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:text-emerald-100">
                 {rankInfo.rank}
               </span>
             )}
