@@ -266,9 +266,9 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           <motion.div animate={{ y: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }} className="shrink-0 flex items-center justify-center">
             <Mascot mood={mascotMood} size="sm" />
           </motion.div>
-          <div className="min-w-0 overflow-hidden flex flex-col">
+          <div className="min-w-0 flex flex-col whitespace-normal max-w-[220px] sm:max-w-[260px]">
             <h1
-              className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight sm:whitespace-nowrap"
+              className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight whitespace-normal sm:whitespace-nowrap"
               data-testid="text-app-title"
             >
               Бадди ВПР
@@ -350,7 +350,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           >
             <Mascot mood={mascotMood} size="sm" className="w-10 h-10" />
           </motion.div>
-          <div className="min-w-0 flex flex-col">
+          <div className="min-w-0 flex flex-col whitespace-normal max-w-[200px]">
             <h1
               className="text-base font-bold text-foreground leading-tight"
               data-testid="text-app-title"
