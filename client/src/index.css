@@ -2,18 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* До загрузки React и мобильные: высота экрана (iPhone 14 и др.) */
+/* Критично: бокс-модель и базовая раскладка до загрузки Tailwind */
+*, *::before, *::after { box-sizing: border-box; }
 html { min-height: 100%; min-height: 100dvh; -webkit-text-size-adjust: 100%; }
 body {
   min-height: 100%;
   min-height: 100dvh;
   min-height: -webkit-fill-available;
+  margin: 0;
   /* Явно светлая тема для Telegram Mini App — не наследовать от системной/Telegram */
   background-color: #F0F9F8; /* мятный фон */
   color: #1A202C; /* тёмный текст */
   color-scheme: light;
 }
-#root { min-height: 100%; min-height: 100dvh; min-height: -webkit-fill-available; }
+#root {
+  min-height: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
 
 /* Мобильный: safe area для вырезов и домашнего индикатора (iPhone и др.) */
 @supports (padding: env(safe-area-inset-bottom)) {
