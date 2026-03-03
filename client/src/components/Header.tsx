@@ -1,6 +1,7 @@
+import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { Star, DoorOpen, Trophy } from "lucide-react";
+import { Star, DoorOpen, Trophy, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
@@ -25,6 +26,15 @@ interface HeaderProps {
   exitLabel?: string;
   /** Оставшееся время в секундах (режим задания). При null таймер не показывается. */
   timerRemainingSeconds?: number | null;
+}
+
+function ParentDashboardLink({ className, size, children }: { className?: string; size?: "default" | "sm" | "lg" | "icon"; children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
+  return (
+    <Button variant="ghost" size={size} onClick={() => setLocation("/parent")} className={className} aria-label="Кабинет родителя" data-testid="button-parent-dashboard">
+      {children}
+    </Button>
+  );
 }
 
 function ProgressRing({ progress }: { progress: number }) {
@@ -314,6 +324,10 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               Верно ответов: {correctCount}
             </TooltipContent>
           </Tooltip>
+          <ParentDashboardLink className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors gap-2 font-medium text-sm sm:text-base min-h-[48px]">
+            <Users className="w-5 h-5 sm:w-5 sm:h-5 shrink-0" aria-hidden />
+            <span className="hidden sm:inline">Для родителей</span>
+          </ParentDashboardLink>
           {onExit && (
             <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label={exitLabel} data-testid="button-exit">
               <DoorOpen className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] shrink-0" aria-hidden />
@@ -352,12 +366,17 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             )}
           </div>
         </div>
-        {onExit ? (
-          <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label={exitLabel} data-testid="button-exit">
-            <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
-            <span className="text-sm font-medium">{exitLabel}</span>
-          </Button>
-        ) : (
+        <div className="flex items-center gap-1">
+          <ParentDashboardLink size="sm" className="gap-1 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation" data-testid="button-parent-dashboard-mobile">
+            <Users className="w-5 h-5 shrink-0" aria-hidden />
+            <span className="text-sm font-medium">Родителям</span>
+          </ParentDashboardLink>
+          {onExit ? (
+            <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label={exitLabel} data-testid="button-exit">
+              <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
+              <span className="text-sm font-medium">{exitLabel}</span>
+            </Button>
+          ) : (
           <Tooltip>
             <TooltipTrigger asChild>
               {/* Звёздочка, отступ (gap-2), число — для золота и серебра */}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import {
   BookOpen,
   CheckCircle,
@@ -7,6 +8,7 @@ import {
   Mail,
   MessageSquare,
   Trophy,
+  ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -40,6 +42,7 @@ const mockData = {
 };
 
 export default function ParentDashboard() {
+  const [, setLocation] = useLocation();
   const [notifications, setNotifications] = useState(mockData.notifications);
 
   // Подставить реальные данные: например useQuery('/api/parent/profile') или props из роутера
@@ -50,6 +53,13 @@ export default function ParentDashboard() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-2xl px-4 py-6 pb-10 safe-bottom">
+        {/* Кнопка «На главную» */}
+        <div className="mb-4">
+          <Button variant="ghost" size="sm" onClick={() => setLocation("/")} className="gap-2 text-muted-foreground hover:text-foreground" aria-label="На главную">
+            <ArrowLeft className="w-4 h-4" />
+            На главную
+          </Button>
+        </div>
         {/* 1. Заголовок + кнопка редактирования профиля */}
         <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl font-bold text-foreground sm:text-2xl">
