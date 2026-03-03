@@ -367,32 +367,46 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <ParentDashboardLink size="sm" className="gap-1 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation" data-testid="button-parent-dashboard-mobile">
+          <ParentDashboardLink
+            size="sm"
+            className="gap-1 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation"
+            data-testid="button-parent-dashboard-mobile"
+          >
             <Users className="w-5 h-5 shrink-0" aria-hidden />
             <span className="text-sm font-medium">Родителям</span>
           </ParentDashboardLink>
-          {onExit ? (
-            <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label={exitLabel} data-testid="button-exit">
+
+          {onExit && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onExit}
+              className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation"
+              aria-label={exitLabel}
+              data-testid="button-exit"
+            >
               <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
               <span className="text-sm font-medium">{exitLabel}</span>
             </Button>
-          ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {/* Звёздочка, отступ (gap-2), число — для золота и серебра */}
-              <div className="flex items-center gap-2 cursor-default" data-testid="star-counter">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400 shrink-0" aria-hidden />
-                <span className="text-sm font-bold tabular-nums">{goldCount}</span>
-                <Star className="w-4 h-4 fill-slate-300 text-slate-400 shrink-0" aria-hidden />
-                <span className="text-sm font-bold tabular-nums text-muted-foreground">{silverCount}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              Верно ответов: {correctCount}
-            </TooltipContent>
-          </Tooltip>
-        )}
-      </div>
+          )}
+
+          {!onExit && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                {/* Звёздочка, отступ (gap-2), число — для золота и серебра */}
+                <div className="flex items-center gap-2 cursor-default" data-testid="star-counter">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400 shrink-0" aria-hidden />
+                  <span className="text-sm font-bold tabular-nums">{goldCount}</span>
+                  <Star className="w-4 h-4 fill-slate-300 text-slate-400 shrink-0" aria-hidden />
+                  <span className="text-sm font-bold tabular-nums text-muted-foreground">{silverCount}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Верно ответов: {correctCount}
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
       {showAnimationControls && (
         <div className="px-4 pb-2 pt-0 border-t border-border/40">
           <AnimationSettings />
