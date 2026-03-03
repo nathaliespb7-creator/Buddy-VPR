@@ -13,18 +13,13 @@ export type StarType = "gold" | "silver" | "empty";
 
 interface HeaderProps {
   mascotMood: "idle" | "happy" | "thinking" | "celebrating" | "encouraging" | "wrong" | "hint";
-  /** Счётчики звёзд (новый формат). Раньше был массив StarType[]. */
   stars: StarCounts;
   onExit?: () => void;
   overallProgress?: number;
-  /** На мобильном: только «Назад» + тонкий прогресс-бар (экран задания) */
   variant?: "full" | "task";
   taskProgress?: { current: number; total: number };
-  /** Premium: ранг для бейджа. Free: null — бейдж не показываем. */
   rankInfo?: RankInfo | null;
-  /** Подпись кнопки выхода (по умолчанию «Выход»). */
   exitLabel?: string;
-  /** Оставшееся время в секундах (режим задания). При null таймер не показывается. */
   timerRemainingSeconds?: number | null;
 }
 
@@ -107,12 +102,10 @@ function ProgressRing({ progress }: { progress: number }) {
   );
 }
 
-/** Горизонтальная полоса прогресса по текущему острову (вопрос N из M). Мятный цвет, плавное заполнение. */
 function TaskProgressBar({ current, total }: { current: number; total: number }) {
   const progressPercent = total > 0 ? (current / total) * 100 : 0;
   return (
     <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-      {/* Фон полосы — светло-серый; заполнение — мятный (primary) */}
       <div
         className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden"
         role="progressbar"
@@ -147,13 +140,13 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
   const silverCount = stars.silver;
   const isTaskVariant = variant === "task" && taskProgress;
   const { showAnimationControls } = useSettings();
+  const correctCount = goldCount + silverCount;
 
   if (isTaskVariant) {
     const { current, total } = taskProgress;
-    const correctCount = goldCount + silverCount;
     return (
       <>
-        {/* Мобильный: полоса прогресса (мятная) + счётчик под ней, кнопка «Назад» + иконка Бадди справа */}
+        {/* Мобильный вариант */}
         <header
           className="w-full border-b border-border/60 bg-background/95 shrink-0 sm:hidden"
           style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
@@ -197,7 +190,8 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             </div>
           )}
         </header>
-        {/* Десктоп: логотип + полоса прогресса по центру + звёзды с подсказкой + Выход */}
+        
+        {/* Десктопный вариант */}
         <header className="w-full py-2.5 sm:py-3 px-3 sm:px-6 border-b border-border/60 bg-background/95 font-sans antialiased shrink-0 hidden sm:block" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }} data-testid="header-desktop">
           <div className="max-w-2xl mx-auto flex items-center gap-3 sm:gap-4 min-h-[48px] sm:min-h-[56px]">
             <div className="flex items-center gap-3 min-w-0 shrink-0">
@@ -228,7 +222,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                     className="flex items-center gap-2.5 cursor-default"
                     data-testid="star-counter"
                   >
-                    {/* Звёздочка, затем отступ (gap-2), затем число */}
                     <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-400 drop-shadow-sm shrink-0" aria-hidden />
                       <AnimatePresence mode="wait">
@@ -265,9 +258,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
     );
   }
 
-  const correctCount = goldCount + silverCount;
-
-  // Полная шапка — только на десктопе (sm+): логотип, общий прогресс (кольцо), звёзды с подсказкой, Выход
+  // Полная шапка — только на десктопе (sm+)
   const fullHeader = (
     <header className="w-full py-2.5 sm:py-3 px-3 sm:px-6 border-b border-border/60 bg-background/95 font-sans antialiased shrink-0 hidden sm:block" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }} data-testid="header-desktop">
       <div className="max-w-2xl mx-auto flex items-center justify-between gap-2 sm:gap-3 min-h-[48px] sm:min-h-[56px]">
@@ -305,7 +296,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 className="flex items-center gap-2.5 cursor-default"
                 data-testid="star-counter"
               >
-                {/* Звёздочка, затем отступ (gap-2), затем число */}
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-400 drop-shadow-sm shrink-0" aria-hidden />
                   <AnimatePresence mode="wait">
@@ -339,7 +329,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
     </header>
   );
 
-  // Мобильный: минимальная полоса (выбор режима, карта островов) — логотип + звёзды с подсказкой или Выход
+  // Мобильный вариант
   const mobileCompactHeader = (
     <header
       className="w-full border-b border-border/60 bg-background/95 shrink-0 sm:hidden"
@@ -393,7 +383,6 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           {!onExit && (
             <Tooltip>
               <TooltipTrigger asChild>
-                {/* Звёздочка, отступ (gap-2), число — для золота и серебра */}
                 <div className="flex items-center gap-2 cursor-default" data-testid="star-counter">
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400 shrink-0" aria-hidden />
                   <span className="text-sm font-bold tabular-nums">{goldCount}</span>
@@ -407,6 +396,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             </Tooltip>
           )}
         </div>
+      </div>
       {showAnimationControls && (
         <div className="px-4 pb-2 pt-0 border-t border-border/40">
           <AnimationSettings />
@@ -422,3 +412,4 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
     </>
   );
 }
+
