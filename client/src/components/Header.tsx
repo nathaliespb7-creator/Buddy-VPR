@@ -318,8 +318,8 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             </Tooltip>
           </div>
 
-          {/* Кнопки: вертикально, прижаты к правому краю */}
-          <div className="flex flex-col items-end gap-1">
+          {/* Кнопки: справа, в одну строку */}
+          <div className="flex items-center gap-3">
             <ParentDashboardLink className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors min-h-[40px] flex items-center justify-center">
               <img
                 src="/icons/shield-lock.png"
@@ -338,7 +338,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 <img
                   src="/icons/chest-exit.png"
                   alt="Выход"
-                  className="w-[40px] h-[40px] object-contain drop-shadow-sm brightness-0 invert"
+                  className="w-[40px] h-[40px] object-contain drop-shadow-sm"
                 />
               </Button>
             )}
