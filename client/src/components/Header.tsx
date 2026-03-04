@@ -321,11 +321,13 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           {/* Кнопки: справа, в одну строку */}
           <div className="flex items-center gap-3">
             <ParentDashboardLink className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors min-h-[40px] flex items-center justify-center">
-              <img
-                src="/icons/shield-lock.png"
-                alt="Родительский контроль"
-                className="w-[48px] h-[48px] object-contain drop-shadow-sm"
-              />
+              <div className="w-12 h-12 rounded-full bg-[#F3FBF8] dark:bg-slate-900/70 flex items-center justify-center overflow-hidden shadow-sm">
+                <img
+                  src="/icons/shield-lock.png"
+                  alt="Родительский контроль"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </ParentDashboardLink>
             {onExit && (
               <Button
@@ -335,11 +337,13 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 aria-label={exitLabel}
                 data-testid="button-exit"
               >
-                <img
-                  src="/icons/chest-exit.png"
-                  alt="Выход"
-                  className="w-[48px] h-[48px] object-contain drop-shadow-sm"
-                />
+                <div className="w-12 h-12 rounded-full bg-[#FFF8F0] dark:bg-slate-900/70 flex items-center justify-center overflow-hidden shadow-sm">
+                  <img
+                    src="/icons/chest-exit.png"
+                    alt="Выход"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </Button>
             )}
           </div>
@@ -403,11 +407,13 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               aria-label={exitLabel}
               data-testid="button-exit"
             >
-              <img
-                src="/icons/chest-exit.png"
-                alt="Выход"
-              className="w-[48px] h-[48px] object-contain drop-shadow-sm"
-              />
+              <div className="w-11 h-11 rounded-full bg-[#FFF8F0] dark:bg-slate-900/70 flex items-center justify-center overflow-hidden shadow-sm">
+                <img
+                  src="/icons/chest-exit.png"
+                  alt="Выход"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </Button>
           )}
 
