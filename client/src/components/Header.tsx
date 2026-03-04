@@ -324,7 +324,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               <img
                 src="/icons/shield-lock.png"
                 alt="Родительский контроль"
-                className="w-[40px] h-[40px] object-contain drop-shadow-sm"
+                className="w-[48px] h-[48px] object-contain drop-shadow-sm"
               />
             </ParentDashboardLink>
             {onExit && (
@@ -338,7 +338,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 <img
                   src="/icons/chest-exit.png"
                   alt="Выход"
-                  className="w-[40px] h-[40px] object-contain drop-shadow-sm"
+                  className="w-[48px] h-[48px] object-contain drop-shadow-sm"
                 />
               </Button>
             )}
@@ -406,7 +406,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               <img
                 src="/icons/chest-exit.png"
                 alt="Выход"
-                className="w-[40px] h-[40px] object-contain drop-shadow-sm brightness-0 invert"
+              className="w-[48px] h-[48px] object-contain drop-shadow-sm"
               />
             </Button>
           )}
