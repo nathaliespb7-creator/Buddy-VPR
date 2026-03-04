@@ -23,101 +23,6 @@ interface HeaderProps {
   timerRemainingSeconds?: number | null;
 }
 
-function ParentIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 64 64"
-      aria-hidden
-      {...props}
-    >
-      <defs>
-        <linearGradient id="shieldGradient" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#a5f3fc" />
-          <stop offset="100%" stopColor="#38bdf8" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M32 4L14 10v17c0 11.5 7.7 22 18 25 10.3-3 18-13.5 18-25V10L32 4z"
-        fill="url(#shieldGradient)"
-        stroke="#0ea5e9"
-        strokeWidth="2"
-      />
-      <rect
-        x="22"
-        y="26"
-        width="20"
-        height="16"
-        rx="3"
-        fill="#fbbf24"
-        stroke="#f59e0b"
-        strokeWidth="2"
-      />
-      <path
-        d="M26 26v-2c0-3.3 2.7-6 6-6s6 2.7 6 6v2"
-        fill="none"
-        stroke="#f97316"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <circle cx="32" cy="33" r="2" fill="#1f2937" />
-    </svg>
-  );
-}
-
-function ExitIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 72 64"
-      aria-hidden
-      {...props}
-    >
-      <rect
-        x="8"
-        y="18"
-        width="32"
-        height="32"
-        rx="6"
-        fill="#fbbf24"
-        stroke="#f59e0b"
-        strokeWidth="2"
-      />
-      <path
-        d="M20 22h8c2 0 3 1 3 3v18"
-        fill="none"
-        stroke="#92400e"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M44 32h10l-4-4m4 4-4 4"
-        fill="none"
-        stroke="#22c55e"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <rect
-        x="10"
-        y="46"
-        width="28"
-        height="10"
-        rx="5"
-        fill="#f97316"
-      />
-      <text
-        x="24"
-        y="53"
-        textAnchor="middle"
-        fontSize="8"
-        fontWeight="700"
-        fill="#fff"
-      >
-        EXIT
-      </text>
-    </svg>
-  );
-}
-
 function ParentDashboardLink({ className, size, children }: { className?: string; size?: "default" | "sm" | "lg" | "icon"; children: React.ReactNode }) {
   const [, setLocation] = useLocation();
   return (
@@ -415,18 +320,26 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
 
           {/* Кнопки: вертикально, прижаты к правому краю */}
           <div className="flex flex-col items-end gap-1">
-            <ParentDashboardLink className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors min-h-[40px]">
-              <ParentIcon className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+            <ParentDashboardLink className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors min-h-[40px] flex items-center justify-center">
+              <img
+                src="/icons/shield-lock.png"
+                alt="Родительский контроль"
+                className="w-8 h-8 object-contain"
+              />
             </ParentDashboardLink>
             {onExit && (
               <Button
                 variant="ghost"
                 onClick={onExit}
-                className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors min-h-[40px]"
+                className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors min-h-[40px] flex items-center justify-center"
                 aria-label={exitLabel}
                 data-testid="button-exit"
               >
-                <ExitIcon className="w-7 h-7 shrink-0" />
+                <img
+                  src="/icons/chest-exit.png"
+                  alt="Выход"
+                  className="w-9 h-9 object-contain"
+                />
               </Button>
             )}
           </div>
