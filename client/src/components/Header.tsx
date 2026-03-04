@@ -261,24 +261,18 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
   // Полная шапка — только на десктопе (sm+)
   const fullHeader = (
     <header className="w-full py-2.5 sm:py-3 px-3 sm:px-6 border-b border-border/60 bg-background/95 font-sans antialiased shrink-0 hidden sm:block" style={{ paddingTop: "max(0.625rem, env(safe-area-inset-top))" }} data-testid="header-desktop">
-      <div className="max-w-2xl mx-auto flex items-center justify-between gap-2 sm:gap-3 min-h-[48px] sm:min-h-[56px]">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
+      <div className="max-w-2xl mx-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 sm:gap-x-3 min-h-[48px] sm:min-h-[56px]">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           <motion.div animate={{ y: [0, -2, 0] }} transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }} className="shrink-0 flex items-center justify-center">
             <Mascot mood={mascotMood} size="sm" />
           </motion.div>
-          <div className="min-w-0 flex flex-col gap-0.5 max-w-[220px] sm:max-w-[260px]">
+          <div className="min-w-0 flex flex-col gap-0.5">
             <h1
-              className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight"
+              className="text-lg sm:text-2xl font-bold text-foreground tracking-tight leading-tight whitespace-nowrap"
               data-testid="text-app-title"
             >
               Бадди ВПР
             </h1>
-            <p
-              className="text-xs sm:text-sm md:text-base text-muted-foreground font-normal leading-snug"
-              data-testid="text-subtitle"
-            >
-              Умный помощник для подготовки
-            </p>
             {rankInfo?.rank && (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200/70 dark:border-emerald-700/70 pl-1 pr-2 py-0.5 text-[11px] sm:text-xs font-semibold text-emerald-800 dark:text-emerald-100">
                 {rankInfo.rank}
@@ -287,49 +281,62 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-4 shrink-0" data-testid="header-stats">
-          {overallProgress !== undefined && (
-            <div className="flex items-center justify-center" data-testid="overall-progress-widget">
-              <ProgressRing progress={overallProgress} />
-            </div>
-          )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <motion.div
-                key={`stars-${correctCount}`}
-                initial={{ scale: 1 }}
-                animate={{ scale: [1, 1.08, 1] }}
-                transition={{ duration: 0.4 }}
-                className="flex items-center gap-2.5 cursor-default"
-                data-testid="star-counter"
+          {/* Статистика: прогресс + звёзды */}
+          <div className="flex items-center gap-3">
+            {overallProgress !== undefined && (
+              <div className="flex items-center justify-center" data-testid="overall-progress-widget">
+                <ProgressRing progress={overallProgress} />
+              </div>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div
+                  key={`stars-${correctCount}`}
+                  initial={{ scale: 1 }}
+                  animate={{ scale: [1, 1.08, 1] }}
+                  transition={{ duration: 0.4 }}
+                  className="flex items-center gap-2.5 cursor-default"
+                  data-testid="star-counter"
+                >
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-400 drop-shadow-sm shrink-0" aria-hidden />
+                    <AnimatePresence mode="wait">
+                      <motion.span key={goldCount} initial={{ scale: 1.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25 }} className="text-sm font-bold tabular-nums text-foreground min-w-[1.25rem] text-left" data-testid="text-gold-count">{goldCount}</motion.span>
+                    </AnimatePresence>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-slate-300 text-slate-400 shrink-0" aria-hidden />
+                    <AnimatePresence mode="wait">
+                      <motion.span key={silverCount} initial={{ scale: 1.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25 }} className="text-sm font-bold tabular-nums text-muted-foreground min-w-[1.25rem] text-left" data-testid="text-silver-count">{silverCount}</motion.span>
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                Верно ответов: {correctCount}
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          {/* Кнопки: вертикально, прижаты к правому краю */}
+          <div className="flex flex-col items-end gap-1">
+            <ParentDashboardLink className="shrink-0 h-10 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors gap-2 text-sm min-h-[40px]">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" aria-hidden />
+              <span className="hidden sm:inline">Для родителей</span>
+            </ParentDashboardLink>
+            {onExit && (
+              <Button
+                variant="ghost"
+                onClick={onExit}
+                className="shrink-0 h-10 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 text-sm min-h-[40px]"
+                aria-label={exitLabel}
+                data-testid="button-exit"
               >
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-amber-400 text-amber-400 drop-shadow-sm shrink-0" aria-hidden />
-                  <AnimatePresence mode="wait">
-                    <motion.span key={goldCount} initial={{ scale: 1.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25 }} className="text-sm font-bold tabular-nums text-foreground min-w-[1.25rem] text-left" data-testid="text-gold-count">{goldCount}</motion.span>
-                  </AnimatePresence>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-slate-300 text-slate-400 shrink-0" aria-hidden />
-                  <AnimatePresence mode="wait">
-                    <motion.span key={silverCount} initial={{ scale: 1.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.25 }} className="text-sm font-bold tabular-nums text-muted-foreground min-w-[1.25rem] text-left" data-testid="text-silver-count">{silverCount}</motion.span>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              Верно ответов: {correctCount}
-            </TooltipContent>
-          </Tooltip>
-          <ParentDashboardLink className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors gap-2 font-medium text-sm sm:text-base min-h-[48px]">
-            <Users className="w-5 h-5 sm:w-5 sm:h-5 shrink-0" aria-hidden />
-            <span className="hidden sm:inline">Для родителей</span>
-          </ParentDashboardLink>
-          {onExit && (
-            <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label={exitLabel} data-testid="button-exit">
-              <DoorOpen className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] shrink-0" aria-hidden />
-              <span>{exitLabel}</span>
-            </Button>
-          )}
+                <DoorOpen className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5] shrink-0" aria-hidden />
+                <span>{exitLabel}</span>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </header>
