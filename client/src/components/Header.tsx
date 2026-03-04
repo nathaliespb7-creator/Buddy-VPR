@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { Star, Trophy, Users, DoorOpen } from "lucide-react";
+import { Star, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
@@ -384,11 +384,14 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
         <div className="flex items-center gap-1">
           <ParentDashboardLink
             size="sm"
-            className="gap-1 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation"
+            className="gap-1 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation flex items-center justify-center"
             data-testid="button-parent-dashboard-mobile"
           >
-            <Users className="w-5 h-5 shrink-0" aria-hidden />
-            <span className="text-sm font-medium">Родителям</span>
+            <img
+              src="/icons/shield-lock.png"
+              alt="Родительский контроль"
+              className="w-8 h-8 object-contain"
+            />
           </ParentDashboardLink>
 
           {onExit && (
@@ -396,12 +399,15 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               variant="ghost"
               size="sm"
               onClick={onExit}
-              className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation"
+              className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation flex items-center justify-center"
               aria-label={exitLabel}
               data-testid="button-exit"
             >
-              <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
-              <span className="text-sm font-medium">{exitLabel}</span>
+              <img
+                src="/icons/chest-exit.png"
+                alt="Выход"
+                className="w-9 h-9 object-contain"
+              />
             </Button>
           )}
 
