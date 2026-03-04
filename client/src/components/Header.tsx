@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { Star, Trophy } from "lucide-react";
+import { Star, Trophy, Users, DoorOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
