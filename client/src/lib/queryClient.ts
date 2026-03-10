@@ -1,7 +1,13 @@
 import { QueryClient } from "@tanstack/react-query";
 
-const API_BASE =
-  (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
+const rawBase = import.meta.env.VITE_API_URL as string | undefined;
+
+// Нормализуем базовый URL так, чтобы:
+// - можно было задать как "https://backend", так и "https://backend/api" или "/api"
+// - в коде по-прежнему вызывать API_BASE + "/api/…", без риска получить "/api/api/…"
+const API_BASE = rawBase
+  ? rawBase.replace(/\/+$/g, "").replace(/\/api$/g, "")
+  : "";
 
 export { API_BASE };
 
