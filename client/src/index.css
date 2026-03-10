@@ -10,6 +10,7 @@ body {
   min-height: 100dvh;
   min-height: -webkit-fill-available;
   margin: 0;
+  font-family: 'Nunito', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   /* Явно светлая тема для Telegram Mini App — не наследовать от системной/Telegram */
   background-color: #F0F9F8; /* мятный фон */
   color: #1A202C; /* тёмный текст */
