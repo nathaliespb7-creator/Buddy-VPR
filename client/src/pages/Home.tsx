@@ -184,11 +184,13 @@ export default function Home() {
     setHasChosenAnimationLevel,
   } = useSettings();
 
+  const apiBase = API_BASE || "/api";
+
   const { data: serverTasks, isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
     queryFn: async () => {
       try {
-        const res = await fetch(API_BASE + "/api/tasks", { credentials: "include" });
+        const res = await fetch(apiBase + "/tasks", { credentials: "include" });
         if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
         const data = await res.json();
         return Array.isArray(data) ? data : [];
@@ -444,7 +446,7 @@ export default function Home() {
       setActiveCategory(category);
 
       try {
-        const res = await fetch(API_BASE + `/api/round/${category}?sessionId=${sessionId}`);
+      const res = await fetch(apiBase + `/round/${category}?sessionId=${sessionId}`);
         const isJson = res.headers.get("content-type")?.includes("application/json");
         if (!res.ok || !isJson) {
           throw new Error("Not JSON");
@@ -627,7 +629,7 @@ export default function Home() {
 
   const fetchRoundSummary = async (category: string) => {
     try {
-      const res = await fetch(API_BASE + `/api/round/${category}/summary?sessionId=${sessionId}`);
+      const res = await fetch(apiBase + `/round/${category}/summary?sessionId=${sessionId}`);
       const summary = await res.json();
       if (summary.wrongWords) {
         setRoundWrongTaskIds(summary.wrongWords.map((w: { id: number }) => w.id));

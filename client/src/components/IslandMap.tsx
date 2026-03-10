@@ -204,11 +204,13 @@ function ProgressIndicator({ progress, island }: { progress: CategoryProgress | 
 export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: IslandMapProps) {
   const totalTasks = taskCounts ? Object.values(taskCounts).reduce((a, b) => a + b, 0) : 0;
 
+  const apiBase = API_BASE || "/api";
+
   const { data: categoryProgress } = useQuery<CategoryProgress[]>({
     queryKey: ["/api/categories/progress", sessionId],
     queryFn: async () => {
       try {
-        const res = await fetch(API_BASE + `/api/categories/progress?sessionId=${sessionId}`);
+        const res = await fetch(apiBase + `/categories/progress?sessionId=${sessionId}`);
         if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
         const data = await res.json();
         return Array.isArray(data) ? data : [];
