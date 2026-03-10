@@ -1,8 +1,8 @@
-name: Deploy to Yandex Object Storage
+name: DISABLED - Deploy to Yandex Object Storage
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ] # Запускать при обновлении ветки main
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build:client
+        run: npm run build
       
       - name: Install S3CMD
         run: |
@@ -41,7 +41,10 @@ jobs:
 
       - name: Upload to Yandex
         env:
-          BUCKET_NAME: buddy-vpr-static-natalia
+          BUCKET_NAME: buddy-vpr-static-natalia # Имя твоего бакета
         run: |
+          # Загрузка всех файлов из папки dist в бакет
           s3cmd put dist/* s3://${{ env.BUCKET_NAME }}/
+          # Принудительное обновление кэша (опционально)
+          # s3cmd setacl s3://${{ env.BUCKET_NAME }}/index.html --acl-public
 
