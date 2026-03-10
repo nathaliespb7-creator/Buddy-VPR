@@ -1,0 +1,1 @@
+API URL настроен на https://functions.yandexcloud.net/d4e4p8rqsstvo1cvu3kq. Сборка обновлена.

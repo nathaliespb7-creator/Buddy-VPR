@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { Star, Trophy } from "lucide-react";
+import { DoorOpen, Star, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
@@ -321,11 +321,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
           {/* Кнопки: справа, в одну строку */}
           <div className="flex items-center gap-3">
             <ParentDashboardLink className="shrink-0 h-10 px-2 sm:px-3 rounded-xl text-muted-foreground hover:text-foreground hover:bg-violet-100/80 dark:hover:bg-violet-900/30 border border-transparent transition-colors min-h-[40px] flex items-center justify-center">
-              <img
-                src="/icons/shield-lock.png"
-                alt="Родительский контроль"
-                className="w-16 h-16 object-contain"
-              />
+              <div className="w-16 h-16 flex items-center justify-center text-2xl" aria-label="Родительский контроль" title="Родительский контроль">🔒</div>
             </ParentDashboardLink>
             {onExit && (
               <Button
@@ -335,11 +331,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 aria-label={exitLabel}
                 data-testid="button-exit"
               >
-                <img
-                  src="/icons/chest-exit.png"
-                  alt="Выход"
-                  className="w-16 h-16 object-contain"
-                />
+                <div className="w-16 h-16 flex items-center justify-center text-2xl" aria-hidden>🚪</div>
               </Button>
             )}
           </div>
@@ -387,11 +379,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
             className="gap-1 text-muted-foreground hover:text-foreground min-h-[44px] touch-manipulation flex items-center justify-center"
             data-testid="button-parent-dashboard-mobile"
           >
-            <img
-              src="/icons/shield-lock.png"
-              alt="Родительский контроль"
-              className="w-16 h-16 object-contain"
-            />
+            <div className="w-16 h-16 flex items-center justify-center text-2xl" aria-label="Родительский контроль" title="Родительский контроль">🔒</div>
           </ParentDashboardLink>
 
           {onExit && (
@@ -403,11 +391,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               aria-label={exitLabel}
               data-testid="button-exit"
             >
-              <img
-                src="/icons/chest-exit.png"
-                alt="Выход"
-                className="w-16 h-16 object-contain"
-              />
+              <div className="w-16 h-16 flex items-center justify-center text-2xl" aria-hidden>🚪</div>
             </Button>
           )}
 

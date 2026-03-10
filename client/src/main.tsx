@@ -34,6 +34,7 @@ window.addEventListener("unhandledrejection", (e) => {
   }
 });
 
+console.log("Приложение запущено!");
 try {
   createRoot(rootEl).render(<App />);
 } catch (err) {

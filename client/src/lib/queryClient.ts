@@ -1,15 +1,15 @@
 import { QueryClient } from "@tanstack/react-query";
 
-/** Базовый URL API. На Vercel без бэкенда — пустая строка (same-origin). */
-export const API_BASE = typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
-  ? String(import.meta.env.VITE_API_URL).replace(/\/$/, "")
-  : "";
+const API_BASE =
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
+
+export { API_BASE };
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
-      retry: 1,
+      retry: false,
+      staleTime: 5 * 60 * 1000,
     },
   },
 });

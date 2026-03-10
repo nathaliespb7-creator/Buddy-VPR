@@ -1,24 +1,26 @@
 import { type Express } from "express";
 import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
+import { fileURLToPath } from "url";
 import viteConfig from "../vite.config";
 import fs from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const viteLogger = createLogger();
 
 export async function setupVite(server: Server, app: Express) {
+  const projectRoot = path.resolve(__dirname, "..");
   const serverOptions = {
     middlewareMode: true,
-    hmr: {
-      server,
-      path: "/vite-hmr",
-      host: "127.0.0.1",
-      clientPort: 5000,
-      protocol: "ws",
+    hmr: false,
+    allowedHosts: true,
+    fs: {
+      allow: [projectRoot, path.resolve(projectRoot, "client")],
+      strict: false,
     },
-    allowedHosts: ["localhost", "127.0.0.1", ".localhost"],
   };
 
   const vite = await createViteServer({
@@ -35,29 +37,26 @@ export async function setupVite(server: Server, app: Express) {
     appType: "custom",
   });
 
-  app.use(vite.middlewares);
+  const clientTemplate = path.resolve(__dirname, "..", "client", "index.html");
 
-  // Отдаём index.html для любого GET (/, /any-path) — без привязки к path-to-regexp
-  app.use(async (req, res, next) => {
+  const serveIndex = async (req: import("express").Request, res: import("express").Response, next: import("express").NextFunction) => {
     if (req.method !== "GET" && req.method !== "HEAD") return next();
-    const url = req.originalUrl;
+    const p = req.path;
+    if (p.startsWith("/api") || p.startsWith("/src") || p.startsWith("/@") || p.startsWith("/node_modules") || p.includes(".")) return next();
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html",
-      );
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
-      const page = await vite.transformIndexHtml(url, template);
+      const page = await vite.transformIndexHtml(req.originalUrl, template);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
     }
-  });
+  };
+
+  app.use(serveIndex);
+  app.use(vite.middlewares);
 }

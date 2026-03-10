@@ -11,9 +11,16 @@ export default defineConfig({
   root: path.resolve(__dirname, "client"),
   publicDir: path.resolve(__dirname, "client/public"),
   build: {
-    // Относительно root (client/), чтобы итог был repo/dist/public для vercel.json
-    outDir: "../dist/public",
+    base: "/",
+    outDir: "../dist",
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: "[name]-[hash].js",
+        chunkFileNames: "[name]-[hash].js",
+        assetFileNames: "[name]-[hash].[ext]",
+      },
+    },
   },
   resolve: {
     alias: {
@@ -22,26 +29,22 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    VitePWA({
-      registerType: "autoUpdate",
-      manifest: {
-        name: "Бадди ВПР",
-        short_name: "Бадди",
-        theme_color: "#4ECDC4",
-        background_color: "#F0F9F8",
-        display: "standalone",
-        icons: [
-          { src: "/favicon.png", sizes: "192x192", type: "image/png", purpose: "any" },
-          { src: "/favicon.png", sizes: "512x512", type: "image/png", purpose: "any" },
-        ],
-      },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,woff2}"],
-      },
-    }),
+    // PWA отключён: ошибка write service worker (terser). Включите обратно после обновления vite-plugin-pwa/workbox.
+    // VitePWA({ registerType: "autoUpdate", manifest: {...}, workbox: { globPatterns: ["**/*.{js,css,html,ico,png,woff2}"] } }),
   ],
   server: {
-    port: 5000,
+    port: 5173,
     strictPort: true,
+    allowedHosts: true,
+    host: "0.0.0.0",
+    cors: true,
+    fs: {
+      strict: false,
+      allow: [".."],
+    },
+    hmr: {
+      clientPort: 5000,
+      host: "localhost",
+    },
   },
 });

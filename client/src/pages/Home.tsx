@@ -691,6 +691,9 @@ export default function Home() {
       {/* Фиксированная высота экрана: скролл только внутри main (важно для iOS PWA — иначе все 10 островов не прокручиваются) */}
       <div className="relative z-10 flex flex-col h-[100dvh] w-full max-w-[100vw] overflow-x-hidden overflow-y-hidden">
         {!showSplash && (
+          <h1 className="text-center py-2 text-lg font-bold text-primary">Проверка связи: Главная загружена</h1>
+        )}
+        {!showSplash && (
           <AnimationOnboardingDialog
             visible={!hasChosenAnimationLevel}
             onChoose={(level: AnimationLevel) => {
