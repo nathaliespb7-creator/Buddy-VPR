@@ -1,7 +1,23 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-/** Базовый URL API (для деплоя фронта отдельно от бэкенда). В dev и при одном origin — пусто. */
-export const API_BASE = (import.meta.env.VITE_API_URL as string) ?? "";
+/** Базовый URL API.
+ * - В dev и при одном origin — пусто.
+ * - Для внешнего бэкенда (Yandex Cloud, Railway и т.п.) задаём полный HTTP URL.
+ * - Значения вида "/api" теперь игнорируются, чтобы не получать "/api/api/*". */
+const RAW_API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+
+let normalizedApiBase = RAW_API_BASE.trim();
+if (!normalizedApiBase) {
+  normalizedApiBase = "";
+} else if (normalizedApiBase.startsWith("/api")) {
+  normalizedApiBase = "";
+} else if (normalizedApiBase.startsWith("http")) {
+  normalizedApiBase = normalizedApiBase.replace(/\/$/, "");
+} else {
+  normalizedApiBase = "";
+}
+
+export const API_BASE = normalizedApiBase;
 
 const CREDENTIALS_MODE: RequestCredentials =
   API_BASE && API_BASE.startsWith("http") ? "omit" : "include";
