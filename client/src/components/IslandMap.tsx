@@ -204,13 +204,11 @@ function ProgressIndicator({ progress, island }: { progress: CategoryProgress | 
 export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: IslandMapProps) {
   const totalTasks = taskCounts ? Object.values(taskCounts).reduce((a, b) => a + b, 0) : 0;
 
-  const apiBase = API_BASE || "/api";
-
   const { data: categoryProgress } = useQuery<CategoryProgress[]>({
     queryKey: ["/api/categories/progress", sessionId],
     queryFn: async () => {
       try {
-        const res = await fetch(apiBase + `/categories/progress?sessionId=${sessionId}`);
+        const res = await fetch(API_BASE + `/api/categories/progress?sessionId=${sessionId}`);
         if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
         const data = await res.json();
         return Array.isArray(data) ? data : [];
@@ -247,7 +245,7 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-[100vw] md:max-w-lg mx-auto px-3 sm:px-6 overflow-x-hidden safe-bottom pb-6 min-h-0"
+      className="w-full max-w-[100vw] md:max-w-lg mx-auto px-3 sm:px-6 overflow-x-hidden safe-bottom pb-6"
       data-testid="island-map"
     >
       <div className="flex items-center justify-center gap-2 mb-5">

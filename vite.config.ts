@@ -1,50 +1,47 @@
-import path from "path";
-import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { VitePWA } from "vite-plugin-pwa";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import path from "path";
 
 export default defineConfig({
   base: "/",
-  root: path.resolve(__dirname, "client"),
-  publicDir: path.resolve(__dirname, "client/public"),
-  build: {
-    base: "/",
-    outDir: "../dist",
-    emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        entryFileNames: "[name]-[hash].js",
-        chunkFileNames: "[name]-[hash].js",
-        assetFileNames: "[name]-[hash].[ext]",
-      },
-    },
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "client/src"),
-    },
-  },
   plugins: [
     react(),
-    // PWA отключён: ошибка write service worker (terser). Включите обратно после обновления vite-plugin-pwa/workbox.
-    // VitePWA({ registerType: "autoUpdate", manifest: {...}, workbox: { globPatterns: ["**/*.{js,css,html,ico,png,woff2}"] } }),
+    ...(process.env.REPL_ID
+      ? [
+          await import("@replit/vite-plugin-runtime-error-modal").then((m) =>
+            m.default(),
+          ),
+        ]
+      : []),
+    ...(process.env.NODE_ENV !== "production" &&
+    process.env.REPL_ID !== undefined
+      ? [
+          await import("@replit/vite-plugin-cartographer").then((m) =>
+            m.cartographer(),
+          ),
+          await import("@replit/vite-plugin-dev-banner").then((m) =>
+            m.devBanner(),
+          ),
+        ]
+      : []),
   ],
-  server: {
-    port: 5173,
-    strictPort: true,
-    allowedHosts: true,
-    host: "0.0.0.0",
-    cors: true,
-    fs: {
-      strict: false,
-      allow: [".."],
+  resolve: {
+    alias: {
+      "@": path.resolve(import.meta.dirname, "client", "src"),
+      "@shared": path.resolve(import.meta.dirname, "shared"),
+      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
-    hmr: {
-      clientPort: 5000,
-      host: "localhost",
+    dedupe: ["react", "react-dom"],
+  },
+  root: path.resolve(import.meta.dirname, "client"),
+  build: {
+    outDir: path.resolve(import.meta.dirname, "dist"),
+    emptyOutDir: true,
+  },
+  server: {
+    fs: {
+      strict: true,
+      deny: ["**/.*"],
     },
   },
 });

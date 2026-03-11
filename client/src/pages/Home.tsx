@@ -6,7 +6,6 @@ import type { UserProfile as MotivationUserProfile, StarCounts } from "@/types/m
 import { migrateProfile } from "@/lib/profileMigration";
 import { calculateNewStars } from "@/lib/starCalculation";
 import { TaskCard } from "@/components/TaskCard";
-import { AdaptiveTaskCard } from "@/components/AdaptiveTaskCard";
 import { type AvatarChoice } from "@/components/AvatarPicker";
 import { PowerCard } from "@/components/PowerCard";
 import { IslandMap } from "@/components/IslandMap";
@@ -184,13 +183,11 @@ export default function Home() {
     setHasChosenAnimationLevel,
   } = useSettings();
 
-  const apiBase = API_BASE || "/api";
-
   const { data: serverTasks, isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
     queryFn: async () => {
       try {
-        const res = await fetch(apiBase + "/tasks", { credentials: "include" });
+        const res = await fetch(API_BASE + "/api/tasks", { credentials: "include" });
         if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
         const data = await res.json();
         return Array.isArray(data) ? data : [];
@@ -259,6 +256,22 @@ export default function Home() {
     setShowResetConfirm(false);
     setPhase("modeChoice");
   }, [profile]);
+
+  const handleExportStats = useCallback(() => {
+    const p = getStoredProfile();
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      sessionId,
+      profile: p ?? undefined,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `buddy-vpr-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [sessionId]);
 
   // Старт диагностики: каждый остров (категория) — по 3 задания
   const startMixedTraining = useCallback(
@@ -446,7 +459,7 @@ export default function Home() {
       setActiveCategory(category);
 
       try {
-      const res = await fetch(apiBase + `/round/${category}?sessionId=${sessionId}`);
+        const res = await fetch(API_BASE + `/api/round/${category}?sessionId=${sessionId}`);
         const isJson = res.headers.get("content-type")?.includes("application/json");
         if (!res.ok || !isJson) {
           throw new Error("Not JSON");
@@ -629,7 +642,7 @@ export default function Home() {
 
   const fetchRoundSummary = async (category: string) => {
     try {
-      const res = await fetch(apiBase + `/round/${category}/summary?sessionId=${sessionId}`);
+      const res = await fetch(API_BASE + `/api/round/${category}/summary?sessionId=${sessionId}`);
       const summary = await res.json();
       if (summary.wrongWords) {
         setRoundWrongTaskIds(summary.wrongWords.map((w: { id: number }) => w.id));
@@ -690,8 +703,7 @@ export default function Home() {
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-secondary/40 rounded-full blur-3xl" />
       </div>
 
-      {/* Фиксированная высота экрана: скролл только внутри main (важно для iOS PWA — иначе все 10 островов не прокручиваются) */}
-      <div className="relative z-10 flex flex-col h-[100dvh] w-full max-w-[100vw] overflow-x-hidden overflow-y-hidden">
+      <div className="relative z-10 flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto w-full max-w-[100vw] overflow-x-hidden">
         {!showSplash && (
           <AnimationOnboardingDialog
             visible={!hasChosenAnimationLevel}
@@ -792,25 +804,14 @@ export default function Home() {
             )}
             {(phase === "diagnostic" || phase === "training") && currentTask && (
               <div key={`wrap-${currentTask.id}`} className="w-full flex-1 md:flex-initial flex flex-col min-h-0 overflow-hidden md:overflow-visible">
-                {currentTask.passage || currentTask.instruction ? (
-                  <AdaptiveTaskCard
-                    key={`task-${currentTask.id}-${currentTaskIndex}`}
-                    task={currentTask}
-                    onComplete={handleTaskComplete}
-                    isDiscovery={phase === "diagnostic"}
-                    taskIndex={currentTaskIndex}
-                    totalTasks={roundTotalTasks || activeTasks.length}
-                  />
-                ) : (
-                  <TaskCard
-                    key={`task-${currentTask.id}-${currentTaskIndex}`}
-                    task={currentTask}
-                    onComplete={handleTaskComplete}
-                    isDiscovery={phase === "diagnostic"}
-                    taskIndex={currentTaskIndex}
-                    totalTasks={roundTotalTasks || activeTasks.length}
-                  />
-                )}
+                <TaskCard
+                  key={`task-${currentTask.id}-${currentTaskIndex}`}
+                  task={currentTask}
+                  onComplete={handleTaskComplete}
+                  isDiscovery={phase === "diagnostic"}
+                  taskIndex={currentTaskIndex}
+                  totalTasks={roundTotalTasks || activeTasks.length}
+                />
               </div>
             )}
             {phase === "mixedModeChoice" && (
@@ -839,6 +840,7 @@ export default function Home() {
                   rankInfo={rankInfo}
                   moduleCapacity={moduleCapacity}
                   onRequestReset={requestResetProgress}
+                  onExportStats={handleExportStats}
                 />
                 <IslandMap
                   key="islands"

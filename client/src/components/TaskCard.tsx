@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Lightbulb, ArrowRight, Sparkles, Star } from "lucide-react";
 import { type Task, getBuddyHint } from "@/lib/taskData";
 import { validateAnswer, type ValidationResult } from "@/lib/vprValidator";
-import { textAnswerValidator } from "@/lib/validators/textAnswerValidator";
 import { cn } from "@/lib/utils";
 import type { StarType } from "./Header";
 
@@ -80,21 +79,16 @@ export function TaskCard({ task, onComplete, isDiscovery, taskIndex = 0, totalTa
   const handleSubmit = () => {
     if (isTextInput) {
       if (!textAnswer.trim()) return;
-      // Fuzzy-валидатор с защитой от ложных срабатываний (этический фильтр + ключевые слова + Levenshtein)
-      const acceptableList = task.acceptableAnswers ?? [];
-      const withModel = acceptableList.includes(task.correct)
-        ? acceptableList
-        : [task.correct, ...acceptableList];
-      const fuzzyResult = textAnswerValidator.validate(textAnswer, {
-        acceptableAnswers: withModel,
-        unacceptablePatterns: task.unacceptablePatterns ?? [],
-        keywords: task.keywords ?? [],
-        minKeywordMatch: task.category === "context" ? 2 : Math.max(1, Math.ceil((task.keywords?.length ?? 0) * 0.4)),
-      });
-      const result: ValidationResult = {
-        score: fuzzyResult.score === 1 ? 1 : 0,
-        feedback: fuzzyResult.feedback,
-      };
+      const result = validateAnswer(
+        textAnswer,
+        {
+          modelAnswer: task.correct,
+          acceptableAnswers: task.acceptableAnswers || [],
+          unacceptablePatterns: task.unacceptablePatterns || [],
+          keywords: task.keywords || [],
+        },
+        task.category === "context" ? { variant: "context" } : undefined
+      );
       setValidationResult(result);
       const correct = result.score >= 1;
       setIsCorrect(correct);

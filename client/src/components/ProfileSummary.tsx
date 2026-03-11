@@ -12,6 +12,8 @@ interface ProfileSummaryProps {
   moduleCapacity: number | null;
   /** Показать «Начать сначала» и по клику вызвать (открыть диалог подтверждения). */
   onRequestReset?: () => void;
+  /** Кнопка «Скачать прогресс (JSON)» — экспорт профиля и sessionId. */
+  onExportStats?: () => void;
 }
 
 function progressLabel(
@@ -37,7 +39,7 @@ function progressLabel(
   return `Осталось ${Math.round(percentLeft)}% до следующего ранга`;
 }
 
-export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, onRequestReset }: ProfileSummaryProps) {
+export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, onRequestReset, onExportStats }: ProfileSummaryProps) {
   const showRankBlock = rankInfo?.rank != null && rankInfo.progressPercent != null;
 
   return (
@@ -94,16 +96,29 @@ export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, o
           </div>
         )}
       </motion.div>
-      {totalStars > 0 && onRequestReset && (
-        <button
-          type="button"
-          onClick={onRequestReset}
-          className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors w-full max-w-2xl mx-auto block text-center py-1"
-          aria-label="Начать сначала (сброс звёзд)"
-        >
-          Начать сначала
-        </button>
-      )}
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+        {totalStars > 0 && onRequestReset && (
+          <button
+            type="button"
+            onClick={onRequestReset}
+            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+            aria-label="Начать сначала (сброс звёзд)"
+          >
+            Начать сначала
+          </button>
+        )}
+        {onExportStats && (
+          <button
+            type="button"
+            onClick={onExportStats}
+            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+            aria-label="Скачать прогресс в формате JSON"
+            data-testid="button-export-stats"
+          >
+            Скачать прогресс (JSON)
+          </button>
+        )}
+      </div>
     </section>
   );
 }

@@ -1,51 +1,71 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-const rawBase = import.meta.env.VITE_API_URL as string | undefined;
+/** Базовый URL API (для деплоя фронта отдельно от бэкенда). В dev и при одном origin — пусто. */
+export const API_BASE = (import.meta.env.VITE_API_URL as string) ?? "";
 
-// Нормализуем базовый URL так, чтобы:
-// - можно было задать как "https://backend", так и "https://backend/api" или "/api"
-// - в коде по-прежнему вызывать API_BASE + "/api/…", без риска получить "/api/api/…"
-const API_BASE = rawBase
-  ? rawBase.replace(/\/+$/g, "").replace(/\/api$/g, "")
-  : "";
+const FETCH_TIMEOUT_MS = 15000;
 
-export { API_BASE };
+function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() =>
+    clearTimeout(timeoutId)
+  );
+}
+
+async function throwIfResNotOk(res: Response) {
+  if (!res.ok) {
+    const text = (await res.text()) || res.statusText;
+    throw new Error(`${res.status}: ${text}`);
+  }
+}
+
+export async function apiRequest(
+  method: string,
+  url: string,
+  data?: unknown | undefined,
+): Promise<Response> {
+  const res = await fetchWithTimeout(API_BASE + url, {
+    method,
+    headers: data ? { "Content-Type": "application/json" } : {},
+    body: data ? JSON.stringify(data) : undefined,
+    credentials: "include",
+  });
+
+  await throwIfResNotOk(res);
+  return res;
+}
+
+type UnauthorizedBehavior = "returnNull" | "throw";
+export const getQueryFn: <T>(options: {
+  on401: UnauthorizedBehavior;
+}) => QueryFunction<T> =
+  ({ on401: unauthorizedBehavior }) =>
+  async ({ queryKey }) => {
+    const url = queryKey.join("/") as string;
+    const res = await fetchWithTimeout(API_BASE + url, {
+      credentials: "include",
+    });
+
+    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+      return null;
+    }
+
+    await throwIfResNotOk(res);
+    return await res.json();
+  };
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      queryFn: getQueryFn({ on401: "throw" }),
+      refetchInterval: false,
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
       retry: false,
-      staleTime: 5 * 60 * 1000,
+    },
+    mutations: {
+      retry: false,
     },
   },
 });
-
-export type ApiRequestOptions = Record<string, unknown> | undefined;
-
-/**
- * Вызов API: fetch с JSON и credentials.
- * Используется для мутаций (например отправка ответа на задание).
- */
-export async function apiRequest<T = unknown>(
-  method: string,
-  path: string,
-  data?: ApiRequestOptions
-): Promise<T> {
-  const url = API_BASE + path;
-  const res = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    ...(data !== undefined && { body: JSON.stringify(data) }),
-  });
-  if (!res.ok) {
-    throw new Error(`API ${method} ${path}: ${res.status}`);
-  }
-  const text = await res.text();
-  if (!text) return undefined as T;
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    throw new Error(`API ${path}: invalid JSON`);
-  }
-}
