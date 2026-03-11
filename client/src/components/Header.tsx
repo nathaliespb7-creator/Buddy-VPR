@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Mascot } from "./Mascot";
-import { Star, DoorOpen, Trophy } from "lucide-react";
+import { Star, Trophy, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { AnimationSettings } from "@/components/AnimationSettings";
@@ -167,7 +167,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
                 aria-label="Назад"
                 data-testid="button-exit"
               >
-                <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
+                <LogOut className="w-5 h-5 shrink-0" aria-hidden />
                 <span className="text-sm font-medium">Назад</span>
               </Button>
             ) : (
@@ -239,7 +239,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
               </Tooltip>
               {onExit && (
                 <Button variant="ghost" onClick={onExit} className="shrink-0 h-12 px-3 sm:px-4 rounded-xl text-muted-foreground hover:text-foreground hover:bg-amber-100/80 dark:hover:bg-amber-900/30 hover:border hover:border-amber-200/80 dark:hover:border-amber-700/50 border border-transparent transition-colors gap-2 font-semibold text-sm sm:text-base min-h-[48px]" aria-label={exitLabel} data-testid="button-exit">
-                  <DoorOpen className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] shrink-0" aria-hidden />
+                  <LogOut className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5] shrink-0" aria-hidden />
                   <span>{exitLabel}</span>
                 </Button>
               )}
@@ -354,7 +354,7 @@ export function Header({ mascotMood, stars, onExit, overallProgress, variant = "
         </div>
         {onExit ? (
           <Button variant="ghost" size="sm" onClick={onExit} className="gap-1 text-muted-foreground hover:text-foreground -mr-2 min-h-[44px] touch-manipulation" aria-label={exitLabel} data-testid="button-exit">
-            <DoorOpen className="w-5 h-5 shrink-0" aria-hidden />
+            <LogOut className="w-5 h-5 shrink-0" aria-hidden />
             <span className="text-sm font-medium">{exitLabel}</span>
           </Button>
         ) : (

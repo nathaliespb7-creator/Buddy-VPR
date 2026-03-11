@@ -134,6 +134,8 @@ function getAvatarPrefix(avatar?: AvatarChoice): string {
 }
 
 export default function Home() {
+  const isExternalApi =
+    typeof API_BASE === "string" && API_BASE.startsWith("http");
   const storedProfile = getStoredProfile();
   const initialPhase: GamePhase = "modeChoice";
 
@@ -187,7 +189,9 @@ export default function Home() {
     queryKey: ["/api/tasks"],
     queryFn: async () => {
       try {
-        const res = await fetch(API_BASE + "/api/tasks", { credentials: "include" });
+        const res = await fetch(API_BASE + "/api/tasks", {
+          credentials: isExternalApi ? "omit" : "include",
+        });
         if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
         const data = await res.json();
         return Array.isArray(data) ? data : [];
