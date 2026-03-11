@@ -3,6 +3,9 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 /** Базовый URL API (для деплоя фронта отдельно от бэкенда). В dev и при одном origin — пусто. */
 export const API_BASE = (import.meta.env.VITE_API_URL as string) ?? "";
 
+const CREDENTIALS_MODE: RequestCredentials =
+  API_BASE && API_BASE.startsWith("http") ? "omit" : "include";
+
 const FETCH_TIMEOUT_MS = 15000;
 
 function fetchWithTimeout(url: string, options: RequestInit = {}): Promise<Response> {
@@ -29,7 +32,7 @@ export async function apiRequest(
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
+    credentials: CREDENTIALS_MODE,
   });
 
   await throwIfResNotOk(res);
@@ -44,7 +47,7 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const url = queryKey.join("/") as string;
     const res = await fetchWithTimeout(API_BASE + url, {
-      credentials: "include",
+      credentials: CREDENTIALS_MODE,
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
