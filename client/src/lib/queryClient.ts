@@ -1,7 +1,19 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-/** Базовый URL API (для деплоя фронта отдельно от бэкенда). В dev и при одном origin — пусто. */
-export const API_BASE = (import.meta.env.VITE_API_URL as string) ?? "";
+/** Базовый URL API (для деплоя фронта отдельно от бэкенда).
+ * - В dev и при одном origin — пусто.
+ * - В Vercel обычно задаётся `/api` через VITE_API_URL.
+ * - Чтобы избежать дубля `/api/api/*`, значения `/api` и `/api/` считаем "пустыми". */
+const RAW_API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "";
+
+let normalizedBase = RAW_API_BASE.trim();
+if (!normalizedBase || normalizedBase === "/api" || normalizedBase === "/api/") {
+  normalizedBase = "";
+} else if (normalizedBase.endsWith("/")) {
+  normalizedBase = normalizedBase.slice(0, -1);
+}
+
+export const API_BASE = normalizedBase;
 
 const FETCH_TIMEOUT_MS = 15000;
 
