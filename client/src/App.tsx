@@ -10,11 +10,13 @@ import Home from "@/pages/Home";
 import ParentDashboardPage from "@/pages/ParentDashboardPage";
 import ClassSubjectSelector from "@/pages/ClassSubjectSelector";
 import LandingPage from "@/pages/LandingPage";
+import WelcomePage from "@/pages/WelcomePage";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
+      <Route path="/" component={WelcomePage} />
+      <Route path="/intro" component={LandingPage} />
       <Route path="/play" component={Home} />
       <Route path="/parent" component={ParentDashboardPage} />
       <Route path="/class-selector" component={ClassSubjectSelector} />
