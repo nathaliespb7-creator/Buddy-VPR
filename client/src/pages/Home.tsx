@@ -137,7 +137,9 @@ export default function Home() {
   const storedProfile = getStoredProfile();
   const initialPhase: GamePhase = "modeChoice";
 
-  const [showSplash, setShowSplash] = useState(true);
+  // Приветственный экран с маскотом теперь показывается на отдельной странице.
+  // В самой игре сразу начинаем с выбора режима без дополнительного сплэша.
+  const [showSplash, setShowSplash] = useState(false);
   const [phase, setPhase] = useState<GamePhase>(initialPhase);
   const [diagnosticStarted, setDiagnosticStarted] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
