@@ -7,11 +7,13 @@ import { SettingsProvider } from "@/context/SettingsContext";
 import { ErrorBoundary } from "@/ErrorBoundary";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
+import ParentDashboardPage from "@/pages/ParentDashboardPage";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/parent" component={ParentDashboardPage} />
       <Route component={NotFound} />
     </Switch>
   );
