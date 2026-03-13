@@ -20,7 +20,7 @@ export default function ClassSubjectSelector() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(SUBJECTS[0]!.id);
 
   const handleStart = () => {
-    setLocation("/");
+    setLocation("/play");
   };
 
   return (
