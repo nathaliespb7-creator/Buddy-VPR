@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 export interface ParentChild {
@@ -96,11 +95,10 @@ export function useChildSummary(childId: string | null) {
   });
 }
 
-export function useProgressStatus(value: number) {
-  return useMemo(() => {
-    if (value >= 80) return "good" as const;
-    if (value >= 50) return "warning" as const;
-    return "critical" as const;
-  }, [value]);
+/** Возвращает статус по проценту (для использования вне хуков, в т.ч. внутри .map()). */
+export function getProgressStatus(value: number): "good" | "warning" | "critical" {
+  if (value >= 80) return "good";
+  if (value >= 50) return "warning";
+  return "critical";
 }
 

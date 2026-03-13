@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParentChildren, useChildSummary, useProgressStatus } from "@/hooks/useParentDashboard";
+import { useParentChildren, useChildSummary, getProgressStatus } from "@/hooks/useParentDashboard";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -108,7 +108,7 @@ export default function ParentDashboardPage() {
                   subject.totalTasks > 0
                     ? Math.round((subject.completedTasks / subject.totalTasks) * 100)
                     : 0;
-                const status = useProgressStatus(percent);
+                const status = getProgressStatus(percent);
                 const barClass =
                   status === "good"
                     ? "bg-emerald-500"
