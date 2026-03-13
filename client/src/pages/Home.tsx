@@ -257,22 +257,6 @@ export default function Home() {
     setPhase("modeChoice");
   }, [profile]);
 
-  const handleExportStats = useCallback(() => {
-    const p = getStoredProfile();
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      sessionId,
-      profile: p ?? undefined,
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `buddy-vpr-progress-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [sessionId]);
-
   // Старт диагностики: каждый остров (категория) — по 3 задания
   const startMixedTraining = useCallback(
     (category: string) => {
@@ -840,7 +824,6 @@ export default function Home() {
                   rankInfo={rankInfo}
                   moduleCapacity={moduleCapacity}
                   onRequestReset={requestResetProgress}
-                  onExportStats={handleExportStats}
                 />
                 <IslandMap
                   key="islands"

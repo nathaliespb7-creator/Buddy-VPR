@@ -12,8 +12,6 @@ interface ProfileSummaryProps {
   moduleCapacity: number | null;
   /** Показать «Начать сначала» и по клику вызвать (открыть диалог подтверждения). */
   onRequestReset?: () => void;
-  /** Кнопка «Скачать прогресс (JSON)» — экспорт профиля и sessionId. */
-  onExportStats?: () => void;
 }
 
 function progressLabel(
@@ -39,7 +37,7 @@ function progressLabel(
   return `Осталось ${Math.round(percentLeft)}% до следующего ранга`;
 }
 
-export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, onRequestReset, onExportStats }: ProfileSummaryProps) {
+export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, onRequestReset }: ProfileSummaryProps) {
   const showRankBlock = rankInfo?.rank != null && rankInfo.progressPercent != null;
 
   return (
@@ -105,17 +103,6 @@ export function ProfileSummary({ avatar, totalStars, rankInfo, moduleCapacity, o
             aria-label="Начать сначала (сброс звёзд)"
           >
             Начать сначала
-          </button>
-        )}
-        {onExportStats && (
-          <button
-            type="button"
-            onClick={onExportStats}
-            className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
-            aria-label="Скачать прогресс в формате JSON"
-            data-testid="button-export-stats"
-          >
-            Скачать прогресс (JSON)
           </button>
         )}
       </div>
