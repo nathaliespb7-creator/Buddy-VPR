@@ -16,14 +16,15 @@ export default function LandingPage() {
         </div>
 
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-          Бадди ВПР — умный помощник
-          <br className="hidden sm:block" />
-          <span className="text-emerald-600"> для подготовки к ВПР</span>
+          Привет! Я Бадди! 🎉
         </h1>
 
         <p className="max-w-xl text-base text-slate-600 sm:text-lg">
-          Геймифицированный тренажёр для&nbsp;4–8&nbsp;классов: проходи задания,
-          зарабатывай звёзды и покоряй острова знаний в удобном офлайн‑режиме.
+          Это <strong>умный тренажёр для подготовки к ВПР</strong> по{" "}
+          <strong>русскому языку</strong>, <strong>математике</strong> и{" "}
+          <strong>окружающему миру</strong>. Здесь ты сможешь эффективно
+          повторять темы, решать задания и видеть свой прогресс. Давай начнём
+          подготовку к ВПР и усилим твои знания и результат? ✨
         </p>
 
         <div className="mt-4 flex flex-col items-center gap-3">
@@ -32,7 +33,7 @@ export default function LandingPage() {
             className="min-w-[220px] min-h-[52px] rounded-full bg-emerald-500 text-base font-semibold text-white shadow-lg shadow-emerald-200 hover:bg-emerald-600"
             onClick={handleStart}
           >
-            Начать подготовку
+            Выбери класс
           </Button>
           <p className="text-xs text-slate-500">
             Шаг 1: выбери класс и предмет — дальше тебя проведёт Бадди.

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { CLASSES, SUBJECTS } from "@/data/subjectsAndClasses";
+import { SUBJECTS } from "@/data/subjectsAndClasses";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,12 +11,11 @@ import {
 } from "@/components/ui/select";
 
 /**
- * Страница выбора класса и предмета перед переходом на главную (карта островов).
- * Для MVP кнопка «Начать» ведёт на "/"; позже можно передавать subject/class в URL или контекст.
+ * Страница выбора предмета перед переходом на главную (карта островов).
+ * Для MVP выбранный предмет пока не передаётся дальше, но помогает сфокусировать внимание ребёнка.
  */
 export default function ClassSubjectSelector() {
   const [, setLocation] = useLocation();
-  const [selectedClass, setSelectedClass] = useState<string>(String(CLASSES[0]));
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(SUBJECTS[0]!.id);
 
   const handleStart = () => {
@@ -28,32 +27,15 @@ export default function ClassSubjectSelector() {
       <div className="mx-auto max-w-md space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Выбери класс и предмет
+            Выбери предмет
           </h1>
           <p className="mt-1 text-sm text-slate-600">
-            Подготовка к ВПР: выбери класс и предмет, затем нажми «Начать».
+            Подготовка к ВПР: выбери предмет, с которого начнём повторение
+            заданий.
           </p>
         </div>
 
         <div className="space-y-4 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">
-              Класс
-            </label>
-            <Select value={selectedClass} onValueChange={setSelectedClass}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Выберите класс" />
-              </SelectTrigger>
-              <SelectContent>
-                {CLASSES.map((grade) => (
-                  <SelectItem key={grade} value={String(grade)}>
-                    {grade} класс
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
           <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700">
               Предмет
@@ -77,7 +59,7 @@ export default function ClassSubjectSelector() {
             className="w-full min-h-[48px] text-base font-semibold"
             size="lg"
           >
-            Начать
+            Старт
           </Button>
         </div>
       </div>
