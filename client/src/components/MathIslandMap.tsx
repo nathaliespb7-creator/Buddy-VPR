@@ -5,7 +5,7 @@
 
 import { useLocation } from "wouter";
 import { mathVprGrade4Config } from "@/data/mathVprGrade4";
-import { cn } from "@/lib/utils";
+import { ballsPhrase, cn } from "@/lib/utils";
 
 export function MathIslandMap() {
   const [, setLocation] = useLocation();
@@ -51,7 +51,7 @@ export function MathIslandMap() {
       </div>
 
       <p className="text-xs text-muted-foreground text-center mt-4">
-        Макс. баллов за работу: {mathVprGrade4Config.max_score}
+        Макс. {ballsPhrase(mathVprGrade4Config.max_score)} за работу
       </p>
     </div>
   );

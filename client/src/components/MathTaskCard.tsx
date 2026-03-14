@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MathDrawingInput } from "@/components/MathDrawingInput";
+import { ballsPhrase } from "@/lib/utils";
 import type { MathTaskExample } from "@/data/mathVprGrade4/types";
 
 interface MathTaskCardProps {
@@ -18,6 +19,7 @@ interface MathTaskCardProps {
 export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTaskCardProps) {
   const [answer, setAnswer] = useState("");
   const [drawing, setDrawing] = useState("");
+  const [hintVisible, setHintVisible] = useState(false);
 
   const handleSubmit = () => {
     if (task.type === "mixed") {
@@ -40,7 +42,7 @@ export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTask
       <div className="flex justify-between text-sm text-muted-foreground">
         <span>Задание №{task.vpr_task_number}</span>
         <span>
-          {taskIndex + 1} из {totalTasks} · макс. {task.max_score} балл(а)
+          {taskIndex + 1} из {totalTasks} · макс. {ballsPhrase(task.max_score)}
         </span>
       </div>
 
@@ -102,7 +104,23 @@ export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTask
       )}
 
       {task.magicHint && (
-        <p className="text-sm text-muted-foreground">💡 {task.magicHint}</p>
+        <div className="space-y-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setHintVisible((v) => !v)}
+            className="gap-1.5"
+            aria-expanded={hintVisible}
+            aria-label={hintVisible ? "Скрыть подсказку" : "Показать подсказку"}
+          >
+            <span aria-hidden>🔦</span>
+            {hintVisible ? "Скрыть подсказку" : "Подсказка"}
+          </Button>
+          {hintVisible && (
+            <p className="text-sm text-muted-foreground pt-1">💡 {task.magicHint}</p>
+          )}
+        </div>
       )}
 
       <Button

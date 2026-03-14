@@ -8,6 +8,7 @@ import { useLocation } from "wouter";
 import { mathVprGrade4Config, mathTaskExamples } from "@/data/mathVprGrade4";
 import type { MathTaskExample } from "@/data/mathVprGrade4/types";
 import { subjectsConfig } from "@/config/subjectsConfig";
+import { ballWord, ballsPhrase } from "@/lib/utils";
 import { mathValidator, type MathTask, type MathValidationResult } from "@/lib/validators/mathValidator";
 import { MathTaskCard } from "@/components/MathTaskCard";
 import { Button } from "@/components/ui/button";
@@ -127,7 +128,7 @@ export default function MathPlayPage() {
       <main className="min-h-screen bg-background p-4 flex flex-col items-center justify-center">
         <h2 className="text-2xl font-bold text-foreground mb-2">Остров пройден!</h2>
         <p className="text-muted-foreground mb-4">
-          Твой результат: {score} из {maxPossible} баллов
+          Твой результат: {score} из {maxPossible} {ballWord(maxPossible)}
         </p>
         <div className="flex gap-3">
           <Button onClick={goToMap}>На карту островов</Button>
@@ -147,7 +148,7 @@ export default function MathPlayPage() {
             ← На карту
           </Button>
           <span className="text-sm text-muted-foreground">
-            {islandDisplay?.icon ?? "🔢"} {island.name} · {score} баллов
+            {islandDisplay?.icon ?? "🔢"} {island.name} · {ballsPhrase(score)}
           </span>
         </div>
 
@@ -159,7 +160,7 @@ export default function MathPlayPage() {
           >
             <p className="font-medium">{lastResult.feedback}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Баллов за задание: {lastResult.score}
+              {ballsPhrase(lastResult.score)} за задание
             </p>
             <Button onClick={goNext} className="mt-3">
               Дальше
