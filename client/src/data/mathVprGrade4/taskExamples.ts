@@ -15,7 +15,11 @@ const baseExamplesByVpr: MathTaskExample[] = [
     type: "text_solution",
     question:
       "Рассмотри рисунок и ответь на вопрос: сколько рублей сдачи получит покупатель, расплатившийся за пакет молока и батон хлеба купюрой в 100 рублей?",
-    image: "milk_bread_prices.png",
+    image: {
+      src: "/images/vpr/math/task3_milk_bread.svg",
+      alt: "Цены: молоко 32 руб., хлеб 33 руб.",
+      caption: "Рисунок к заданию 3",
+    },
     prices: { milk: 32, bread: 33 },
     correct_solution:
       "1) 32 + 33 = 65 (руб.) — стоимость покупки\n2) 100 - 65 = 35 (руб.) — сдача",
@@ -94,6 +98,20 @@ const baseExamplesByVpr: MathTaskExample[] = [
     max_score: 2,
     magicHint: "📊 Смотри на нужную строку и столбец таблицы.",
     scoring_criteria: { "2": "Оба ответа верны", "1": "Верен один ответ", "0": "Оба неверны." },
+    table: {
+      caption: "Количество учеников в классах",
+      columns: [
+        { key: "class", title: "Класс" },
+        { key: "boys", title: "Мальчиков" },
+        { key: "girls", title: "Девочек" },
+        { key: "total", title: "Всего" },
+      ],
+      data: [
+        { class: "4 «А»", boys: 12, girls: 14, total: 26 },
+        { class: "4 «Б»", boys: 10, girls: 12, total: 22 },
+        { class: "4 «В»", boys: 14, girls: 10, total: 24 },
+      ],
+    },
   },
   // № 8 — Текстовая задача (3–4 действия с величинами), решение + ответ, partial credit
   {

@@ -5,7 +5,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MathDrawingInput } from "@/components/MathDrawingInput";
+import { GeometryCanvas } from "@/components/GeometryCanvas";
+import { TaskImage } from "@/components/TaskImage";
+import { DataTable } from "@/components/DataTable";
 import { ballsPhrase } from "@/lib/utils";
 import type { MathTaskExample } from "@/data/mathVprGrade4/types";
 
@@ -48,10 +50,26 @@ export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTask
 
       <p className="text-base font-medium text-foreground whitespace-pre-wrap">{question}</p>
 
+      {task.type === "text_solution" && "image" in task && task.image && (
+        <TaskImage
+          src={typeof task.image === "string" ? task.image : task.image}
+          zoomable
+        />
+      )}
+
+      {"table" in task && task.table && (
+        <DataTable
+          columns={task.table.columns}
+          data={task.table.data}
+          caption={task.table.caption}
+        />
+      )}
+
       {task.type === "drawing" && (
-        <MathDrawingInput
+        <GeometryCanvas
+          taskType={task.vpr_task_number === 10 ? "mirror_reflection" : "circle_draw"}
+          initialImage={"image" in task && task.image ? (typeof task.image === "string" ? task.image : task.image.src) : undefined}
           onDrawComplete={setDrawing}
-          taskType={task.vpr_task_number === 10 ? "mirror" : "shape"}
         />
       )}
 
@@ -66,7 +84,11 @@ export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTask
             className="w-full rounded-lg border bg-background px-3 py-2 text-base"
             aria-label="Числовой ответ"
           />
-          <MathDrawingInput onDrawComplete={setDrawing} taskType="shape" />
+          <GeometryCanvas
+            taskType="rectangle_split"
+            initialImage={"image" in task && task.image ? (typeof task.image === "string" ? task.image : task.image.src) : undefined}
+            onDrawComplete={setDrawing}
+          />
         </>
       )}
 

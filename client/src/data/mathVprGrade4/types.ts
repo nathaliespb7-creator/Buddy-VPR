@@ -81,13 +81,21 @@ export interface MathTaskTimeExample extends MathTaskExampleBase {
   type: "time_input";
 }
 
+/** Изображение к заданию: путь или объект с подписью. */
+export interface MathTaskImage {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
 /** Задание «решение + ответ» (№ 3, 8, 11). */
 export interface MathTaskSolutionExample extends MathTaskExampleBase {
   correct_answer: string;
   correct_solution: string;
   type: "text_solution";
   partial_credit?: boolean;
-  image?: string;
+  /** Путь к файлу или объект с src, alt, caption (рисунок к условию). */
+  image?: string | MathTaskImage;
   prices?: Record<string, number>;
 }
 
@@ -97,7 +105,7 @@ export interface MathTaskDrawingExample extends MathTaskExampleBase {
   type: "drawing";
   image_part1?: string;
   image_part2?: string;
-  image?: string;
+  image?: string | MathTaskImage;
 }
 
 /** Задание смешанное: число + чертёж (№ 5). */
@@ -107,7 +115,7 @@ export interface MathTaskMixedExample extends MathTaskExampleBase {
   correct_answer_part1: number;
   correct_answer_part2: string;
   type: "mixed";
-  image?: string;
+  image?: string | MathTaskImage;
   grid_cell_cm?: number;
 }
 
@@ -117,6 +125,13 @@ export interface MathTaskTextExample extends MathTaskExampleBase {
   type: "text_input";
 }
 
+/** Столбец таблицы к заданию № 6. */
+export interface MathTaskTableColumn {
+  key: string;
+  title: string;
+  width?: string;
+}
+
 /** Задание с двумя числами (№ 6 — таблицы/диаграммы, 2 вопроса). */
 export interface MathTaskTwoNumbersExample extends MathTaskExampleBase {
   correct_answer: [number, number];
@@ -124,6 +139,12 @@ export interface MathTaskTwoNumbersExample extends MathTaskExampleBase {
   /** Для № 6: два подвопроса. */
   question_part1?: string;
   question_part2?: string;
+  /** Таблица к условию (ВПР 6). */
+  table?: {
+    columns: MathTaskTableColumn[];
+    data: Record<string, string | number>[];
+    caption?: string;
+  };
 }
 
 export type MathTaskExample =
