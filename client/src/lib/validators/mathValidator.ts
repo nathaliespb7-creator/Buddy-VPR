@@ -9,7 +9,15 @@
 export interface MathTask {
   id: string;
   vprTaskNumber: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
-  type: "number_input" | "text_input" | "text_solution" | "drawing" | "time_input" | "mixed";
+  type:
+    | "number_input"
+    | "text_input"
+    | "text_solution"
+    | "drawing"
+    | "time_input"
+    | "mixed"
+    | "expression"
+    | "written_operations";
   correctAnswer: string | number | [number, number];
   correctSolution?: string;
   maxScore: 1 | 2;
@@ -43,6 +51,10 @@ export class MathValidator {
     switch (task.type) {
       case "number_input":
         return this.validateNumber(userAnswer, task);
+      case "expression":
+        return this.validateExpression(userAnswer, task);
+      case "written_operations":
+        return this.validateWrittenOperations(userAnswer, task);
       case "time_input":
         return this.validateTime(userAnswer, task);
       case "text_input":
@@ -56,6 +68,74 @@ export class MathValidator {
       default:
         return { score: 0, feedback: "Неизвестный тип задания", isCorrect: false };
     }
+  }
+
+  /** Выражения (№ 2): порядок действий, один числовой ответ. */
+  private validateExpression(userAnswer: string, task: MathTask): MathValidationResult {
+    return this.validateNumber(userAnswer, { ...task, type: "number_input" });
+  }
+
+  /** Письменные вычисления (№ 7): число или «частное (ост. остаток)». */
+  private validateWrittenOperations(userAnswer: string, task: MathTask): MathValidationResult {
+    const expected = task.correctAnswer;
+    if (typeof expected === "string" && /ост\.?/i.test(expected)) {
+      return this.validateRemainderAnswer(userAnswer, expected, task);
+    }
+    return this.validateNumber(userAnswer, { ...task, type: "number_input" });
+  }
+
+  /** Нормализация ответа с остатком: "9 (ост. 2)" / "9 ост 2" / "9, ост 2" → { quotient: 9, remainder: 2 }. */
+  private parseRemainderAnswer(raw: string): { quotient: number; remainder: number } | null {
+    const normalized = raw.replace(/\s+/g, " ").trim().toLowerCase();
+    const match = normalized.match(
+      /(\d+)\s*(?:\(?\s*ост\.?\s*\)?|,)\s*(\d+)|(\d+)\s+(\d+)\s*$/
+    );
+    if (match) {
+      const q = parseInt(match[1] ?? match[3] ?? "0", 10);
+      const r = parseInt(match[2] ?? match[4] ?? "0", 10);
+      if (!isNaN(q) && !isNaN(r)) return { quotient: q, remainder: r };
+    }
+    const onlyNum = normalized.replace(/[^\d]/g, "");
+    if (onlyNum.length >= 2) {
+      const q = parseInt(onlyNum.slice(0, -1), 10);
+      const r = parseInt(onlyNum.slice(-1), 10);
+      if (!isNaN(q) && !isNaN(r)) return { quotient: q, remainder: r };
+    }
+    return null;
+  }
+
+  private validateRemainderAnswer(
+    userAnswer: string,
+    expectedStr: string,
+    task: MathTask
+  ): MathValidationResult {
+    const expectedParsed = this.parseRemainderAnswer(expectedStr);
+    const userParsed = this.parseRemainderAnswer(userAnswer);
+    if (!expectedParsed) {
+      return this.validateNumber(userAnswer, { ...task, type: "number_input", correctAnswer: expectedStr });
+    }
+    if (!userParsed) {
+      return {
+        score: 0,
+        feedback: "Введи частное и остаток, например: 9 (ост. 2)",
+        isCorrect: false,
+      };
+    }
+    if (
+      userParsed.quotient === expectedParsed.quotient &&
+      userParsed.remainder === expectedParsed.remainder
+    ) {
+      return {
+        score: task.maxScore,
+        feedback: "Верно! Молодец! 🌟",
+        isCorrect: true,
+      };
+    }
+    return {
+      score: 0,
+      feedback: "Неверно. Проверь частное и остаток.",
+      isCorrect: false,
+    };
   }
 
   private validateNumber(userAnswer: string, task: MathTask): MathValidationResult {

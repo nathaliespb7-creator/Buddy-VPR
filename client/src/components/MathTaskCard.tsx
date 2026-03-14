@@ -1,6 +1,6 @@
 /**
  * Карточка задания по математике ВПР 4 класс.
- * Поддерживает number_input, time_input, text_input, text_solution, drawing, mixed.
+ * Поддерживает number_input, expression, written_operations, time_input, text_input, text_solution, drawing, mixed.
  */
 
 import { useState } from "react";
@@ -79,14 +79,20 @@ export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTask
         />
       )}
 
-      {(task.type === "number_input" || task.type === "time_input" || task.type === "text_input") && (
+      {(task.type === "number_input" ||
+        task.type === "expression" ||
+        task.type === "written_operations" ||
+        task.type === "time_input" ||
+        task.type === "text_input") && (
         <input
           type="text"
-          inputMode={task.type === "number_input" ? "numeric" : "text"}
+          inputMode={task.type === "number_input" || task.type === "expression" ? "numeric" : "text"}
           placeholder={
             task.type === "time_input"
               ? "Например: 15:45 или 15 ч 45 мин"
-              : "Введи ответ"
+              : task.type === "written_operations"
+                ? "Число или частное (ост. остаток)"
+                : "Введи ответ"
           }
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}

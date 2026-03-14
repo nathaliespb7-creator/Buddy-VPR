@@ -1,43 +1,13 @@
 /**
  * Примеры заданий ВПР Математика 4 класс 2026 (ФИОКО).
- * Минимум по одному примеру на каждый тип (№ 1–11).
- * Формат ответа и критерии — по кодификатору.
+ * Остров Вычислений (№ 1, 2, 7) — расширенный набор из arithmeticIsland; остальные — по одному примеру на тип.
  */
 
 import type { MathTaskExample } from "./types";
+import { arithmeticIslandTasks } from "./islands/arithmeticIsland";
 
-export const mathTaskExamples: MathTaskExample[] = [
-  // № 1 — Арифметика: сложение/вычитание многозначных, число
-  {
-    id: "math_t1_001",
-    vpr_task_number: 1,
-    type: "number_input",
-    question: "Вычисли: 56 + 38",
-    correct_answer: 94,
-    difficulty: "базовый",
-    max_score: 1,
-    magicHint: "Складывай поразрядно: сначала единицы, потом десятки.",
-    common_mistakes: [84, 93, 83],
-    scoring_criteria: { "1": "Верный ответ", "0": "Неверный ответ" },
-    hints: {
-      school_of_russia: "Складывай поразрядно: единицы с единицами, десятки с десятками.",
-      peterson: "Используй алгоритм письменного сложения с переходом через разряд.",
-      elkonin: "Ориентируйся на состав числа: 56 = 50 + 6, 38 = 30 + 8.",
-    },
-  },
-  // № 2 — Арифметика: числовые выражения (2–4 действия), число
-  {
-    id: "math_t2_001",
-    vpr_task_number: 2,
-    type: "number_input",
-    question: "Вычисли значение выражения: 24 + 6 · 3",
-    correct_answer: 42,
-    difficulty: "базовый",
-    max_score: 1,
-    magicHint: "Сначала умножение, потом сложение!",
-    common_mistakes: [90, 102, 30],
-    scoring_criteria: { "1": "Верный ответ", "0": "Неверный ответ" },
-  },
+// Базовые примеры по одному на каждый номер ВПР (3–6, 8–11); № 1, 2, 7 берём из острова Вычислений.
+const baseExamplesByVpr: MathTaskExample[] = [
   // № 3 — Текстовая задача (покупки, сдача), решение + ответ, partial credit
   {
     id: "math_t3_001",
@@ -125,19 +95,6 @@ export const mathTaskExamples: MathTaskExample[] = [
     magicHint: "📊 Смотри на нужную строку и столбец таблицы.",
     scoring_criteria: { "2": "Оба ответа верны", "1": "Верен один ответ", "0": "Оба неверны." },
   },
-  // № 7 — Арифметика: письменные действия (умножение/деление), число
-  {
-    id: "math_t7_001",
-    vpr_task_number: 7,
-    type: "number_input",
-    question: "Вычисли: 124 · 5",
-    correct_answer: 620,
-    difficulty: "базовый",
-    max_score: 1,
-    magicHint: "Умножай поразрядно: 4·5, 2·5, 1·5; не забудь перенос.",
-    common_mistakes: [624, 600, 120],
-    scoring_criteria: { "1": "Верный ответ", "0": "Неверный ответ" },
-  },
   // № 8 — Текстовая задача (3–4 действия с величинами), решение + ответ, partial credit
   {
     id: "math_t8_001",
@@ -214,6 +171,12 @@ export const mathTaskExamples: MathTaskExample[] = [
       "0": "Неверно или нет ответа",
     },
   },
+];
+
+/** Все примеры: сначала Остров Вычислений (20 заданий № 1, 2, 7), затем по одному на остальные номера ВПР. */
+export const mathTaskExamples: MathTaskExample[] = [
+  ...arithmeticIslandTasks,
+  ...baseExamplesByVpr,
 ];
 
 /** Примеры по номеру задания ВПР (1–11). */

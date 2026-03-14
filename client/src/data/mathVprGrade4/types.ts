@@ -11,7 +11,9 @@ export type MathTaskType =
   | "text_solution"
   | "drawing"
   | "time_input"
-  | "mixed";
+  | "mixed"
+  | "expression"
+  | "written_operations";
 
 export type MathDifficulty = "базовый" | "повышенный";
 
@@ -55,10 +57,22 @@ export interface MathTaskExampleBase {
   common_mistakes?: Array<string | number | { answer: string; error: string }>;
 }
 
-/** Задание с числовым ответом (№ 1, 2, 7). */
+/** Задание с числовым ответом (№ 1, 2, 7). correct_answer может быть строкой для формата «9 (ост. 2)». */
 export interface MathTaskNumberExample extends MathTaskExampleBase {
-  correct_answer: number;
+  correct_answer: number | string;
   type: "number_input";
+}
+
+/** Задание на вычисление выражения (№ 2): порядок действий, один числовой ответ. */
+export interface MathTaskExpressionExample extends MathTaskExampleBase {
+  correct_answer: number;
+  type: "expression";
+}
+
+/** Задание на письменные вычисления (№ 7): столбик, один числовой ответ или «частное (ост. остаток)». */
+export interface MathTaskWrittenExample extends MathTaskExampleBase {
+  correct_answer: number | string;
+  type: "written_operations";
 }
 
 /** Задание с ответом «время» (№ 4). */
@@ -114,6 +128,8 @@ export interface MathTaskTwoNumbersExample extends MathTaskExampleBase {
 
 export type MathTaskExample =
   | MathTaskNumberExample
+  | MathTaskExpressionExample
+  | MathTaskWrittenExample
   | MathTaskTimeExample
   | MathTaskSolutionExample
   | MathTaskDrawingExample
