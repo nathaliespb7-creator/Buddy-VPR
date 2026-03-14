@@ -124,8 +124,13 @@ function getAvatarPrefix(avatar?: AvatarChoice): string {
 }
 
 export default function Home() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const subjectId = useMemo(() => getSubjectIdFromUrl(), [location]);
+
+  /** Переход на экран выбора предмета (и при необходимости класса) для смены настроек */
+  const goToClassSelector = useCallback(() => {
+    setLocation("/class-selector");
+  }, [setLocation]);
   const storedProfile = useMemo(() => getStoredProfile(subjectId), [subjectId]);
   const initialPhase: GamePhase = "modeChoice";
 
@@ -746,7 +751,7 @@ export default function Home() {
             onExit={
               phase === "diagnostic" || phase === "training"
                 ? goToMap
-                : goToFirstScreen
+                : goToClassSelector
             }
             overallProgress={overallProgress}
             variant={phase === "diagnostic" || phase === "training" ? "task" : "full"}
@@ -762,7 +767,7 @@ export default function Home() {
             exitLabel={
               phase === "diagnostic" || phase === "training"
                 ? "Назад"
-                : "На главную"
+                : "Домой"
             }
             timerRemainingSeconds={phase === "diagnostic" || phase === "training" ? timerRemainingSeconds : null}
           />
