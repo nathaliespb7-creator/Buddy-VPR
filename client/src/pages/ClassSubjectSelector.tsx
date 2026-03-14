@@ -19,7 +19,7 @@ export default function ClassSubjectSelector() {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(SUBJECTS[0]!.id);
 
   const handleStart = () => {
-    setLocation("/play");
+    setLocation(`/play?subject=${encodeURIComponent(selectedSubjectId)}`);
   };
 
   return (

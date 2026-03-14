@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 import { Header, type StarType } from "@/components/Header";
 import { ProgressBar } from "@/components/ProgressBar";
 import type { UserProfile as MotivationUserProfile, StarCounts } from "@/types/motivation";
-import { migrateProfile } from "@/lib/profileMigration";
 import { calculateNewStars } from "@/lib/starCalculation";
 import { TaskCard } from "@/components/TaskCard";
 import { type AvatarChoice } from "@/components/AvatarPicker";
@@ -15,6 +15,8 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { ModeChoiceScreen } from "@/components/ModeChoiceScreen";
 import { MixedModeChoiceScreen } from "@/components/MixedModeChoiceScreen";
 import { tasksData, encouragements, type Task } from "@/lib/taskData";
+import { getStoredProfile, saveProfile } from "@/lib/storage";
+import { getCategoriesForSubject, getCategoryLabelsForSubject, type SubjectId } from "@/data/subjectsConfig";
 import { AnimationOnboardingDialog } from "@/components/AnimationOnboardingDialog";
 import { ProfileSummary } from "@/components/ProfileSummary";
 import { LevelUpModal } from "@/components/LevelUpModal";
@@ -65,22 +67,10 @@ function getStoredSessionId(): string {
 
 const EMPTY_STARS: StarCounts = { total: 0, gold: 0, silver: 0 };
 
-function getStoredProfile(): UserProfile | null {
-  try {
-    const stored = localStorage.getItem("buddy_profile");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const migrated = migrateProfile(parsed);
-      return migrated;
-    }
-  } catch {
-    // ignore
-  }
-  return null;
-}
-
-function saveProfile(profile: UserProfile) {
-  localStorage.setItem("buddy_profile", JSON.stringify(profile));
+function getSubjectIdFromUrl(): SubjectId {
+  if (typeof window === "undefined") return "russian";
+  const s = new URLSearchParams(window.location.search).get("subject");
+  return s === "math" || s === "environment" ? s : "russian";
 }
 
 function playRewardSound() {
@@ -134,7 +124,9 @@ function getAvatarPrefix(avatar?: AvatarChoice): string {
 }
 
 export default function Home() {
-  const storedProfile = getStoredProfile();
+  const [location] = useLocation();
+  const subjectId = useMemo(() => getSubjectIdFromUrl(), [location]);
+  const storedProfile = useMemo(() => getStoredProfile(subjectId), [subjectId]);
   const initialPhase: GamePhase = "modeChoice";
 
   // Приветственный экран с маскотом теперь показывается на отдельной странице.
@@ -213,6 +205,9 @@ export default function Home() {
     [totalStars, moduleCapacity]
   );
 
+  /** Показываем баннер, когда API недоступен и используются данные из кэша */
+  const isOffline = Boolean(serverTasks && serverTasks.length === 0);
+
   const isTrainingPhase = phase === "training" || phase === "diagnostic";
   useEffect(() => {
     if (isTrainingPhase) {
@@ -254,10 +249,10 @@ export default function Home() {
       ? { ...profile, stars: EMPTY_STARS, starByTaskId: {} }
       : { avatar: "buddy" as AvatarChoice, tier: "free" as const, nickname: null, stars: EMPTY_STARS };
     setProfile(next);
-    saveProfile(next);
+    saveProfile(next, subjectId);
     setShowResetConfirm(false);
     setPhase("modeChoice");
-  }, [profile]);
+  }, [profile, subjectId]);
 
   // Старт диагностики: каждый остров (категория) — по 3 задания
   const startMixedTraining = useCallback(
@@ -284,9 +279,11 @@ export default function Home() {
     [allTasks]
   );
 
+  const diagnosticCategories = useMemo(() => getCategoriesForSubject(subjectId), [subjectId]);
+
   const startDiagnostic = useCallback(() => {
     if (allTasks.length === 0) return;
-    const categories = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax", "reading", "plan", "vocabulary"];
+    const categories = diagnosticCategories;
     const diagnosticTasks: Task[] = [];
     const shuffledCats = [...categories].sort(() => Math.random() - 0.5);
     const TASKS_PER_ISLAND = 3;
@@ -313,7 +310,7 @@ export default function Home() {
           nickname: null,
           stars: EMPTY_STARS,
         };
-        saveProfile(defaultProfile);
+        saveProfile(defaultProfile, subjectId);
         return defaultProfile;
       }
       return prev;
@@ -327,7 +324,7 @@ export default function Home() {
     setRoundTotalTasks(diagnosticTasks.length);
     setMascotMood("thinking");
     setDiagnosticStarted(true);
-  }, [allTasks]);
+  }, [allTasks, diagnosticCategories, subjectId]);
 
   const taskCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -338,7 +335,17 @@ export default function Home() {
   }, [allTasks]);
 
   const { data: categoryProgressData } = useQuery<{ category: string; correctCount: number; totalTasksInCategory: number; status: string; wrongCount: number; roundNumber: number }[]>({
-    queryKey: [`/api/categories/progress?sessionId=${sessionId}`],
+    queryKey: ["/api/categories/progress", sessionId],
+    queryFn: async () => {
+      try {
+        const res = await fetch(API_BASE + `/api/categories/progress?sessionId=${sessionId}`);
+        if (!res.ok || !res.headers.get("content-type")?.includes("application/json")) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      } catch {
+        return [];
+      }
+    },
     enabled: !!sessionId,
   });
 
@@ -417,10 +424,10 @@ export default function Home() {
         fireConfetti();
         setMascotMood("celebrating");
       }
-      saveProfile(updated);
+      saveProfile(updated, subjectId);
       return updated;
     });
-  }, []);
+  }, [subjectId]);
 
   const handleSelectIsland = useCallback(
     async (category: string) => {
@@ -676,7 +683,7 @@ export default function Home() {
                   stars: EMPTY_STARS,
                 };
                 setProfile(defaultProfile);
-                saveProfile(defaultProfile);
+                saveProfile(defaultProfile, subjectId);
               }
             }}
           />
@@ -690,6 +697,11 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-[100dvh] md:min-h-0 md:h-auto w-full max-w-[100vw] overflow-x-hidden">
+        {isOffline && (
+          <div className="shrink-0 bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 text-center text-sm py-1.5 px-2" role="status">
+            Работаем офлайн: данные из кэша
+          </div>
+        )}
         {!showSplash && (
           <AnimationOnboardingDialog
             visible={!hasChosenAnimationLevel}
@@ -806,6 +818,8 @@ export default function Home() {
                 onAll={() => startMixedTraining("all")}
                 onOneSkill={(cat) => startMixedTraining(cat)}
                 onBack={() => setPhase("modeChoice")}
+                categoryKeys={diagnosticCategories}
+                categoryLabels={getCategoryLabelsForSubject(subjectId)}
               />
             )}
             {phase === "powerCard" && (
@@ -833,6 +847,7 @@ export default function Home() {
                   taskCounts={taskCounts}
                   isLoading={tasksLoading || isLoadingRound}
                   sessionId={sessionId}
+                  subjectId={subjectId}
                 />
               </>
             )}

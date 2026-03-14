@@ -2,18 +2,19 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Shuffle, Target } from "lucide-react";
-import { categoryLabels } from "@/lib/taskData";
-
-const CATEGORY_ORDER = ["accent", "phonetics", "meaning", "morphemics", "morphology", "syntax"] as const;
 
 interface MixedModeChoiceScreenProps {
   onAll: () => void;
   onOneSkill: (category: string) => void;
   onBack: () => void;
+  /** Ключи категорий (островов) для текущего предмета */
+  categoryKeys: string[];
+  /** Подписи категорий для UI */
+  categoryLabels: Record<string, string>;
 }
 
 /** В смешанном режиме: один навык или все сразу */
-export function MixedModeChoiceScreen({ onAll, onOneSkill, onBack }: MixedModeChoiceScreenProps) {
+export function MixedModeChoiceScreen({ onAll, onOneSkill, onBack, categoryKeys, categoryLabels }: MixedModeChoiceScreenProps) {
   return (
     <motion.div
       key="mixed-mode-choice"
@@ -65,7 +66,7 @@ export function MixedModeChoiceScreen({ onAll, onOneSkill, onBack }: MixedModeCh
 
         <p className="text-sm font-medium text-muted-foreground pt-2">или один навык:</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          {CATEGORY_ORDER.map((key) => (
+          {categoryKeys.map((key) => (
             <Button
               key={key}
               variant="outline"

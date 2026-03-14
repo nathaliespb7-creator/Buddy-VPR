@@ -1,8 +1,26 @@
 import { motion } from "framer-motion";
-import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered, Search, MessageSquareQuote } from "lucide-react";
+import { Zap, BookOpen, Star, Layers, Puzzle, Users, FileText, MapPin, Loader2, CheckCircle2, RotateCcw, BookOpenCheck, ListOrdered, Search, MessageSquareQuote, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import { getIslandsForSubject, type IslandConfig, type SubjectId } from "@/data/subjectsConfig";
+
+const ICON_MAP: Record<string, (props: { className?: string }) => React.ReactNode> = {
+  Zap,
+  BookOpen,
+  Star,
+  Layers,
+  Puzzle,
+  Users,
+  FileText,
+  MapPin,
+  ListOrdered,
+  BookOpenCheck,
+  Search,
+  MessageSquareQuote,
+  CheckCircle2,
+  Target,
+};
 
 interface CategoryProgress {
   category: string;
@@ -20,130 +38,8 @@ interface IslandMapProps {
   taskCounts?: Record<string, number>;
   isLoading?: boolean;
   sessionId: string;
+  subjectId: SubjectId;
 }
-
-const islands = [
-  {
-    key: "accent",
-    label: "Остров Ударений",
-    description: "Найди секретную силу каждого слова!",
-    icon: Zap,
-    gradient: "from-violet-200 to-violet-100 dark:from-violet-900/40 dark:to-violet-800/30",
-    iconBg: "bg-violet-300 dark:bg-violet-700",
-    iconColor: "text-violet-800 dark:text-violet-200",
-    borderColor: "border-violet-300 dark:border-violet-700",
-    dotColor: "bg-violet-400",
-    progressColor: "bg-violet-400",
-  },
-  {
-    key: "phonetics",
-    label: "Остров Звуков",
-    description: "Узнай, как звуки прячутся в буквах!",
-    icon: BookOpen,
-    gradient: "from-sky-200 to-sky-100 dark:from-sky-900/40 dark:to-sky-800/30",
-    iconBg: "bg-sky-300 dark:bg-sky-700",
-    iconColor: "text-sky-800 dark:text-sky-200",
-    borderColor: "border-sky-300 dark:border-sky-700",
-    dotColor: "bg-sky-400",
-    progressColor: "bg-sky-400",
-  },
-  {
-    key: "morphemics",
-    label: "Остров Слов-Конструктор",
-    description: "Разбери слова на части: корень, приставка, суффикс!",
-    icon: Puzzle,
-    gradient: "from-emerald-200 to-emerald-100 dark:from-emerald-900/40 dark:to-emerald-800/30",
-    iconBg: "bg-emerald-300 dark:bg-emerald-700",
-    iconColor: "text-emerald-800 dark:text-emerald-200",
-    borderColor: "border-emerald-300 dark:border-emerald-700",
-    dotColor: "bg-emerald-400",
-    progressColor: "bg-emerald-400",
-  },
-  {
-    key: "morphology",
-    label: "Остров Частей Речи",
-    description: "Узнай, кто такие глагол, существительное и их друзья!",
-    icon: Users,
-    gradient: "from-rose-200 to-rose-100 dark:from-rose-900/40 dark:to-rose-800/30",
-    iconBg: "bg-rose-300 dark:bg-rose-700",
-    iconColor: "text-rose-800 dark:text-rose-200",
-    borderColor: "border-rose-300 dark:border-rose-700",
-    dotColor: "bg-rose-400",
-    progressColor: "bg-rose-400",
-  },
-  {
-    key: "syntax",
-    label: "Остров Предложений",
-    description: "Найди подлежащее, сказуемое и расставь запятые!",
-    icon: FileText,
-    gradient: "from-indigo-200 to-indigo-100 dark:from-indigo-900/40 dark:to-indigo-800/30",
-    iconBg: "bg-indigo-300 dark:bg-indigo-700",
-    iconColor: "text-indigo-800 dark:text-indigo-200",
-    borderColor: "border-indigo-300 dark:border-indigo-700",
-    dotColor: "bg-indigo-400",
-    progressColor: "bg-indigo-400",
-  },
-  {
-    key: "vocabulary",
-    label: "Остров Слов",
-    description: "Подбери слово с таким же значением (синоним)!",
-    icon: Search,
-    gradient: "from-fuchsia-200 to-fuchsia-100 dark:from-fuchsia-900/40 dark:to-fuchsia-800/30",
-    iconBg: "bg-fuchsia-300 dark:bg-fuchsia-700",
-    iconColor: "text-fuchsia-800 dark:text-fuchsia-200",
-    borderColor: "border-fuchsia-300 dark:border-fuchsia-700",
-    dotColor: "bg-fuchsia-400",
-    progressColor: "bg-fuchsia-400",
-  },
-  {
-    key: "context",
-    label: "Остров контекста",
-    description: "Объясни, что значит слово в предложении!",
-    icon: MessageSquareQuote,
-    gradient: "from-orange-200 to-orange-100 dark:from-orange-900/40 dark:to-orange-800/30",
-    iconBg: "bg-orange-300 dark:bg-orange-700",
-    iconColor: "text-orange-800 dark:text-orange-200",
-    borderColor: "border-orange-300 dark:border-orange-700",
-    dotColor: "bg-orange-400",
-    progressColor: "bg-orange-400",
-  },
-  {
-    key: "plan",
-    label: "Остров Планов",
-    description: "Составь план текста из 3 пунктов!",
-    icon: ListOrdered,
-    gradient: "from-cyan-200 to-cyan-100 dark:from-cyan-900/40 dark:to-cyan-800/30",
-    iconBg: "bg-cyan-300 dark:bg-cyan-700",
-    iconColor: "text-cyan-800 dark:text-cyan-200",
-    borderColor: "border-cyan-300 dark:border-cyan-700",
-    dotColor: "bg-cyan-400",
-    progressColor: "bg-cyan-400",
-  },
-  {
-    key: "reading",
-    label: "Остров Текстов",
-    description: "Прочитай текст и найди главную мысль!",
-    icon: BookOpenCheck,
-    gradient: "from-teal-200 to-teal-100 dark:from-teal-900/40 dark:to-teal-800/30",
-    iconBg: "bg-teal-300 dark:bg-teal-700",
-    iconColor: "text-teal-800 dark:text-teal-200",
-    borderColor: "border-teal-300 dark:border-teal-700",
-    dotColor: "bg-teal-400",
-    progressColor: "bg-teal-400",
-  },
-  {
-    key: "meaning",
-    label: "Остров Мудрости",
-    description: "Разгадай тайны пословиц и слов!",
-    icon: Star,
-    gradient: "from-amber-200 to-amber-100 dark:from-amber-900/40 dark:to-amber-800/30",
-    iconBg: "bg-amber-300 dark:bg-amber-700",
-    iconColor: "text-amber-800 dark:text-amber-200",
-    borderColor: "border-amber-300 dark:border-amber-700",
-    dotColor: "bg-amber-400",
-    progressColor: "bg-amber-400",
-  },
-];
 
 function taskCountLabel(n: number): string {
   if (n % 10 === 1 && n % 100 !== 11) return `${n} задание`;
@@ -151,7 +47,7 @@ function taskCountLabel(n: number): string {
   return `${n} заданий`;
 }
 
-function ProgressIndicator({ progress, island }: { progress: CategoryProgress | undefined, island: typeof islands[0] }) {
+function ProgressIndicator({ progress, island }: { progress: CategoryProgress | undefined; island: IslandConfig }) {
   if (!progress) return null;
 
   const { currentIndex, totalTasks, roundNumber, status, correctCount, wrongCount, totalTasksInCategory } = progress;
@@ -201,7 +97,8 @@ function ProgressIndicator({ progress, island }: { progress: CategoryProgress | 
   );
 }
 
-export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: IslandMapProps) {
+export function IslandMap({ onSelect, taskCounts, isLoading, sessionId, subjectId }: IslandMapProps) {
+  const islands = getIslandsForSubject(subjectId);
   const totalTasks = taskCounts ? Object.values(taskCounts).reduce((a, b) => a + b, 0) : 0;
 
   const { data: categoryProgress } = useQuery<CategoryProgress[]>({
@@ -278,7 +175,7 @@ export function IslandMap({ onSelect, taskCounts, isLoading, sessionId }: Island
         <div className="absolute left-1/2 top-4 bottom-4 w-0.5 bg-border/50 -translate-x-1/2" />
 
         {islands.map((island, i) => {
-          const Icon = island.icon;
+          const Icon = ICON_MAP[island.icon] ?? Zap;
           const isLeft = i % 2 === 0;
           const progress = progressByCategory.get(island.key);
 

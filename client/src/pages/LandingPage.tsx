@@ -36,7 +36,7 @@ export default function LandingPage() {
             Выбери класс
           </Button>
           <p className="text-xs text-slate-500">
-            Шаг 1: выбери класс и предмет — дальше тебя проведёт Бадди.
+            Шаг 1: выбери класс — дальше тебя проведёт Бадди.
           </p>
         </div>
       </div>
