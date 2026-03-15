@@ -1,0 +1,13 @@
+<svg width="400" height="240" xmlns="http://www.w3.org/2000/svg">
+  <!-- ;5BG0B>5 ?>;5: A5B:0 6×4 :;5B:8 (24 :2. A< ?@8 1 A< =0 :;5B:C) -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="240" fill="url(#grid)"/>
+  <!-- @O<>C3>;L=8: 6 :;5B>: 2 H8@8=C, 4 2 2KA>BC -->
+  <rect x="40" y="40" width="240" height="160" fill="none" stroke="#333" stroke-width="3"/>
+  <text x="160" y="125" text-anchor="middle" font-size="14" fill="#666">@O<>C3>;L=8:</text>
+  <text x="160" y="145" text-anchor="middle" font-size="12" fill="#999">@>2548 ;8=8N: :204@0B + ?@O<>C3>;L=8:</text>
+</svg>

@@ -50,7 +50,7 @@ export function MathTaskCard({ task, onAnswer, taskIndex, totalTasks }: MathTask
 
       <p className="text-base font-medium text-foreground whitespace-pre-wrap">{question}</p>
 
-      {task.type === "text_solution" && "image" in task && task.image && (
+      {(task.type === "text_solution" || task.type === "drawing") && "image" in task && task.image && (
         <TaskImage
           src={typeof task.image === "string" ? task.image : task.image}
           zoomable

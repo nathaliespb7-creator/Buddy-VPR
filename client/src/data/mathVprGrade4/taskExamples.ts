@@ -70,7 +70,11 @@ const baseExamplesByVpr: MathTaskExample[] = [
       "Найди площадь этого прямоугольника. Ответ дай в квадратных сантиметрах.",
     question_part2:
       "Проведи прямую линию так, чтобы прямоугольник оказался разбит на квадрат и ещё один прямоугольник.",
-    image: "rectangle_grid.png",
+    image: {
+      src: "/images/vpr/math/task5_rectangle_grid.svg",
+      alt: "Прямоугольник на клетчатом поле",
+      caption: "Рисунок к заданию 5",
+    },
     grid_cell_cm: 1,
     question: "",
     correct_answer_part1: 24,
@@ -120,6 +124,11 @@ const baseExamplesByVpr: MathTaskExample[] = [
     type: "text_solution",
     question:
       "В магазин привезли 4 ящика яблок по 12 кг и 3 ящика груш по 8 кг. Сколько всего килограммов фруктов привезли?",
+    image: {
+      src: "/images/vpr/math/task8_jam_banks.svg",
+      alt: "Банки 400 г и 200 г с вареньем",
+      caption: "Рисунок к заданию 8",
+    },
     correct_solution:
       "1) 12 · 4 = 48 (кг) — яблоки\n2) 8 · 3 = 24 (кг) — груши\n3) 48 + 24 = 72 (кг) — всего",
     correct_answer: "72 кг",
@@ -157,7 +166,12 @@ const baseExamplesByVpr: MathTaskExample[] = [
     type: "drawing",
     question:
       "Миша написал на футболке своё имя (см. рис. 1). Затем он подошёл к зеркалу. Нарисуй, как будет выглядеть отражение его имени в зеркале (рис. 2).",
-    image_part1: "name_Misha.png",
+    image: {
+      src: "/images/vpr/math/task10_name_misha.svg",
+      alt: "Имя «Миша» на футболке",
+      caption: "Рис. 1",
+    },
+    image_part1: "/images/vpr/math/task10_name_misha.svg",
     image_part2: "mirror_empty.png",
     correct_answer: "mirror_drawing",
     difficulty: "повышенный",
@@ -176,6 +190,11 @@ const baseExamplesByVpr: MathTaskExample[] = [
     type: "text_solution",
     question:
       "В коробке лежат 20 конфет: шоколадные и карамельки. Шоколадных на 4 больше, чем карамелек. Сколько конфет каждого вида?",
+    image: {
+      src: "/images/vpr/math/task11_bicycles.svg",
+      alt: "Велосипеды: 2- и 3-колёсные",
+      caption: "Рисунок к заданию 11",
+    },
     correct_solution:
       "1) 20 - 4 = 16 — если бы поровну\n2) 16 : 2 = 8 — карамелек\n3) 8 + 4 = 12 — шоколадных",
     correct_answer: "12 шоколадных и 8 карамелек",
