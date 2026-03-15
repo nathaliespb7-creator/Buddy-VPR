@@ -1,11 +1,12 @@
 /**
- * Остров Вычислений (ВПР № 1, 2, 7): арифметика, выражения, письменные действия.
- * Данные из конфига buddy_vpr_math_island_arithmetic.
+ * Остров Вычислений (ВПР № 1, 2, 7): 130 заданий (50+50+30 по типам).
+ * Базовые 20 заданий + 110 из arithmeticIslandExpanded.
  */
 
 import type { MathTaskExample } from "../types";
+import { arithmeticIslandExpandedTasks } from "./arithmeticIslandExpanded";
 
-export const arithmeticIslandTasks: MathTaskExample[] = [
+const arithmeticIslandBaseTasks: MathTaskExample[] = [
   {
     id: "math_arith_001",
     vpr_task_number: 1,
@@ -326,4 +327,10 @@ export const arithmeticIslandTasks: MathTaskExample[] = [
       elkonin: "Анализируй соотношение делимого и делителя",
     },
   },
+];
+
+/** Все 130 заданий Острова Вычислений: 50 (№1) + 50 (№2) + 30 (№7). */
+export const arithmeticIslandTasks: MathTaskExample[] = [
+  ...arithmeticIslandBaseTasks,
+  ...arithmeticIslandExpandedTasks,
 ];
